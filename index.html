@@ -1,30 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BiofilmedDesire Residence Portal</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-        iframe { border: none; width: 100%; height: 100%; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #f8fafc; }
+        iframe { border: none; width: 100%; height: 100%; display: block; }
     </style>
 </head>
 <body>
-    <iframe id="portalFrame" src=""></iframe>
-
     <script>
-        // 1. Get the code from the URL (e.g., ?code=A1-00001x)
         const urlParams = new URLSearchParams(window.location.search);
-        const userCode = urlParams.get('code');
+        const locationCode = urlParams.get('code') || '';
+        
+        // This is your UPDATED Google Script link that works
+        const scriptBaseUrl = "https://script.google.com/macros/s/AKfycbz7_yp7R3DvdEuyUX7ZDHN2tXp444NuY9DEklcaHQEP2TGZ4fVuLU5ZhezMRMq7e63O/exec";
+        const finalUrl = scriptBaseUrl + "?code=" + locationCode;
 
-        // 2. YOUR GOOGLE SCRIPT URL GOES HERE
-        const scriptUrl = "PASTE_YOUR_SCRIPT_URL_HERE";
-
-        // 3. Load the script inside the frame with the code attached
-        if (userCode) {
-            document.getElementById('portalFrame').src = scriptUrl + "?code=" + userCode;
-        } else {
-            document.body.innerHTML = "<h1>Access Denied. Please use your official link.</h1>";
-        }
+        const iframe = document.createElement('iframe');
+        iframe.src = finalUrl;
+        document.body.appendChild(iframe);
     </script>
 </body>
 </html>
