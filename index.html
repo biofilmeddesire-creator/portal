@@ -10,7 +10,7 @@
         // 2. Redirect logic
         if (code) {
             // Replace the URL below with your actual Google Script Exec URL from your screenshot
-            const scriptUrl = "https://script.google.com/macros/s/AKfycbz7_yp7R3DvdEuyUX7ZDHN2tXp444NuY9DEklcaHQEP2TGZ4fVuLU5ZhezMRMq7e63O/exec";
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbyJLzDafToaDVylNcu55eDoytf3WmOs3KgRR_o8sAOj8VFiWSvNXFZbAxNGx7flhRgy/exec";
             window.location.replace(scriptUrl + "?code=" + encodeURIComponent(code));
         } else {
             // If someone tries to visit without a code, show the security screen
