@@ -1,1 +1,23 @@
-# portal
+{
+  "id": "biofilmed-desire-portal-v1",
+  "name": "BiofilmedDesire Residence Portal",
+  "short_name": "BD Portal",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
