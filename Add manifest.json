@@ -8,13 +8,13 @@
   "theme_color": "#0f172a",
   "icons": [
     {
-      "src": "logo.jpg",
+      "src": "rsz_logo.jpg",
       "sizes": "192x192",
       "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "logo.jpg",
+      "src": "rsz_logo.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any"
