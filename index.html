@@ -75,19 +75,19 @@
     const urlParams = new URLSearchParams(window.location.search);
     let locationCode = urlParams.get('id') || '';
 
-    /* ─── FIX #1: Recover token from localStorage if URL has no ?id= ─── */
+    /* Recover token from localStorage if URL has no ?id= */
     if (!locationCode) {
       locationCode = localStorage.getItem('bd_portal_id') || '';
     }
 
-    /* Save token whenever we have one (so PWA launches always find it) */
+    /* Save token whenever we have one */
     if (locationCode) {
       localStorage.setItem('bd_portal_id', locationCode);
     }
 
     const scriptBaseUrl = "https://script.google.com/macros/s/AKfycby2W3PgMadtomfMLpzsYkjwWsvyMdsyTV9rrjpGJ56-GhsUKP0VRwc6_AHgKgJkdg/exec";
 
-    /* ─── FIX #2: Graceful error if opened without any token ─── */
+    /* Show error if opened without any token */
     if (!locationCode) {
       document.getElementById('splash').innerHTML = 
         '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;">' +
@@ -100,7 +100,7 @@
       const iframe = document.createElement('iframe');
       iframe.src = finalUrl;
       
-      /* ─── FIX #3: allowfullscreen + allow for full form interaction ─── */
+      /* allowfullscreen + allow for full form interaction */
       iframe.setAttribute('allowfullscreen', '');
       iframe.setAttribute('allow', 'camera; microphone; clipboard-read; clipboard-write; fullscreen; autoplay; geolocation; payment');
       
@@ -110,7 +110,7 @@
         setTimeout(() => splash.remove(), 500);
       };
       
-      /* ─── FIX #4: Force-remove splash after 8s even if onload hangs ─── */
+      /* Force-remove splash after 8s even if onload hangs */
       setTimeout(() => {
         const splash = document.getElementById('splash');
         if (splash) splash.remove();
