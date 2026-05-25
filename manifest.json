@@ -2,7 +2,7 @@
   "id": "biofilmed-desire-portal-v1",
   "name": "BiofilmedDesire Residence Portal",
   "short_name": "BD Portal",
-  "start_url": "/portal/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
