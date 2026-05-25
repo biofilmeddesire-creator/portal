@@ -71,43 +71,34 @@
   </div>
 
   <script>
-    (function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      let locationCode = urlParams.get('id') || '';
+    const urlParams = new URLSearchParams(window.location.search);
+    let locationCode = urlParams.get('id') || '';
 
-      /* Recover token from localStorage if URL has no ?id= */
-      if (!locationCode) {
-        locationCode = localStorage.getItem('bd_portal_id') || '';
-      }
+    /* Recover token from localStorage if URL has no ?id= */
+    if (!locationCode) {
+      locationCode = localStorage.getItem('bd_portal_id') || '';
+    }
 
-      /* Save token whenever we have one */
-      if (locationCode) {
-        localStorage.setItem('bd_portal_id', locationCode);
-      }
+    /* Save token whenever we have one */
+    if (locationCode) {
+      localStorage.setItem('bd_portal_id', locationCode);
+    }
 
-      /* Show error if opened without any token */
-      if (!locationCode) {
-        document.getElementById('splash').innerHTML = 
-          '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;">' +
-          '<strong>Error:</strong> No residence ID found.<br><br>' +
-          'Please open this portal using the link provided by Biofilmed Desire.' +
-          '</p>';
-        return;
-      }
-
-      /* Build Apps Script URL from encoded parts to hide it from casual inspection */
-      const parts = [
-        'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy8=',  // https://script.google.com/macros/s/
-        'QUtmeWNieTJXM1BnTWFkdG9tZk1McHpzWWtqd1dzdnlNZHN5VFY5cnJqcEdKNTYtR2hzVUtQMFZSd2M2X0FIZ0tnSmtkZw==',  // deployment ID
-        'L2V4ZWM='  // /exec
-      ];
-      
-      const scriptBaseUrl = atob(parts[0]) + atob(parts[1]) + atob(parts[2]);
-      const finalUrl = scriptBaseUrl + '?code=' + encodeURIComponent(locationCode);
+    /* Show error if opened without any token */
+    if (!locationCode) {
+      document.getElementById('splash').innerHTML = 
+        '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;">' +
+        '<strong>Error:</strong> No residence ID found.<br><br>' +
+        'Please open this portal using the link provided by Biofilmed Desire.' +
+        '</p>';
+    } else {
+      /* FIXED: Updated to your current deployment URL */
+      const scriptBaseUrl = "https://script.google.com/macros/s/AKfycbyZW3PgMadtomfMLpzsYkjwNVsvyMdSyTV9rrjpGJ56-GhsUKPOVRwc6_AHgKgJRdg/exec";
+      const finalUrl = scriptBaseUrl + "?code=" + encodeURIComponent(locationCode);
       
       /* Redirect to Apps Script - replace so GitHub URL doesn't stay in history */
       window.location.replace(finalUrl);
-    })();
+    }
   </script>
 </body>
 </html>
