@@ -1,23 +1,20 @@
 {
-  "id": "biofilmed-desire-portal-v1",
-  "name": "BiofilmedDesire Residence Portal",
-  "short_name": "BD Portal",
-  "start_url": ".",
+  "name": "Biofilmed Desire",
+  "short_name": "Biofilmed",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
   "icons": [
     {
-      "src": "rsz_logo.jpg",
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/jpeg",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
-      "src": "rsz_logo.jpg",
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any"
+      "type": "image/png"
     }
   ]
 }
