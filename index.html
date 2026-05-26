@@ -1,193 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#000000">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="BD Portal">
-  
-  <title>BiofilmedDesire Residence Portal</title>
-  
-  <link rel="manifest" href="/manifest.json">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BD Portal">
 
-  <link rel="icon" type="image/jpeg" sizes="192x192" href="rsz_logo.jpg">
-  <link rel="icon" type="image/jpeg" sizes="512x512" href="rsz_logo.jpg">
-  <link rel="apple-touch-icon" sizes="192x192" href="rsz_logo.jpg">
-  <link rel="apple-touch-icon" sizes="180x180" href="rsz_logo.jpg">
-  <link rel="apple-touch-icon" sizes="152x152" href="rsz_logo.jpg">
-  <link rel="apple-touch-icon" sizes="120x120" href="rsz_logo.jpg">
-  <link rel="shortcut icon" href="rsz_logo.jpg">
-  
-  <style>
-    * {
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      background-color: #0f172a;
-      -webkit-text-size-adjust: 100%;
-    }
-    #splash {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #0f172a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      transition: opacity 0.5s ease;
-    }
-    #splash img {
-      width: 120px;
-      height: 120px;
-      border-radius: 24px;
-      object-fit: cover;
-      border: 2px solid rgba(255,255,255,0.1);
-    }
-    #splash p {
-      color: #94a3b8;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      margin-top: 16px;
-      font-size: 14px;
-      letter-spacing: 0.5px;
-    }
-  </style>
-</head>
-<body>
-  <div id="splash">
-    <img src="rsz_logo.jpg" alt="Biofilmed Desire">
-    <p>Loading portal...</p>
-  </div>
+    <title>BiofilmedDesire Residence Portal</title>
 
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    let locationCode = urlParams.get('id') || '';
+    <link rel="manifest" href="/manifest.json">
 
-    /* Recover token from localStorage if URL has no ?id= */
-    if (!locationCode) {
-      locationCode = localStorage.getItem('bd_portal_id') || '';
-    }
+    <!-- PNG icons for PWA install prompt and home screen -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icon-192.png">
+    <link rel="shortcut icon" href="icon-192.png">
 
-    /* Save token whenever we have one */
-    if (locationCode) {
-      localStorage.setItem('bd_portal_id', locationCode);
-    }
+    <style>
+      * {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+      body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        background-color: #0f172a;
+        -webkit-text-size-adjust: 100%;
+      }
+      #splash {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0f172a;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+      }
+      #splash img {
+        width: 120px;
+        height: 120px;
+        border-radius: 24px;
+        object-fit: cover;
+        border: 2px solid rgba(255,255,255,0.1);
+      }
+      #splash p {
+        color: #94a3b8;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin-top: 16px;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+      }
+      #iframe-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+      iframe {
+        border: none;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="splash">
+      <img src="rsz_logo.jpg" alt="Biofilmed Desire">
+      <p>Loading portal...</p>
+    </div>
 
-    /* Show error if opened without any token */
-    if (!locationCode) {
-      document.getElementById('splash').innerHTML = 
-        '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;">' +
-        '<strong>Error:</strong> No residence ID found.<br><br>' +
-        'Please open this portal using the link provided by Biofilmed Desire.' +
-        '</p>';
-    } else {
-      /* CORRECT URL - your current deployment */
-      const scriptBaseUrl = "https://script.google.com/macros/s/AKfycbyZW3PgMadtomfMLpzsYkjwNVsvyMdSyTV9rrjpGJ56-GhsUKPOVRwc6_AHgKgJRdg/exec";
-      const finalUrl = scriptBaseUrl + "?code=" + encodeURIComponent(locationCode);
-      
-      /* NAVIGATE DIRECTLY to Apps Script - no iframe blocking */
-      window.location.replace(finalUrl);
-    }
-  </script>
-</body>
+    <div id="iframe-wrapper"></div>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      let locationCode = urlParams.get('id') || '';
+
+      /* Recover token from localStorage if URL has no ?id= */
+      if (!locationCode) {
+        locationCode = localStorage.getItem('bd_portal_id') || '';
+      }
+
+      /* Save token whenever we have one */
+      if (locationCode) {
+        localStorage.setItem('bd_portal_id', locationCode);
+      }
+
+      /* Show error if opened without any token */
+      if (!locationCode) {
+        document.getElementById('splash').innerHTML =
+          '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;">' +
+          '<strong>Error:</strong> No residence ID found.<br><br>' +
+          'Please open this portal using the link provided by Biofilmed Desire.' +
+          '</p>';
+      } else {
+        /* CORRECT URL — your current deployment */
+        const scriptBaseUrl = "https://script.google.com/macros/s/AKfycbyZW3PgMadtomfMLpzsYkjwNVsvyMdSyTV9rrjpGJ56-GhsUKPOVRwc6_AHgKgJRdg/exec";
+        const finalUrl = scriptBaseUrl + "?code=" + encodeURIComponent(locationCode);
+
+        const iframe = document.createElement('iframe');
+        iframe.src = finalUrl;
+
+        /* Critical attributes for Chrome standalone / PWA */
+        iframe.setAttribute('allowfullscreen', '');
+        iframe.setAttribute('allow', 'camera; microphone; clipboard-read; clipboard-write; fullscreen; autoplay; geolocation; payment');
+        iframe.setAttribute('scrolling', 'yes');
+        iframe.setAttribute('loading', 'eager');
+        iframe.setAttribute('tabindex', '0');
+        iframe.setAttribute('title', 'BiofilmedDesire Portal');
+
+        /* Sandbox with explicit permissions unlocks form interaction in PWA */
+        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads');
+
+        iframe.onload = function() {
+          const splash = document.getElementById('splash');
+          if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => splash.remove(), 500);
+          }
+        };
+
+        /* Force-remove splash after 8s in case onload is slow */
+        setTimeout(() => {
+          const splash = document.getElementById('splash');
+          if (splash) splash.remove();
+        }, 8000);
+
+        document.getElementById('iframe-wrapper').appendChild(iframe);
+      }
+    </script>
+  </body>
 </html>
-    #splash p {
-      color: #94a3b8;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      margin-top: 16px;
-      font-size: 14px;
-      letter-spacing: 0.5px;
-    }
-    #iframe-wrapper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-    }
-    iframe {
-      border: none;
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-  </style>
-</head>
-<body>
-  <div id="splash">
-    <img src="rsz_logo.jpg" alt="Biofilmed Desire">
-    <p>Loading portal...</p>
-  </div>
-
-  <div id="iframe-wrapper"></div>
-
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    let locationCode = urlParams.get('id') || '';
-
-    /* Recover token from localStorage if URL has no ?id= */
-    if (!locationCode) {
-      locationCode = localStorage.getItem('bd_portal_id') || '';
-    }
-
-    /* Save token whenever we have one */
-    if (locationCode) {
-      localStorage.setItem('bd_portal_id', locationCode);
-    }
-
-    /* Show error if opened without any token */
-    if (!locationCode) {
-      document.getElementById('splash').innerHTML = 
-        '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;">' +
-        '<strong>Error:</strong> No residence ID found.<br><br>' +
-        'Please open this portal using the link provided by Biofilmed Desire.' +
-        '</p>';
-    } else {
-      /* CORRECT URL - your current deployment */
-      const scriptBaseUrl = "https://script.google.com/macros/s/AKfycbyZW3PgMadtomfMLpzsYkjwNVsvyMdSyTV9rrjpGJ56-GhsUKPOVRwc6_AHgKgJRdg/exec";
-      const finalUrl = scriptBaseUrl + "?code=" + encodeURIComponent(locationCode);
-      
-      const iframe = document.createElement('iframe');
-      iframe.src = finalUrl;
-      
-      /* Critical attributes for Chrome standalone */
-      iframe.setAttribute('allowfullscreen', '');
-      iframe.setAttribute('allow', 'camera; microphone; clipboard-read; clipboard-write; fullscreen; autoplay; geolocation; payment');
-      iframe.setAttribute('scrolling', 'yes');
-      iframe.setAttribute('loading', 'eager');
-      iframe.setAttribute('tabindex', '0');
-      iframe.setAttribute('title', 'BiofilmedDesire Portal');
-      
-      /* FIX: Sandbox with explicit permissions unlocks form interaction in PWA */
-      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads');
-      
-      iframe.onload = function() {
-        const splash = document.getElementById('splash');
-        splash.style.opacity = '0';
-        setTimeout(() => splash.remove(), 500);
-      };
-      
-      /* Force-remove splash after 8s */
-      setTimeout(() => {
-        const splash = document.getElementById('splash');
-        if (splash) splash.remove();
-      }, 8000);
-      
-      document.getElementById('iframe-wrapper').appendChild(iframe);
-    }
-  </script>
 </body>
 </html>
