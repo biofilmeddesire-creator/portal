@@ -12,8 +12,6 @@
     <title>BiofilmedDesire Residence Portal</title>
 
     <link rel="manifest" href="/manifest.json">
-
-    <!-- PNG icons for PWA install prompt and home screen -->
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
@@ -49,6 +47,7 @@
         justify-content: center;
         z-index: 9999;
         transition: opacity 0.5s ease;
+        pointer-events: none;
       }
       #splash img {
         width: 120px;
@@ -92,17 +91,14 @@
       const urlParams = new URLSearchParams(window.location.search);
       let locationCode = urlParams.get('id') || '';
 
-      /* Recover token from localStorage if URL has no ?id= */
       if (!locationCode) {
         locationCode = localStorage.getItem('bd_portal_id') || '';
       }
 
-      /* Save token whenever we have one */
       if (locationCode) {
         localStorage.setItem('bd_portal_id', locationCode);
       }
 
-      /* Show error if opened without any token */
       if (!locationCode) {
         document.getElementById('splash').innerHTML =
           '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;">' +
@@ -110,23 +106,18 @@
           'Please open this portal using the link provided by Biofilmed Desire.' +
           '</p>';
       } else {
-        /* CORRECT URL — your current deployment */
         const scriptBaseUrl = "https://script.google.com/macros/s/AKfycbyZW3PgMadtomfMLpzsYkjwNVsvyMdSyTV9rrjpGJ56-GhsUKPOVRwc6_AHgKgJRdg/exec";
         const finalUrl = scriptBaseUrl + "?code=" + encodeURIComponent(locationCode);
 
         const iframe = document.createElement('iframe');
         iframe.src = finalUrl;
 
-        /* Critical attributes for Chrome standalone / PWA */
         iframe.setAttribute('allowfullscreen', '');
         iframe.setAttribute('allow', 'camera; microphone; clipboard-read; clipboard-write; fullscreen; autoplay; geolocation; payment');
         iframe.setAttribute('scrolling', 'yes');
         iframe.setAttribute('loading', 'eager');
         iframe.setAttribute('tabindex', '0');
         iframe.setAttribute('title', 'BiofilmedDesire Portal');
-
-        /* Sandbox with explicit permissions unlocks form interaction in PWA */
-        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads');
 
         iframe.onload = function() {
           const splash = document.getElementById('splash');
@@ -136,16 +127,13 @@
           }
         };
 
-        /* Force-remove splash after 8s in case onload is slow */
         setTimeout(() => {
           const splash = document.getElementById('splash');
           if (splash) splash.remove();
-        }, 8000);
+        }, 6000);
 
         document.getElementById('iframe-wrapper').appendChild(iframe);
       }
     </script>
   </body>
-</html>
-</body>
 </html>
