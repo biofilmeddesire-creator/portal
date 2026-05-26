@@ -1,45 +1,226 @@
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    if (data.action === 'getLandlordData') {
-      return getLandlordData(data.token);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BD Portal">
+  <title>BiofilmedDesire Residence Portal</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="icon-192.png">
+  <link rel="shortcut icon" href="icon-192.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-touch-callout: none; }
+    body { background-color: #f8fafc; font-family: 'Inter', sans-serif; padding: 40px 15px; color: #1e293b; -webkit-text-size-adjust: 100%; overscroll-behavior-y: none; }
+    .container { max-width: 500px; width: 100%; background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin: auto; border-top: 5px solid #0f172a; position: relative; }
+    .top-right-logo { position: absolute; top: 15px; right: 15px; width: 55px; height: 55px; object-fit: cover; border-radius: 50%; border: 1px solid #e2e8f0; background-color: white; }
+    h2 { font-family: 'Playfair Display', serif; font-weight: 600; text-align: left; margin-bottom: 30px; color: #0f172a; font-size: 1.4rem; padding-right: 65px; }
+    @media (max-width: 576px) {
+      body { padding: 20px 10px; }
+      .container { padding: 25px 15px; border-radius: 8px; }
+      .top-right-logo { width: 45px; height: 45px; top: 10px; right: 10px; }
+      h2 { font-size: 1.25rem; padding-right: 50px; margin-bottom: 20px; }
+      .room-card { padding: 15px; }
     }
-    const result = processForm(data);
-    return ContentService.createTextOutput(JSON.stringify({ status: result }))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ error: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
+    .form-label { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; }
+    .room-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; position: relative; }
+    .btn-remove { position: absolute; top: 10px; right: 10px; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px; padding: 2px 8px; font-weight: bold; font-size: 0.8rem; min-width: 28px; min-height: 28px; cursor: pointer; }
+    .btn-remove:hover { background: #fca5a5; }
+    .btn-add { background-color: #e2e8f0; color: #0f172a; font-weight: 600; border: none; border-radius: 6px; padding: 12px; width: 100%; margin-bottom: 25px; min-height: 44px; cursor: pointer; }
+    .btn-add:hover { background-color: #cbd5e1; }
+    .btn-submit { width: 100%; padding: 14px; font-weight: 600; background-color: #0f172a; color: white; border: none; border-radius: 6px; margin-top: 15px; min-height: 48px; font-size: 1rem; cursor: pointer; }
+    .btn-submit:hover { background-color: #1e293b; }
+    .btn-submit:active { background-color: #334155; transform: scale(0.98); }
+    .whatsapp-success { color: #15803d; font-size: 0.9rem; margin-top: 15px; text-align: center; font-weight: 500; }
+    .text-danger { color: #dc2626; font-size: 0.9rem; margin-top: 15px; text-align: center; }
+    input, select, textarea { font-size: 16px !important; min-height: 44px; }
+    input[type="number"] { -moz-appearance: textfield; }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+    #loadingScreen img { width: 120px; height: 120px; border-radius: 24px; object-fit: cover; border: 2px solid rgba(255,255,255,0.1); }
+    #loadingScreen p { color: #94a3b8; font-family: sans-serif; margin-top: 16px; font-size: 14px; letter-spacing: 0.5px; }
+    #statusMsg { margin-top: 20px; text-align: center; font-weight: 600; padding: 12px; border-radius: 6px; }
+  </style>
+</head>
+<body>
 
-function getLandlordData(token) {
-  try {
-    const ss = getTargetSpreadsheet();
-    const sheet = ss.getSheetByName(SHEET_NAME);
-    const data = sheet.getDataRange().getValues();
-    const headers = data[0];
-    const tokenIdx = getSafeCol(headers, "Security_Token") !== -1 ? getSafeCol(headers, "Security_Token") : getSafeCol(headers, "Location_Code");
-    const resNameIdx = getSafeCol(headers, "Res_Name");
-    const roomTypeIdx = getSafeCol(headers, "Room_Type");
-    const spotsIdx = getSafeCol(headers, "Availability_spots");
-    const liveStatusIdx = getSafeCol(headers, "Inventory_Live_Status") !== -1 ? getSafeCol(headers, "Inventory_Live_Status") : getSafeCol(headers, "Status");
-    const priceIdx = getSafeCol(headers, "Landlord_Base_Price") !== -1 ? getSafeCol(headers, "Landlord_Base_Price") : getSafeCol(headers, "Price_Monthly");
-    let resName = "";
-    let rooms = [];
-    for (let i = 1; i < data.length; i++) {
-      if (String(data[i][tokenIdx]).trim() === token && token !== "") {
-        const currentLiveStatus = String(data[i][liveStatusIdx] || "").trim().toLowerCase();
-        if (currentLiveStatus !== "archived") {
-          resName = data[i][resNameIdx] || resName;
-          rooms.push({ rowIndex: i + 1, type: data[i][roomTypeIdx], price: data[i][priceIdx], spots: data[i][spotsIdx] });
-        }
-      }
+  <div id="loadingScreen">
+    <img src="rsz_logo.jpg" alt="Biofilmed Desire">
+    <p>Loading portal...</p>
+  </div>
+
+  <div class="container" id="mainContent" style="display:none;">
+    <img src="rsz_logo.jpg" alt="Desire Logo" class="top-right-logo" onerror="this.style.display='none'">
+    <h2>BiofilmedDesire Residence Portal</h2>
+    <div class="mb-4">
+      <label class="form-label">Name of Residence</label>
+      <input type="text" id="residenceName" class="form-control" required>
+    </div>
+    <div id="roomContainer"></div>
+    <button type="button" class="btn-add" id="addRoomBtn">+ Add Another Room Type</button>
+    <div class="mb-4">
+      <label class="form-label">Notes</label>
+      <textarea id="notes" class="form-control" rows="2" placeholder="Update pricing or conditions..."></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Picture</label>
+      <input type="file" id="pictureFile" class="form-control" accept="image/*">
+    </div>
+    <div class="mb-4">
+      <label class="form-label">Video</label>
+      <input type="file" id="videoFile" class="form-control" accept="video/*">
+    </div>
+    <button type="button" class="btn-submit" id="submitBtn">Submit Data</button>
+    <div id="statusMsg"></div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZW3PgMadtomfMLpzsYkjwNVsvyMdSyTV9rrjpGJ56-GhsUKPOVRwc6_AHgKgJRdg/exec";
+    const roomTypeOptions = ["Single","RDP (Single)","Commune (Single)","RDP (Full house)","Sharing (Per Bed)","Sharing (Full Room)","Sharing (Private use)","Sharing (3+ Per Room)","Bachelor","1 Bedroom Apartment","2 Bedroom Apartment","3 Bedroom Apartment"];
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let locationCode = urlParams.get('id') || urlParams.get('code') || '';
+    if (!locationCode) locationCode = localStorage.getItem('bd_portal_id') || '';
+    if (locationCode) localStorage.setItem('bd_portal_id', locationCode);
+
+    function createRoomCard(room = { type: '', price: '', spots: 0, rowIndex: '' }) {
+      const div = document.createElement('div');
+      div.className = 'room-card';
+      div.setAttribute('data-rowindex', room.rowIndex || '');
+      const optionsHtml = roomTypeOptions.map(opt =>
+        `<option value="${opt}" ${room.type === opt ? 'selected' : ''}>${opt}</option>`
+      ).join('');
+      div.innerHTML = `
+        <button type="button" class="btn-remove">X</button>
+        <div class="mb-3">
+          <label class="form-label">Room Type</label>
+          <select class="form-select type-select" required>
+            <option value="" disabled ${!room.type ? 'selected' : ''}>Select Room Type...</option>
+            ${optionsHtml}
+          </select>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <label class="form-label">Monthly Price (R)</label>
+            <input type="number" class="form-control price-input" value="${room.price || ''}" min="0" required>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Spots Available</label>
+            <input type="number" class="form-control spots-input" value="${room.spots || 0}" min="0" required>
+          </div>
+        </div>`;
+      div.querySelector('.btn-remove').addEventListener('click', () => {
+        if (document.querySelectorAll('.room-card').length > 1) div.remove();
+        else alert('At least one room card is required.');
+      });
+      return div;
     }
-    return ContentService.createTextOutput(JSON.stringify({ residenceName: resName || "Residence Update", rooms: rooms }))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ error: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
+
+    function renderRooms(rooms) {
+      const container = document.getElementById('roomContainer');
+      container.innerHTML = '';
+      if (!rooms || rooms.length === 0) { container.appendChild(createRoomCard()); }
+      else { rooms.forEach(r => container.appendChild(createRoomCard(r))); }
+    }
+
+    document.getElementById('addRoomBtn').addEventListener('click', () => {
+      document.getElementById('roomContainer').appendChild(createRoomCard());
+    });
+
+    function readFileAsBase64(file) {
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = e => resolve({ base64: e.target.result.split(',')[1], mimeType: file.type, name: file.name });
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function loadData() {
+      if (!locationCode) {
+        document.getElementById('loadingScreen').innerHTML =
+          '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;"><strong>Error:</strong> No residence ID found.<br><br>Please open this portal using the link provided by Biofilmed Desire.</p>';
+        return;
+      }
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'getLandlordData', token: locationCode })
+        });
+        const data = await res.json();
+        document.getElementById('residenceName').value = data.residenceName || '';
+        renderRooms(data.rooms || []);
+      } catch (err) {
+        renderRooms([]);
+      }
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', async function () {
+      const btn = document.getElementById('submitBtn');
+      const msg = document.getElementById('statusMsg');
+      btn.disabled = true;
+      btn.innerText = 'Authorizing...';
+      msg.className = '';
+      msg.innerText = 'Please wait...';
+
+      const cardMap = new Map();
+      document.querySelectorAll('.room-card').forEach(card => {
+        const type = card.querySelector('.type-select').value;
+        const price = parseFloat(card.querySelector('.price-input').value) || 0;
+        const spots = parseInt(card.querySelector('.spots-input').value, 10) || 0;
+        const rowIndex = card.getAttribute('data-rowindex') || '';
+        const key = type + '||' + price;
+        if (cardMap.has(key)) { cardMap.get(key).spots += spots; }
+        else { cardMap.set(key, { type, price, spots, rowIndex }); }
+      });
+
+      const payload = {
+        token: locationCode,
+        residenceName: document.getElementById('residenceName').value,
+        notes: document.getElementById('notes').value.trim(),
+        dynamicRoomJSON: JSON.stringify(Array.from(cardMap.values()))
+      };
+
+      const picFile = document.getElementById('pictureFile').files[0];
+      const vidFile = document.getElementById('videoFile').files[0];
+      if (picFile) { const f = await readFileAsBase64(picFile); payload.pictureBase64 = f.base64; payload.pictureMime = f.mimeType; payload.pictureName = f.name; }
+      if (vidFile) { const f = await readFileAsBase64(vidFile); payload.videoBase64 = f.base64; payload.videoMime = f.mimeType; payload.videoName = f.name; }
+
+      try {
+        const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const result = await res.json();
+        if (result.status === 'Success') {
+          msg.className = 'whatsapp-success';
+          msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp.';
+        } else {
+          msg.className = 'text-danger';
+          msg.innerText = 'Error: ' + (result.error || result.status || 'Unknown error');
+        }
+      } catch (err) {
+        msg.className = 'text-danger';
+        msg.innerText = 'Connection error. Please check your signal and try again.';
+      }
+      btn.disabled = false;
+      btn.innerText = 'Submit Data';
+    });
+
+    document.getElementById('residenceName').addEventListener('input', () => {
+      localStorage.setItem('residence_draft', JSON.stringify({ residenceName: document.getElementById('residenceName').value }));
+    });
+
+    loadData();
+  </script>
+</body>
+</html>
