@@ -9,10 +9,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="BD Portal">
   <title>BiofilmedDesire Residence Portal</title>
-  
+
   <!-- Dynamic manifest will be replaced by JavaScript when token is present -->
   <link id="manifest-link" rel="manifest" href="/manifest.json">
-  
+
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -57,7 +57,13 @@
     #iosInstallHint { display: none; text-align: center; padding: 20px; background: #f1f5f9; border-radius: 8px; margin-bottom: 20px; }
     #iosInstallHint p { margin: 0; font-size: 0.85rem; color: #475569; }
     #iosInstallHint .share-icon { font-size: 1.2rem; }
+    /* Per-card media section styling */
+    .media-section { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
+    .media-label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 6px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .file-input-sm { font-size: 14px !important; min-height: 38px; }
+    .notes-textarea { min-height: 60px; resize: vertical; }
   </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -69,30 +75,18 @@
   <div class="container" id="mainContent" style="display:none;">
     <img src="rsz_logo.jpg" alt="Desire Logo" class="top-right-logo" onerror="this.style.display='none'">
     <h2>BiofilmedDesire Residence Portal</h2>
-    
+
     <!-- iOS Install Hint - only shown when opened in Safari before adding to home screen -->
     <div id="iosInstallHint">
       <p><span class="share-icon">📲</span> <strong>For best experience:</strong> Tap the <strong>Share</strong> button below, then <strong>"Add to Home Screen"</strong>. This keeps you logged in every time.</p>
     </div>
-    
+
     <div class="mb-4">
       <label class="form-label">Name of Residence</label>
       <input type="text" id="residenceName" class="form-control" required>
     </div>
     <div id="roomContainer"></div>
     <button type="button" class="btn-add" id="addRoomBtn">+ Add Another Room Type</button>
-    <div class="mb-4">
-      <label class="form-label">Notes</label>
-      <textarea id="notes" class="form-control" rows="2" placeholder="Update pricing or conditions..."></textarea>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Picture</label>
-      <input type="file" id="pictureFile" class="form-control" accept="image/*">
-    </div>
-    <div class="mb-4">
-      <label class="form-label">Video</label>
-      <input type="file" id="videoFile" class="form-control" accept="video/*">
-    </div>
     <button type="button" class="btn-submit" id="submitBtn">Submit Data</button>
     <div id="statusMsg"></div>
   </div>
@@ -101,33 +95,33 @@
     // ─────────────────────────────────────────────────────────────────────────
     // iOS PWA FIX: Dynamic manifest generation + multi-layer token recovery
     // ─────────────────────────────────────────────────────────────────────────
-    
+
     const SCRIPT_URL = "https://api.biofilmeddesire.com";
     const roomTypeOptions = ["Single","RDP (Single)","Commune (Single)","RDP (Full house)","Sharing (Per Bed)","Sharing (Full Room)","Sharing (Private use)","Sharing (3+ Per Room)","Bachelor","1 Bedroom Apartment","2 Bedroom Apartment","3 Bedroom Apartment"];
 
     // 🔑 TOKEN RECOVERY: Try multiple sources (URL → localStorage → sessionStorage)
     const urlParams = new URLSearchParams(window.location.search);
     let locationCode = urlParams.get('id') || urlParams.get('code') || '';
-    
+
     // If no token in URL, try localStorage (Android/Chrome PWA shares with browser)
     if (!locationCode) {
       locationCode = localStorage.getItem('bd_portal_id') || '';
     }
-    
+
     // If still no token, try sessionStorage (fallback)
     if (!locationCode) {
       locationCode = sessionStorage.getItem('bd_portal_id') || '';
     }
-    
+
     // 🍎 iOS DETECTION: Check if running in standalone mode
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.navigator.standalone === true;
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    
+
     // 📱 DYNAMIC MANIFEST: Embed token in start_url so iOS captures it at install time
     function generateDynamicManifest() {
       if (!locationCode) return; // No token, can't generate meaningful manifest
-      
+
       const baseManifest = {
         name: "Biofilmed Desire Portal",
         short_name: "BD Portal",
@@ -142,19 +136,19 @@
         ],
         orientation: "portrait"
       };
-      
+
       const blob = new Blob([JSON.stringify(baseManifest)], { type: 'application/json' });
       const manifestURL = URL.createObjectURL(blob);
-      
+
       // Replace the static manifest with dynamic one
       const manifestLink = document.getElementById('manifest-link');
       if (manifestLink) {
         manifestLink.href = manifestURL;
       }
-      
+
       console.log('[BD Portal] Dynamic manifest generated with start_url:', baseManifest.start_url);
     }
-    
+
     // Generate manifest immediately if we have a token
     if (locationCode) {
       generateDynamicManifest();
@@ -162,15 +156,15 @@
       localStorage.setItem('bd_portal_id', locationCode);
       sessionStorage.setItem('bd_portal_id', locationCode);
     }
-    
+
     // Show iOS install hint if in Safari (not standalone) and have token
     if (isIOS && !isStandalone && locationCode) {
       const hint = document.getElementById('iosInstallHint');
       if (hint) hint.style.display = 'block';
     }
-    
+
     // ─────────────────────────────────────────────────────────────────────────
-    // REST OF YOUR EXISTING CODE (UNCHANGED)
+    // PER-CARD MEDIA SYSTEM (UPDATED)
     // ─────────────────────────────────────────────────────────────────────────
 
     function createRoomCard(room = { type: '', price: '', spots: 0, rowIndex: '' }) {
@@ -197,6 +191,18 @@
           <div class="col-6">
             <label class="form-label">Spots Available</label>
             <input type="number" class="form-control spots-input" value="${room.spots || 0}" min="0" required>
+          </div>
+        </div>
+        <div class="media-section">
+          <label class="media-label">📎 Notes & Media for this Room Type</label>
+          <div class="mb-2">
+            <textarea class="form-control notes-input notes-textarea" rows="2" placeholder="Update pricing or conditions for this room type..."></textarea>
+          </div>
+          <div class="mb-2">
+            <input type="file" class="form-control file-input-sm picture-input" accept="image/*">
+          </div>
+          <div class="mb-1">
+            <input type="file" class="form-control file-input-sm video-input" accept="video/*">
           </div>
         </div>`;
       div.querySelector('.btn-remove').addEventListener('click', () => {
@@ -254,28 +260,75 @@
       msg.className = '';
       msg.innerText = 'Please wait...';
 
-      const cardMap = new Map();
-      document.querySelectorAll('.room-card').forEach(card => {
+      // Collect all room cards with per-card media (async file reading)
+      const cardEntries = [];
+      const cards = document.querySelectorAll('.room-card');
+
+      for (let i = 0; i < cards.length; i++) {
+        const card = cards[i];
         const type = card.querySelector('.type-select').value;
         const price = parseFloat(card.querySelector('.price-input').value) || 0;
         const spots = parseInt(card.querySelector('.spots-input').value, 10) || 0;
         const rowIndex = card.getAttribute('data-rowindex') || '';
-        const key = type + '||' + price;
-        if (cardMap.has(key)) { cardMap.get(key).spots += spots; }
-        else { cardMap.set(key, { type, price, spots, rowIndex }); }
+        const notes = card.querySelector('.notes-input').value.trim();
+        const pictureFile = card.querySelector('.picture-input').files[0];
+        const videoFile = card.querySelector('.video-input').files[0];
+
+        const entry = {
+          type, price, spots, rowIndex,
+          notes: notes || '',
+          pictureBase64: null, pictureMime: null, pictureName: null,
+          videoBase64: null, videoMime: null, videoName: null
+        };
+
+        if (pictureFile) {
+          const picData = await readFileAsBase64(pictureFile);
+          entry.pictureBase64 = picData.base64;
+          entry.pictureMime = picData.mimeType;
+          entry.pictureName = picData.name;
+        }
+        if (videoFile) {
+          const vidData = await readFileAsBase64(videoFile);
+          entry.videoBase64 = vidData.base64;
+          entry.videoMime = vidData.mimeType;
+          entry.videoName = vidData.name;
+        }
+
+        cardEntries.push(entry);
+      }
+
+      // Deduplicate by type+price (merge spots, keep first rowIndex, concat notes, keep latest media)
+      const cardMap = new Map();
+      cardEntries.forEach(entry => {
+        const key = entry.type + '||' + entry.price;
+        if (cardMap.has(key)) {
+          const existing = cardMap.get(key);
+          existing.spots += entry.spots;
+          if (!existing.rowIndex && entry.rowIndex) existing.rowIndex = entry.rowIndex;
+          if (entry.notes) {
+            existing.notes = existing.notes ? existing.notes + ' | ' + entry.notes : entry.notes;
+          }
+          // Keep latest media if present
+          if (entry.pictureBase64) {
+            existing.pictureBase64 = entry.pictureBase64;
+            existing.pictureMime = entry.pictureMime;
+            existing.pictureName = entry.pictureName;
+          }
+          if (entry.videoBase64) {
+            existing.videoBase64 = entry.videoBase64;
+            existing.videoMime = entry.videoMime;
+            existing.videoName = entry.videoName;
+          }
+        } else {
+          cardMap.set(key, { ...entry });
+        }
       });
 
       const payload = {
         token: locationCode,
         residenceName: document.getElementById('residenceName').value,
-        notes: document.getElementById('notes').value.trim(),
         dynamicRoomJSON: JSON.stringify(Array.from(cardMap.values()))
       };
-
-      const picFile = document.getElementById('pictureFile').files[0];
-      const vidFile = document.getElementById('videoFile').files[0];
-      if (picFile) { const f = await readFileAsBase64(picFile); payload.pictureBase64 = f.base64; payload.pictureMime = f.mimeType; payload.pictureName = f.name; }
-      if (vidFile) { const f = await readFileAsBase64(vidFile); payload.videoBase64 = f.base64; payload.videoMime = f.mimeType; payload.videoName = f.name; }
 
       try {
         const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
