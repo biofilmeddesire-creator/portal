@@ -82,14 +82,12 @@
     .reminder-banner.stale p { color: #7f1d1d; }
     .reminder-banner .portal-link { display: inline-block; margin-top: 10px; background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
     .reminder-banner .portal-link:hover { background: #1e293b; }
-    /* Samsung / mobile alignment fix - replaces Bootstrap col-6 */
     .price-spots-row { display: flex; gap: 12px; flex-wrap: nowrap; }
     .price-spots-row > div { flex: 1 1 0; min-width: 0; }
     @media (max-width: 360px) {
       .price-spots-row { flex-direction: column; gap: 0; }
     }
   </style>
-<base target="_blank">
 </head>
 <body>
 
@@ -196,7 +194,7 @@
             '<img src="rsz_logo.jpg" style="width:80px;height:80px;border-radius:16px;margin-bottom:20px;">' +
             '<p style="font-size:18px;margin-bottom:16px;font-weight:600;">Re-open from WhatsApp</p>' +
             '<p style="color:#94a3b8;margin-bottom:24px;line-height:1.5;">Please go back to your WhatsApp chat and tap the Biofilmed Desire link again. Then add to Home Screen while on that page.</p>' +
-            '<button onclick="window.location.href='https://wa.me/'" style="background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;">Open WhatsApp</button>' +
+            '<button onclick="window.location.href=\'https://wa.me/\'" style="background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;">Open WhatsApp</button>' +
             '</div>';
         } else {
           loadData();
@@ -324,23 +322,19 @@
       if (loadingScreen) loadingScreen.style.display = 'none';
       if (mainContent) mainContent.style.display = 'block';
 
-      // STEP 1: Try to restore draft FIRST (takes precedence over server data)
       const draftRestored = restoreDraft(serverData);
       console.log('[BD Portal] Draft restored:', draftRestored);
 
-      // STEP 2: If no draft, fall back to server data
       if (!draftRestored) {
         console.log('[BD Portal] No draft, using server data');
         if (apiSuccess && serverData) {
           document.getElementById('residenceName').value = serverData.residenceName || '';
           renderRooms(serverData.rooms || []);
         } else {
-          // API failed and no draft - show one empty card
           renderRooms([]);
         }
       }
 
-      // STEP 3: Show reminder banner if needed
       if (reminderData && reminderData.needsReminder) {
         showReminderBanner(reminderData);
       }
@@ -637,13 +631,11 @@
         const priceVal = card.querySelector('.price-input').value;
         const spotsVal = card.querySelector('.spots-input').value;
 
-        // Only save if there's actual data (not empty defaults)
         if (typeVal || priceVal || spotsVal) {
           draft.rooms.push({
             type: typeVal,
             price: priceVal,
             spots: spotsVal
-            // NOTES, PICTURE, VIDEO are NOT saved to draft
           });
         }
       });
@@ -683,13 +675,11 @@
         return false;
       }
 
-      // Restore residence name (draft takes precedence over server)
       if (draft.residenceName !== undefined) {
         document.getElementById('residenceName').value = draft.residenceName;
         console.log('[BD Portal] Restored residence name:', draft.residenceName);
       }
 
-      // Restore room cards: type, price, spots only (notes/media stay empty)
       if (draft.rooms && draft.rooms.length > 0) {
         const container = document.getElementById('roomContainer');
         container.innerHTML = '';
@@ -701,7 +691,6 @@
             spots: r.spots || 0,
             rowIndex: ''
           });
-          // Notes, picture, video inputs stay empty (not restored)
           container.appendChild(card);
         });
 
