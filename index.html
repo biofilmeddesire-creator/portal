@@ -10,7 +10,6 @@
   <meta name="apple-mobile-web-app-title" content="BD Portal">
   <title>BiofilmedDesire Residence Portal</title>
 
-  <!-- Dynamic manifest will be replaced by JavaScript when token is present -->
   <link id="manifest-link" rel="manifest" href="/manifest.json">
 
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -57,7 +56,6 @@
     #iosInstallHint { display: none; text-align: center; padding: 20px; background: #f1f5f9; border-radius: 8px; margin-bottom: 20px; }
     #iosInstallHint p { margin: 0; font-size: 0.85rem; color: #475569; }
     #iosInstallHint .share-icon { font-size: 1.2rem; }
-    /* Per-card media section styling */
     .media-section { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
     .media-label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 6px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
     .file-input-sm { font-size: 14px !important; min-height: 38px; }
@@ -76,7 +74,6 @@
     <img src="rsz_logo.jpg" alt="Desire Logo" class="top-right-logo" onerror="this.style.display='none'">
     <h2>BiofilmedDesire Residence Portal</h2>
 
-    <!-- iOS Install Hint - only shown when opened in Safari before adding to home screen -->
     <div id="iosInstallHint">
       <p><span class="share-icon">📲</span> <strong>For best experience:</strong> Tap the <strong>Share</strong> button below, then <strong>"Add to Home Screen"</strong>. This keeps you logged in every time.</p>
     </div>
@@ -92,40 +89,46 @@
   </div>
 
   <script>
-    // ─────────────────────────────────────────────────────────────────────────
-    // iOS PWA FIX: Dynamic manifest generation + multi-layer token recovery
-    // ─────────────────────────────────────────────────────────────────────────
-
     const SCRIPT_URL = "https://api.biofilmeddesire.com";
     const roomTypeOptions = ["Single","RDP (Single)","Commune (Single)","RDP (Full house)","Sharing (Per Bed)","Sharing (Full Room)","Sharing (Private use)","Sharing (3+ Per Room)","Bachelor","1 Bedroom Apartment","2 Bedroom Apartment","3 Bedroom Apartment"];
 
-    // 🔑 TOKEN RECOVERY: Try multiple sources (URL → localStorage → sessionStorage)
-    const urlParams = new URLSearchParams(window.location.search);
-    let locationCode = urlParams.get('id') || urlParams.get('code') || '';
+    // ═══════════════════════════════════════════════════════════════════════
+    // iOS PWA TOKEN RECOVERY (Hash-first for PWA compatibility)
+    // ═══════════════════════════════════════════════════════════════════════
 
-    // If no token in URL, try localStorage (Android/Chrome PWA shares with browser)
+    // iOS PWAs preserve hash fragments but strip query params on home screen launch
+    const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+    const urlParams = new URLSearchParams(window.location.search);
+
+    let locationCode = hashParams.get('id') || hashParams.get('code') || 
+                       urlParams.get('id') || urlParams.get('code') || '';
+
+    // Fallback to storage (for returning users who already saved)
     if (!locationCode) {
       locationCode = localStorage.getItem('bd_portal_id') || '';
     }
-
-    // If still no token, try sessionStorage (fallback)
     if (!locationCode) {
       locationCode = sessionStorage.getItem('bd_portal_id') || '';
     }
 
-    // 🍎 iOS DETECTION: Check if running in standalone mode
+    // iOS detection
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.navigator.standalone === true;
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-    // 📱 DYNAMIC MANIFEST: Embed token in start_url so iOS captures it at install time
+    // Save token to storage whenever we have it
+    if (locationCode) {
+      localStorage.setItem('bd_portal_id', locationCode);
+      sessionStorage.setItem('bd_portal_id', locationCode);
+    }
+
+    // Dynamic manifest with hash-based start_url (iOS PWA compatible)
     function generateDynamicManifest() {
-      if (!locationCode) return; // No token, can't generate meaningful manifest
+      if (!locationCode) return;
 
       const baseManifest = {
         name: "Biofilmed Desire Portal",
         short_name: "BD Portal",
-        start_url: "/?id=" + encodeURIComponent(locationCode),
+        start_url: "/#id=" + encodeURIComponent(locationCode),
         display: "standalone",
         background_color: "#0f172a",
         theme_color: "#0f172a",
@@ -139,33 +142,46 @@
 
       const blob = new Blob([JSON.stringify(baseManifest)], { type: 'application/json' });
       const manifestURL = URL.createObjectURL(blob);
-
-      // Replace the static manifest with dynamic one
       const manifestLink = document.getElementById('manifest-link');
-      if (manifestLink) {
-        manifestLink.href = manifestURL;
-      }
+      if (manifestLink) manifestLink.href = manifestURL;
 
-      console.log('[BD Portal] Dynamic manifest generated with start_url:', baseManifest.start_url);
+      console.log('[BD Portal] Manifest start_url:', baseManifest.start_url);
     }
 
-    // Generate manifest immediately if we have a token
-    if (locationCode) {
-      generateDynamicManifest();
-      // Save to all storage layers
-      localStorage.setItem('bd_portal_id', locationCode);
-      sessionStorage.setItem('bd_portal_id', locationCode);
-    }
+    if (locationCode) generateDynamicManifest();
 
-    // Show iOS install hint if in Safari (not standalone) and have token
+    // Show install hint for iOS Safari users (not standalone yet)
     if (isIOS && !isStandalone && locationCode) {
       const hint = document.getElementById('iosInstallHint');
       if (hint) hint.style.display = 'block';
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // PER-CARD MEDIA SYSTEM (UPDATED)
-    // ─────────────────────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════
+    // iOS STANDALONE FALLBACK: No token in PWA mode
+    // ═══════════════════════════════════════════════════════════════════════
+
+    if (isStandalone && !locationCode) {
+      // Try one more time after a short delay (sometimes iOS delays storage access)
+      setTimeout(() => {
+        locationCode = localStorage.getItem('bd_portal_id') || sessionStorage.getItem('bd_portal_id') || '';
+        if (!locationCode) {
+          document.getElementById('loadingScreen').innerHTML = `
+            <div style="color:#fff;text-align:center;padding:40px;font-family:sans-serif;max-width:320px;">
+              <img src="rsz_logo.jpg" style="width:80px;height:80px;border-radius:16px;margin-bottom:20px;">
+              <p style="font-size:18px;margin-bottom:16px;font-weight:600;">🔗 Re-open from WhatsApp</p>
+              <p style="color:#94a3b8;margin-bottom:24px;line-height:1.5;">Please go back to your WhatsApp chat and tap the Biofilmed Desire link again. Then add to Home Screen while on that page.</p>
+              <button onclick="window.location.href='https://wa.me/'" style="background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;">Open WhatsApp</button>
+            </div>`;
+        } else {
+          // Token found after delay, proceed
+          loadData();
+        }
+      }, 500);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // PER-CARD MEDIA SYSTEM
+    // ═══════════════════════════════════════════════════════════════════════
 
     function createRoomCard(room = { type: '', price: '', spots: 0, rowIndex: '' }) {
       const div = document.createElement('div');
@@ -233,8 +249,11 @@
 
     async function loadData() {
       if (!locationCode) {
-        document.getElementById('loadingScreen').innerHTML =
-          '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;"><strong>Error:</strong> No residence ID found.<br><br>Please open this portal using the link provided by Biofilmed Desire.</p>';
+        // Only show error if we're NOT waiting for the iOS standalone fallback
+        if (!isStandalone) {
+          document.getElementById('loadingScreen').innerHTML =
+            '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;"><strong>Error:</strong> No residence ID found.<br><br>Please open this portal using the link provided by Biofilmed Desire.</p>';
+        }
         return;
       }
       try {
@@ -260,7 +279,6 @@
       msg.className = '';
       msg.innerText = 'Please wait...';
 
-      // Collect all room cards with per-card media (async file reading)
       const cardEntries = [];
       const cards = document.querySelectorAll('.room-card');
 
@@ -297,7 +315,6 @@
         cardEntries.push(entry);
       }
 
-      // Deduplicate by type+price (merge spots, keep first rowIndex, concat notes, keep latest media)
       const cardMap = new Map();
       cardEntries.forEach(entry => {
         const key = entry.type + '||' + entry.price;
@@ -308,7 +325,6 @@
           if (entry.notes) {
             existing.notes = existing.notes ? existing.notes + ' | ' + entry.notes : entry.notes;
           }
-          // Keep latest media if present
           if (entry.pictureBase64) {
             existing.pictureBase64 = entry.pictureBase64;
             existing.pictureMime = entry.pictureMime;
@@ -352,7 +368,10 @@
       localStorage.setItem('residence_draft', JSON.stringify({ residenceName: document.getElementById('residenceName').value }));
     });
 
-    loadData();
+    // Start loading (will be delayed if iOS standalone fallback is running)
+    if (!isStandalone || locationCode) {
+      loadData();
+    }
   </script>
 </body>
 </html>
