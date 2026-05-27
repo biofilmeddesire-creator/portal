@@ -71,6 +71,9 @@
     .receipt-copy { background: #0f172a; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; }
     .receipt-copy:hover { background: #1e293b; }
     .receipt-copy:active { transform: scale(0.98); }
+    .draft-saved { font-size: 0.7rem; color: #10b981; text-align: right; margin-top: 4px; opacity: 0; transition: opacity 0.3s; }
+    .draft-saved.show { opacity: 1; }
+    .draft-indicator { font-size: 0.7rem; color: #94a3b8; text-align: center; margin-bottom: 15px; }
   </style>
 <base target="_blank">
 </head>
@@ -93,6 +96,7 @@
       <label class="form-label">Name of Residence</label>
       <input type="text" id="residenceName" class="form-control" required>
     </div>
+    <div class="draft-indicator" id="draftIndicator"></div>
     <div id="roomContainer"></div>
     <button type="button" class="btn-add" id="addRoomBtn">+ Add Another Room Type</button>
     <button type="button" class="btn-submit" id="submitBtn">Submit Data</button>
@@ -237,6 +241,7 @@
           <div class="mb-2">
             <textarea class="form-control notes-input notes-textarea" rows="2" placeholder="Update pricing or conditions for this room type..."></textarea>
           </div>
+          <div class="draft-saved" id="draftSaved">💾 Draft saved</div>
           <div class="mb-2">
             <input type="file" class="form-control file-input-sm picture-input" accept="image/*">
           </div>
@@ -292,6 +297,13 @@
       }
       document.getElementById('loadingScreen').style.display = 'none';
       document.getElementById('mainContent').style.display = 'block';
+
+      // Restore drafts after server data loads
+      const draftRestored = loadDraft();
+      if (draftRestored) {
+        const indicator = document.getElementById('draftIndicator');
+        if (indicator) indicator.innerText = '💾 Draft restored';
+      }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -531,6 +543,8 @@
         if (result.status === 'Success') {
           msg.className = 'whatsapp-success';
           msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp.';
+          localStorage.removeItem(DRAFT_KEY); // 🧹 Clear draft on success
+          document.getElementById('draftIndicator').innerText = '';
           buildReceipt(payload, cardMap);
           // Also try to clear any old queued items
           processQueue();
@@ -549,9 +563,107 @@
       btn.dataset.submitting = "false";
     });
 
-    document.getElementById('residenceName').addEventListener('input', () => {
-      localStorage.setItem('residence_draft', JSON.stringify({ residenceName: document.getElementById('residenceName').value }));
-    });
+    // ─────────────────────────────────────────────────────────────────────────
+    // AUTO-SAVE DRAFTS: Per-card persistence for interruptions
+    // ─────────────────────────────────────────────────────────────────────────
+
+    const DRAFT_KEY = 'bd_portal_draft_v2';
+    let draftDebounceTimer = null;
+
+    function getDraft() {
+      try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); }
+      catch (e) { return null; }
+    }
+
+    function saveDraft() {
+      const cards = document.querySelectorAll('.room-card');
+      const draft = {
+        residenceName: document.getElementById('residenceName').value,
+        savedAt: Date.now(),
+        rooms: []
+      };
+
+      cards.forEach(card => {
+        draft.rooms.push({
+          type: card.querySelector('.type-select').value,
+          price: card.querySelector('.price-input').value,
+          spots: card.querySelector('.spots-input').value,
+          notes: card.querySelector('.notes-input').value
+        });
+      });
+
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+
+      // Show "Draft saved" briefly on each card
+      document.querySelectorAll('.draft-saved').forEach(el => {
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 1500);
+      });
+
+      // Show indicator
+      const indicator = document.getElementById('draftIndicator');
+      if (indicator) {
+        indicator.innerText = '💾 Auto-saved ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      }
+    }
+
+    function loadDraft() {
+      const draft = getDraft();
+      if (!draft) return false;
+
+      // Only restore if draft is less than 7 days old
+      const ageDays = (Date.now() - (draft.savedAt || 0)) / (1000 * 60 * 60 * 24);
+      if (ageDays > 7) {
+        localStorage.removeItem(DRAFT_KEY);
+        return false;
+      }
+
+      // Restore residence name
+      if (draft.residenceName) {
+        document.getElementById('residenceName').value = draft.residenceName;
+      }
+
+      // Restore room cards if we have them and server gave no cards
+      const container = document.getElementById('roomContainer');
+      const existingCards = container.querySelectorAll('.room-card');
+      const serverGaveCards = existingCards.length > 0 && existingCards[0].querySelector('.type-select').value !== '';
+
+      if (!serverGaveCards && draft.rooms && draft.rooms.length > 0) {
+        container.innerHTML = '';
+        draft.rooms.forEach(r => {
+          const card = createRoomCard({
+            type: r.type || '',
+            price: r.price || '',
+            spots: r.spots || 0,
+            rowIndex: ''
+          });
+          card.querySelector('.notes-input').value = r.notes || '';
+          container.appendChild(card);
+        });
+        return true;
+      }
+
+      // If server gave cards, just restore notes
+      if (serverGaveCards && draft.rooms) {
+        existingCards.forEach((card, idx) => {
+          if (draft.rooms[idx]) {
+            card.querySelector('.notes-input').value = draft.rooms[idx].notes || '';
+          }
+        });
+      }
+
+      return true;
+    }
+
+    // Debounced auto-save on any input
+    function debouncedSave() {
+      if (draftDebounceTimer) clearTimeout(draftDebounceTimer);
+      draftDebounceTimer = setTimeout(saveDraft, 800);
+    }
+
+    // Attach auto-save listeners to the whole form
+    document.getElementById('updateForm').addEventListener('input', debouncedSave);
+    document.getElementById('updateForm').addEventListener('change', debouncedSave);
 
     // Start loading (will be delayed if iOS standalone fallback is running)
     if (!isStandalone || locationCode) {
