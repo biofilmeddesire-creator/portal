@@ -74,6 +74,14 @@
     .draft-saved { font-size: 0.7rem; color: #10b981; text-align: right; margin-top: 4px; opacity: 0; transition: opacity 0.3s; }
     .draft-saved.show { opacity: 1; }
     .draft-indicator { font-size: 0.7rem; color: #94a3b8; text-align: center; margin-bottom: 15px; }
+    .reminder-banner { background: #fef3c7; border: 1px solid #f59e0b; border-radius: 10px; padding: 16px; margin-bottom: 20px; text-align: left; }
+    .reminder-banner.stale { background: #fee2e2; border-color: #ef4444; }
+    .reminder-banner h4 { font-size: 0.95rem; font-weight: 600; color: #92400e; margin-bottom: 8px; }
+    .reminder-banner.stale h4 { color: #991b1b; }
+    .reminder-banner p { font-size: 0.85rem; color: #78350f; margin: 0; line-height: 1.5; }
+    .reminder-banner.stale p { color: #7f1d1d; }
+    .reminder-banner .portal-link { display: inline-block; margin-top: 10px; background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
+    .reminder-banner .portal-link:hover { background: #1e293b; }
   </style>
 <base target="_blank">
 </head>
@@ -91,6 +99,7 @@
     <div id="iosInstallHint">
       <p><span class="share-icon">📲</span> <strong>For best experience:</strong> Tap the <strong>Share</strong> button below, then <strong>"Add to Home Screen"</strong>. This keeps you logged in every time.</p>
     </div>
+    <div id="reminderBanner" style="display:none;"></div>
 
     <div class="mb-4">
       <label class="form-label">Name of Residence</label>
@@ -284,19 +293,40 @@
         }
         return;
       }
+
+      let reminderData = null;
+
       try {
-        const res = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({ action: 'getLandlordData', token: locationCode })
-        });
-        const data = await res.json();
+        // Check reminder status in parallel with data load
+        const [dataRes, reminderRes] = await Promise.all([
+          fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'getLandlordData', token: locationCode })
+          }),
+          fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'checkReminder', token: locationCode })
+          }).catch(() => null)
+        ]);
+
+        const data = await dataRes.json();
         document.getElementById('residenceName').value = data.residenceName || '';
         renderRooms(data.rooms || []);
+
+        if (reminderRes) {
+          reminderData = await reminderRes.json();
+        }
       } catch (err) {
         renderRooms([]);
       }
+
       document.getElementById('loadingScreen').style.display = 'none';
       document.getElementById('mainContent').style.display = 'block';
+
+      // Show reminder banner if needed
+      if (reminderData && reminderData.needsReminder) {
+        showReminderBanner(reminderData);
+      }
 
       // Restore drafts after server data loads
       const draftRestored = loadDraft();
@@ -304,6 +334,33 @@
         const indicator = document.getElementById('draftIndicator');
         if (indicator) indicator.innerText = '💾 Draft restored';
       }
+    }
+
+    function showReminderBanner(reminderData) {
+      const banner = document.getElementById('reminderBanner');
+      if (!banner) return;
+
+      let html = '';
+
+      if (reminderData.hasExpiredPromise) {
+        html = `
+          <div class="reminder-banner stale">
+            <h4>⚠️ Is this room REALLY available?</h4>
+            <p>You noted a tenant was moving out by <strong>${escapeHtml(reminderData.promisedDate || 'a past date')}</strong>. That date has passed.</p>
+            <p style="margin-top:8px;"><strong>Remember:</strong> A room is only "available" when the tenant has <em>actually moved out</em> and you can show it to a new student <em>today</em>. A promise to leave is not the same as available.</p>
+            <p style="margin-top:8px;">Please update your spots only when the room is truly ready.</p>
+          </div>`;
+      } else if (reminderData.isStale) {
+        html = `
+          <div class="reminder-banner">
+            <h4>📅 Your listing is getting stale</h4>
+            <p>Last updated: <strong>${escapeHtml(reminderData.lastUpdate || 'unknown')}</strong></p>
+            <p style="margin-top:8px;">Students are searching right now. An outdated listing means missed bookings. Please update your availability.</p>
+          </div>`;
+      }
+
+      banner.innerHTML = html;
+      banner.style.display = 'block';
     }
 
     // ─────────────────────────────────────────────────────────────────────────
