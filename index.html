@@ -445,14 +445,14 @@
 
       const lines = ['Biofilmed Desire Receipt', 'Residence: ' + resName, 'Date: ' + dateStr, 'Ref: ' + ref, ''];
       rooms.forEach(function(r) {
-        lines.push('&#8226; ' + r.type + ' &mdash; R' + r.price + ' &mdash; ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : ''));
+        lines.push('\u2022 ' + r.type + ' \u2014 R' + r.price + ' \u2014 ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : ''));
       });
       lines.push('', 'Submitted via BD Portal');
-      lastReceiptText = lines.join('\\n');
+      lastReceiptText = lines.join('\n');
 
       document.getElementById('receiptSection').style.display = 'block';
       document.getElementById('receiptCard').classList.remove('show');
-      document.getElementById('receiptArrow').innerText = '&#9660;';
+      document.getElementById('receiptArrow').innerText = '\u25bc';
     }
 
     document.getElementById('receiptToggle').addEventListener('click', function() {
@@ -460,10 +460,10 @@
       const arrow = document.getElementById('receiptArrow');
       if (card.classList.contains('show')) {
         card.classList.remove('show');
-        arrow.innerText = '&#9660;';
+        arrow.innerText = '\u25bc';
       } else {
         card.classList.add('show');
-        arrow.innerText = '&#9650;';
+        arrow.innerText = '\u25b2';
       }
     });
 
@@ -472,7 +472,7 @@
         navigator.clipboard.writeText(lastReceiptText).then(function() {
           const btn = document.getElementById('receiptCopy');
           const oldText = btn.innerText;
-          btn.innerText = '&#9989; Copied!';
+          btn.innerText = '\u2705 Copied!';
           setTimeout(function() { btn.innerText = oldText; }, 2000);
         });
       }
@@ -597,7 +597,7 @@
       catch (e) { return null; }
     }
 
-    function saveDraft() {
+    function saveDraft(targetCard) {
       const cards = document.querySelectorAll('.room-card');
       const draft = {
         residenceName: document.getElementById('residenceName').value,
@@ -616,14 +616,22 @@
 
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
 
-      document.querySelectorAll('.draft-saved').forEach(function(el) {
-        el.classList.add('show');
-        setTimeout(function() { el.classList.remove('show'); }, 1500);
-      });
+      if (targetCard) {
+        const draftEl = targetCard.querySelector('.draft-saved');
+        if (draftEl) {
+          draftEl.classList.add('show');
+          setTimeout(function() { draftEl.classList.remove('show'); }, 1500);
+        }
+      } else {
+        document.querySelectorAll('.draft-saved').forEach(function(el) {
+          el.classList.add('show');
+          setTimeout(function() { el.classList.remove('show'); }, 1500);
+        });
+      }
 
       const indicator = document.getElementById('draftIndicator');
       if (indicator) {
-        indicator.innerText = '&#128190; Auto-saved ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        indicator.innerText = '\u2705 Auto-saved ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
       }
     }
 
@@ -671,9 +679,10 @@
       return true;
     }
 
-    function debouncedSave() {
+    function debouncedSave(e) {
       if (draftDebounceTimer) clearTimeout(draftDebounceTimer);
-      draftDebounceTimer = setTimeout(saveDraft, 800);
+      const targetCard = e && e.target ? e.target.closest('.room-card') : null;
+      draftDebounceTimer = setTimeout(function() { saveDraft(targetCard); }, 800);
     }
 
     const updateForm = document.getElementById('updateForm');
