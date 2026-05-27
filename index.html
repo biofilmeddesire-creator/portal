@@ -22,7 +22,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-touch-callout: none; }
+    * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-touch-callout: none; box-sizing: border-box; }
     body { background-color: #f8fafc; font-family: 'Inter', sans-serif; padding: 40px 15px; color: #1e293b; -webkit-text-size-adjust: 100%; overscroll-behavior-y: none; }
     .container { max-width: 500px; width: 100%; background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin: auto; border-top: 5px solid #0f172a; position: relative; }
     .top-right-logo { position: absolute; top: 15px; right: 15px; width: 55px; height: 55px; object-fit: cover; border-radius: 50%; border: 1px solid #e2e8f0; background-color: white; }
@@ -34,7 +34,7 @@
       h2 { font-size: 1.25rem; padding-right: 50px; margin-bottom: 20px; }
       .room-card { padding: 15px; }
     }
-    .form-label { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; }
+    .form-label { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; display: block; }
     .room-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; position: relative; }
     .btn-remove { position: absolute; top: 10px; right: 10px; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px; padding: 2px 8px; font-weight: bold; font-size: 0.8rem; min-width: 28px; min-height: 28px; cursor: pointer; }
     .btn-remove:hover { background: #fca5a5; }
@@ -45,7 +45,7 @@
     .btn-submit:active { background-color: #334155; transform: scale(0.98); }
     .whatsapp-success { color: #15803d; font-size: 0.9rem; margin-top: 15px; text-align: center; font-weight: 500; }
     .text-danger { color: #dc2626; font-size: 0.9rem; margin-top: 15px; text-align: center; }
-    input, select, textarea { font-size: 16px !important; min-height: 44px; }
+    input, select, textarea { font-size: 16px !important; min-height: 44px; width: 100%; }
     input[type="number"] { -moz-appearance: textfield; }
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -82,6 +82,12 @@
     .reminder-banner.stale p { color: #7f1d1d; }
     .reminder-banner .portal-link { display: inline-block; margin-top: 10px; background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
     .reminder-banner .portal-link:hover { background: #1e293b; }
+    /* Samsung / mobile alignment fix - replaces Bootstrap col-6 */
+    .price-spots-row { display: flex; gap: 12px; flex-wrap: nowrap; }
+    .price-spots-row > div { flex: 1 1 0; min-width: 0; }
+    @media (max-width: 360px) {
+      .price-spots-row { flex-direction: column; gap: 0; }
+    }
   </style>
 </head>
 <body>
@@ -112,14 +118,14 @@
     </form>
     <div id="statusMsg"></div>
     <div id="receiptSection" style="display:none;">
-      <div class="receipt-toggle" id="receiptToggle">&#128196; View Receipt <span id="receiptArrow">&#9660;</span></div>
+      <div class="receipt-toggle" id="receiptToggle">&#128196; View Receipt <span id="receiptArrow">v</span></div>
       <div class="receipt-card" id="receiptCard">
         <div class="receipt-row" id="receiptResName"></div>
         <div class="receipt-row" id="receiptDate"></div>
         <div class="receipt-row" id="receiptRef"></div>
         <div class="receipt-divider"></div>
         <div id="receiptRooms"></div>
-        <button class="receipt-copy" id="receiptCopy">&#128203; Copy to Clipboard</button>
+        <button class="receipt-copy" id="receiptCopy">Copy to Clipboard</button>
       </div>
     </div>
   </div>
@@ -187,7 +193,7 @@
           document.getElementById('loadingScreen').innerHTML =
             '<div style="color:#fff;text-align:center;padding:40px;font-family:sans-serif;max-width:320px;">' +
             '<img src="rsz_logo.jpg" style="width:80px;height:80px;border-radius:16px;margin-bottom:20px;">' +
-            '<p style="font-size:18px;margin-bottom:16px;font-weight:600;">&#128279; Re-open from WhatsApp</p>' +
+            '<p style="font-size:18px;margin-bottom:16px;font-weight:600;">Re-open from WhatsApp</p>' +
             '<p style="color:#94a3b8;margin-bottom:24px;line-height:1.5;">Please go back to your WhatsApp chat and tap the Biofilmed Desire link again. Then add to Home Screen while on that page.</p>' +
             '<button onclick="window.location.href=\'https://wa.me/\'" style="background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;">Open WhatsApp</button>' +
             '</div>';
@@ -220,22 +226,22 @@
             optionsHtml +
           '</select>' +
         '</div>' +
-        '<div class="row">' +
-          '<div class="col-6">' +
+        '<div class="price-spots-row">' +
+          '<div>' +
             '<label class="form-label">Monthly Price (R)</label>' +
             '<input type="number" class="form-control price-input" value="' + (room.price || '') + '" min="0" required>' +
           '</div>' +
-          '<div class="col-6">' +
+          '<div>' +
             '<label class="form-label">Spots Available</label>' +
             '<input type="number" class="form-control spots-input" value="' + (room.spots || 0) + '" min="0" required>' +
           '</div>' +
         '</div>' +
         '<div class="media-section">' +
-          '<label class="media-label">&#128206; Notes & Media for this Room Type</label>' +
+          '<label class="media-label">Notes & Media for this Room Type</label>' +
           '<div class="mb-2">' +
             '<textarea class="form-control notes-input notes-textarea" rows="2" placeholder="Update pricing or conditions for this room type..."></textarea>' +
           '</div>' +
-          '<div class="draft-saved">&#128190; Draft saved</div>' +
+          '<div class="draft-saved">Draft saved</div>' +
           '<div class="mb-2">' +
             '<input type="file" class="form-control file-input-sm picture-input" accept="image/*">' +
           '</div>' +
@@ -279,6 +285,7 @@
       }
 
       let reminderData = null;
+      let serverData = null;
 
       try {
         const controller = new AbortController();
@@ -298,9 +305,9 @@
         ]);
         clearTimeout(timeoutId);
 
-        const data = await dataRes.json();
-        document.getElementById('residenceName').value = data.residenceName || '';
-        renderRooms(data.rooms || []);
+        serverData = await dataRes.json();
+        document.getElementById('residenceName').value = serverData.residenceName || '';
+        renderRooms(serverData.rooms || []);
 
         if (reminderRes) {
           reminderData = await reminderRes.json();
@@ -319,11 +326,7 @@
         showReminderBanner(reminderData);
       }
 
-      const draftRestored = loadDraft();
-      if (draftRestored) {
-        const indicator = document.getElementById('draftIndicator');
-        if (indicator) indicator.innerText = '&#128190; Draft restored';
-      }
+      restoreDraft(serverData);
     }
 
     function showReminderBanner(reminderData) {
@@ -335,7 +338,7 @@
       if (reminderData.hasExpiredPromise) {
         html =
           '<div class="reminder-banner stale">' +
-            '<h4>&#9888;&#65039; Is this room REALLY available?</h4>' +
+            '<h4>Is this room REALLY available?</h4>' +
             '<p>You noted a tenant was moving out by <strong>' + escapeHtml(reminderData.promisedDate || 'a past date') + '</strong>. That date has passed.</p>' +
             '<p style="margin-top:8px;"><strong>Remember:</strong> A room is only "available" when the tenant has <em>actually moved out</em> and you can show it to a new student <em>today</em>. A promise to leave is not the same as available.</p>' +
             '<p style="margin-top:8px;">Please update your spots only when the room is truly ready.</p>' +
@@ -343,7 +346,7 @@
       } else if (reminderData.isStale) {
         html =
           '<div class="reminder-banner">' +
-            '<h4>&#128197; Your listing is getting stale</h4>' +
+            '<h4>Your listing is getting stale</h4>' +
             '<p>Last updated: <strong>' + escapeHtml(reminderData.lastUpdate || 'unknown') + '</strong></p>' +
             '<p style="margin-top:8px;">Students are searching right now. An outdated listing means missed bookings. Please update your availability.</p>' +
           '</div>';
@@ -429,9 +432,9 @@
       const resName = payload.residenceName || 'Residence';
       const ref = payload.token || 'N/A';
 
-      document.getElementById('receiptResName').innerHTML = '<strong>&#127968;</strong> ' + escapeHtml(resName);
-      document.getElementById('receiptDate').innerHTML = '<strong>&#128197;</strong> ' + dateStr;
-      document.getElementById('receiptRef').innerHTML = '<strong>&#128273;</strong> Ref: ' + escapeHtml(ref);
+      document.getElementById('receiptResName').innerHTML = '<strong>Residence:</strong> ' + escapeHtml(resName);
+      document.getElementById('receiptDate').innerHTML = '<strong>Date:</strong> ' + dateStr;
+      document.getElementById('receiptRef').innerHTML = '<strong>Ref:</strong> ' + escapeHtml(ref);
 
       const roomsDiv = document.getElementById('receiptRooms');
       roomsDiv.innerHTML = '';
@@ -439,20 +442,20 @@
       rooms.forEach(function(r) {
         const row = document.createElement('div');
         row.className = 'receipt-row';
-        row.innerHTML = '&#8226; <strong>' + escapeHtml(r.type) + '</strong> &mdash; R' + r.price + ' &mdash; ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : '');
+        row.innerHTML = '* <strong>' + escapeHtml(r.type) + '</strong> -- R' + r.price + ' -- ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : '');
         roomsDiv.appendChild(row);
       });
 
       const lines = ['Biofilmed Desire Receipt', 'Residence: ' + resName, 'Date: ' + dateStr, 'Ref: ' + ref, ''];
       rooms.forEach(function(r) {
-        lines.push('\u2022 ' + r.type + ' \u2014 R' + r.price + ' \u2014 ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : ''));
+        lines.push('* ' + r.type + ' -- R' + r.price + ' -- ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : ''));
       });
       lines.push('', 'Submitted via BD Portal');
       lastReceiptText = lines.join('\n');
 
       document.getElementById('receiptSection').style.display = 'block';
       document.getElementById('receiptCard').classList.remove('show');
-      document.getElementById('receiptArrow').innerText = '\u25bc';
+      document.getElementById('receiptArrow').innerText = 'v';
     }
 
     document.getElementById('receiptToggle').addEventListener('click', function() {
@@ -460,10 +463,10 @@
       const arrow = document.getElementById('receiptArrow');
       if (card.classList.contains('show')) {
         card.classList.remove('show');
-        arrow.innerText = '\u25bc';
+        arrow.innerText = 'v';
       } else {
         card.classList.add('show');
-        arrow.innerText = '\u25b2';
+        arrow.innerText = '^';
       }
     });
 
@@ -472,7 +475,7 @@
         navigator.clipboard.writeText(lastReceiptText).then(function() {
           const btn = document.getElementById('receiptCopy');
           const oldText = btn.innerText;
-          btn.innerText = '\u2705 Copied!';
+          btn.innerText = 'Copied!';
           setTimeout(function() { btn.innerText = oldText; }, 2000);
         });
       }
@@ -558,7 +561,7 @@
       if (!navigator.onLine) {
         const queueLen = addToQueue(payload);
         msg.className = 'whatsapp-success';
-        msg.innerHTML = '&#9203; No signal. Your update is saved and will auto-send when connection returns. (' + queueLen + ' in queue)';
+        msg.innerHTML = 'No signal. Your update is saved and will auto-send when connection returns. (' + queueLen + ' in queue)';
         btn.disabled = false;
         btn.innerText = 'Submit Data';
         btn.dataset.submitting = "false";
@@ -582,14 +585,14 @@
       } catch (err) {
         const queueLen = addToQueue(payload);
         msg.className = 'whatsapp-success';
-        msg.innerHTML = '&#9203; Connection failed. Your update is saved and will auto-send when signal returns. (' + queueLen + ' in queue)';
+        msg.innerHTML = 'Connection failed. Your update is saved and will auto-send when signal returns. (' + queueLen + ' in queue)';
       }
       btn.disabled = false;
       btn.innerText = 'Submit Data';
       btn.dataset.submitting = "false";
     });
 
-    const DRAFT_KEY = 'bd_portal_draft_v2';
+    const DRAFT_KEY = 'bd_portal_draft_v3';
     let draftDebounceTimer = null;
 
     function getDraft() {
@@ -609,8 +612,8 @@
         draft.rooms.push({
           type: card.querySelector('.type-select').value,
           price: card.querySelector('.price-input').value,
-          spots: card.querySelector('.spots-input').value,
-          notes: card.querySelector('.notes-input').value
+          spots: card.querySelector('.spots-input').value
+          // NOTES, PICTURE, VIDEO are NOT saved to draft
         });
       });
 
@@ -622,20 +625,15 @@
           draftEl.classList.add('show');
           setTimeout(function() { draftEl.classList.remove('show'); }, 1500);
         }
-      } else {
-        document.querySelectorAll('.draft-saved').forEach(function(el) {
-          el.classList.add('show');
-          setTimeout(function() { el.classList.remove('show'); }, 1500);
-        });
       }
 
       const indicator = document.getElementById('draftIndicator');
       if (indicator) {
-        indicator.innerText = '\u2705 Auto-saved ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        indicator.innerText = 'Auto-saved ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
       }
     }
 
-    function loadDraft() {
+    function restoreDraft(serverData) {
       const draft = getDraft();
       if (!draft) return false;
 
@@ -645,15 +643,14 @@
         return false;
       }
 
+      // Restore residence name
       if (draft.residenceName) {
         document.getElementById('residenceName').value = draft.residenceName;
       }
 
-      const container = document.getElementById('roomContainer');
-      const existingCards = container.querySelectorAll('.room-card');
-      const serverGaveCards = existingCards.length > 0 && existingCards[0].querySelector('.type-select').value !== '';
-
-      if (!serverGaveCards && draft.rooms && draft.rooms.length > 0) {
+      // Restore room cards: type, price, spots only (notes/media stay empty)
+      if (draft.rooms && draft.rooms.length > 0) {
+        const container = document.getElementById('roomContainer');
         container.innerHTML = '';
         draft.rooms.forEach(function(r) {
           const card = createRoomCard({
@@ -662,21 +659,16 @@
             spots: r.spots || 0,
             rowIndex: ''
           });
-          card.querySelector('.notes-input').value = r.notes || '';
+          // Notes, picture, video inputs stay empty (not restored)
           container.appendChild(card);
         });
+
+        const indicator = document.getElementById('draftIndicator');
+        if (indicator) indicator.innerText = 'Draft restored';
         return true;
       }
 
-      if (serverGaveCards && draft.rooms) {
-        existingCards.forEach(function(card, idx) {
-          if (draft.rooms[idx]) {
-            card.querySelector('.notes-input').value = draft.rooms[idx].notes || '';
-          }
-        });
-      }
-
-      return true;
+      return false;
     }
 
     function debouncedSave(e) {
