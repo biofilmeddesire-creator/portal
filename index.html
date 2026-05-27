@@ -90,6 +90,7 @@
 
   <script>
     const SCRIPT_URL = "https://api.biofilmeddesire.com";
+    const QUEUE_KEY = 'bd_offline_queue';
     const roomTypeOptions = ["Single","RDP (Single)","Commune (Single)","RDP (Full house)","Sharing (Per Bed)","Sharing (Full Room)","Sharing (Private use)","Sharing (3+ Per Room)","Bachelor","1 Bedroom Apartment","2 Bedroom Apartment","3 Bedroom Apartment"];
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -271,6 +272,81 @@
       document.getElementById('mainContent').style.display = 'block';
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // OFFLINE QUEUE: Save submissions when no signal, retry automatically
+    // ─────────────────────────────────────────────────────────────────────────
+
+    function getQueue() {
+      try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }
+      catch (e) { return []; }
+    }
+
+    function saveQueue(queue) {
+      localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+    }
+
+    function addToQueue(payload) {
+      const queue = getQueue();
+      queue.push({ payload: payload, timestamp: Date.now(), attempts: 0 });
+      saveQueue(queue);
+      return queue.length;
+    }
+
+    function removeFromQueue(index) {
+      const queue = getQueue();
+      queue.splice(index, 1);
+      saveQueue(queue);
+    }
+
+    async function processQueue() {
+      const queue = getQueue();
+      if (queue.length === 0) return;
+
+      const msg = document.getElementById('statusMsg');
+      let successCount = 0;
+
+      for (let i = queue.length - 1; i >= 0; i--) {
+        const item = queue[i];
+        item.attempts++;
+
+        try {
+          const res = await fetch(SCRIPT_URL, { 
+            method: 'POST', 
+            body: JSON.stringify(item.payload) 
+          });
+          const result = await res.json();
+
+          if (result.status === 'Success') {
+            removeFromQueue(i);
+            successCount++;
+          } else if (item.attempts >= 3) {
+            // Give up after 3 attempts, keep in queue for manual retry
+            removeFromQueue(i);
+          }
+        } catch (err) {
+          if (item.attempts >= 3) {
+            removeFromQueue(i);
+          }
+        }
+      }
+
+      if (successCount > 0) {
+        msg.className = 'whatsapp-success';
+        msg.innerText = successCount + ' queued submission(s) sent successfully!';
+        msg.style.display = 'block';
+      }
+    }
+
+    // Auto-retry when connection comes back
+    window.addEventListener('online', () => {
+      processQueue();
+    });
+
+    // Process any leftover queue on page load (in case they closed and reopened)
+    if (navigator.onLine) {
+      setTimeout(processQueue, 2000);
+    }
+
     document.getElementById('submitBtn').addEventListener('click', async function () {
       const btn = document.getElementById('submitBtn');
       if (btn.dataset.submitting === "true") return; // 🛡️ Prevent double-submit
@@ -348,19 +424,34 @@
         dynamicRoomJSON: JSON.stringify(Array.from(cardMap.values()))
       };
 
+      // If offline, queue it instead of failing
+      if (!navigator.onLine) {
+        const queueLen = addToQueue(payload);
+        msg.className = 'whatsapp-success';
+        msg.innerHTML = '⏳ No signal. Your update is saved and will auto-send when connection returns. (' + queueLen + ' in queue)';
+        btn.disabled = false;
+        btn.innerText = 'Submit Data';
+        btn.dataset.submitting = "false";
+        return;
+      }
+
       try {
         const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await res.json();
         if (result.status === 'Success') {
           msg.className = 'whatsapp-success';
           msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp.';
+          // Also try to clear any old queued items
+          processQueue();
         } else {
           msg.className = 'text-danger';
           msg.innerText = 'Error: ' + (result.error || result.status || 'Unknown error');
         }
       } catch (err) {
-        msg.className = 'text-danger';
-        msg.innerText = 'Connection error. Please check your signal and try again.';
+        // Network failure — queue it for retry
+        const queueLen = addToQueue(payload);
+        msg.className = 'whatsapp-success';
+        msg.innerHTML = '⏳ Connection failed. Your update is saved and will auto-send when signal returns. (' + queueLen + ' in queue)';
       }
       btn.disabled = false;
       btn.innerText = 'Submit Data';
@@ -376,5 +467,7 @@
       loadData();
     }
   </script>
+</body>
+</html>
 </body>
 </html>
