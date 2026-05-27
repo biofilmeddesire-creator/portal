@@ -273,7 +273,9 @@
 
     document.getElementById('submitBtn').addEventListener('click', async function () {
       const btn = document.getElementById('submitBtn');
+      if (btn.dataset.submitting === "true") return; // 🛡️ Prevent double-submit
       const msg = document.getElementById('statusMsg');
+      btn.dataset.submitting = "true";
       btn.disabled = true;
       btn.innerText = 'Authorizing...';
       msg.className = '';
@@ -362,6 +364,7 @@
       }
       btn.disabled = false;
       btn.innerText = 'Submit Data';
+      btn.dataset.submitting = "false";
     });
 
     document.getElementById('residenceName').addEventListener('input', () => {
