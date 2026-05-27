@@ -60,6 +60,17 @@
     .media-label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 6px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
     .file-input-sm { font-size: 14px !important; min-height: 38px; }
     .notes-textarea { min-height: 60px; resize: vertical; }
+    .receipt-toggle { color: #0f172a; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; }
+    .receipt-toggle:hover { color: #334155; }
+    .receipt-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-top: 10px; text-align: left; display: none; }
+    .receipt-card.show { display: block; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .receipt-row { font-size: 0.85rem; color: #475569; margin-bottom: 6px; }
+    .receipt-row strong { color: #0f172a; }
+    .receipt-divider { border-top: 1px dashed #e2e8f0; margin: 10px 0; }
+    .receipt-copy { background: #0f172a; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; }
+    .receipt-copy:hover { background: #1e293b; }
+    .receipt-copy:active { transform: scale(0.98); }
   </style>
 <base target="_blank">
 </head>
@@ -86,6 +97,17 @@
     <button type="button" class="btn-add" id="addRoomBtn">+ Add Another Room Type</button>
     <button type="button" class="btn-submit" id="submitBtn">Submit Data</button>
     <div id="statusMsg"></div>
+    <div id="receiptSection" style="display:none;">
+      <div class="receipt-toggle" id="receiptToggle">📄 View Receipt <span id="receiptArrow">▼</span></div>
+      <div class="receipt-card" id="receiptCard">
+        <div class="receipt-row" id="receiptResName"></div>
+        <div class="receipt-row" id="receiptDate"></div>
+        <div class="receipt-row" id="receiptRef"></div>
+        <div class="receipt-divider"></div>
+        <div id="receiptRooms"></div>
+        <button class="receipt-copy" id="receiptCopy">📋 Copy to Clipboard</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -347,6 +369,74 @@
       setTimeout(processQueue, 2000);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // RECEIPT: Build collapsible proof of submission
+    // ─────────────────────────────────────────────────────────────────────────
+
+    let lastReceiptText = '';
+
+    function buildReceipt(payload, cardMap) {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      const resName = payload.residenceName || 'Residence';
+      const ref = payload.token || 'N/A';
+
+      document.getElementById('receiptResName').innerHTML = '<strong>🏠</strong> ' + escapeHtml(resName);
+      document.getElementById('receiptDate').innerHTML = '<strong>📅</strong> ' + dateStr;
+      document.getElementById('receiptRef').innerHTML = '<strong>🔑</strong> Ref: ' + escapeHtml(ref);
+
+      const roomsDiv = document.getElementById('receiptRooms');
+      roomsDiv.innerHTML = '';
+      const rooms = Array.from(cardMap.values());
+      rooms.forEach(r => {
+        const row = document.createElement('div');
+        row.className = 'receipt-row';
+        row.innerHTML = '• <strong>' + escapeHtml(r.type) + '</strong> — R' + r.price + ' — ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : '');
+        roomsDiv.appendChild(row);
+      });
+
+      // Build plain text for clipboard
+      lastReceiptText = 'Biofilmed Desire Receipt\n' +
+        'Residence: ' + resName + '\n' +
+        'Date: ' + dateStr + '\n' +
+        'Ref: ' + ref + '\n\n' +
+        rooms.map(r => '• ' + r.type + ' — R' + r.price + ' — ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : '')).join('\n') + '\n\n' +
+        'Submitted via BD Portal';
+
+      document.getElementById('receiptSection').style.display = 'block';
+      document.getElementById('receiptCard').classList.remove('show');
+      document.getElementById('receiptArrow').innerText = '▼';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.innerText = text;
+      return div.innerHTML;
+    }
+
+    document.getElementById('receiptToggle').addEventListener('click', () => {
+      const card = document.getElementById('receiptCard');
+      const arrow = document.getElementById('receiptArrow');
+      if (card.classList.contains('show')) {
+        card.classList.remove('show');
+        arrow.innerText = '▼';
+      } else {
+        card.classList.add('show');
+        arrow.innerText = '▲';
+      }
+    });
+
+    document.getElementById('receiptCopy').addEventListener('click', () => {
+      if (navigator.clipboard && lastReceiptText) {
+        navigator.clipboard.writeText(lastReceiptText).then(() => {
+          const btn = document.getElementById('receiptCopy');
+          const oldText = btn.innerText;
+          btn.innerText = '✅ Copied!';
+          setTimeout(() => btn.innerText = oldText, 2000);
+        });
+      }
+    });
+
     document.getElementById('submitBtn').addEventListener('click', async function () {
       const btn = document.getElementById('submitBtn');
       if (btn.dataset.submitting === "true") return; // 🛡️ Prevent double-submit
@@ -441,6 +531,7 @@
         if (result.status === 'Success') {
           msg.className = 'whatsapp-success';
           msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp.';
+          buildReceipt(payload, cardMap);
           // Also try to clear any old queued items
           processQueue();
         } else {
