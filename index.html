@@ -82,12 +82,14 @@
     .reminder-banner.stale p { color: #7f1d1d; }
     .reminder-banner .portal-link { display: inline-block; margin-top: 10px; background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
     .reminder-banner .portal-link:hover { background: #1e293b; }
+    /* Samsung / mobile alignment fix - replaces Bootstrap col-6 */
     .price-spots-row { display: flex; gap: 12px; flex-wrap: nowrap; }
     .price-spots-row > div { flex: 1 1 0; min-width: 0; }
     @media (max-width: 360px) {
       .price-spots-row { flex-direction: column; gap: 0; }
     }
   </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -609,7 +611,7 @@
     function getDraft() {
       try { 
         const raw = localStorage.getItem(DRAFT_KEY);
-        console.log('[BD Portal] getDraft raw:', raw ? 'found' : 'null');
+        console.log('[BD Portal] getDraft raw:', raw ? ('found ' + raw.length + ' chars') : 'null');
         return JSON.parse(raw || 'null'); 
       }
       catch (e) { 
@@ -618,47 +620,43 @@
       }
     }
 
-    function saveDraft(targetCard) {
+    function saveDraft(showIndicator) {
       const cards = document.querySelectorAll('.room-card');
       const draft = {
-        residenceName: document.getElementById('residenceName').value,
+        residenceName: document.getElementById('residenceName').value || '',
         savedAt: Date.now(),
         rooms: []
       };
 
-      cards.forEach(function(card) {
+      cards.forEach(function(card, idx) {
         const typeVal = card.querySelector('.type-select').value;
         const priceVal = card.querySelector('.price-input').value;
         const spotsVal = card.querySelector('.spots-input').value;
-
-        if (typeVal || priceVal || spotsVal) {
-          draft.rooms.push({
-            type: typeVal,
-            price: priceVal,
-            spots: spotsVal
-          });
-        }
+        
+        draft.rooms.push({
+          type: typeVal || '',
+          price: priceVal || '',
+          spots: spotsVal || ''
+        });
       });
 
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-      console.log('[BD Portal] Draft saved with', draft.rooms.length, 'rooms');
-
-      if (targetCard) {
-        const draftEl = targetCard.querySelector('.draft-saved');
-        if (draftEl) {
-          draftEl.classList.add('show');
-          setTimeout(function() { draftEl.classList.remove('show'); }, 1500);
-        }
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        console.log('[BD Portal] Draft SAVED:', draft.rooms.length, 'rooms, residence:', draft.residenceName);
+      } catch (e) {
+        console.error('[BD Portal] Draft save FAILED:', e);
       }
 
-      const indicator = document.getElementById('draftIndicator');
-      if (indicator) {
-        indicator.innerText = 'Auto-saved ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      if (showIndicator) {
+        const indicator = document.getElementById('draftIndicator');
+        if (indicator) {
+          indicator.innerText = 'Auto-saved ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        }
       }
     }
 
     function restoreDraft(serverData) {
-      console.log('[BD Portal] restoreDraft called, serverData rooms:', serverData && serverData.rooms ? serverData.rooms.length : 'none');
+      console.log('[BD Portal] restoreDraft called');
 
       const draft = getDraft();
       if (!draft) {
@@ -675,16 +673,18 @@
         return false;
       }
 
+      // Restore residence name
       if (draft.residenceName !== undefined) {
         document.getElementById('residenceName').value = draft.residenceName;
         console.log('[BD Portal] Restored residence name:', draft.residenceName);
       }
 
+      // Restore room cards
       if (draft.rooms && draft.rooms.length > 0) {
         const container = document.getElementById('roomContainer');
         container.innerHTML = '';
         draft.rooms.forEach(function(r, idx) {
-          console.log('[BD Portal] Restoring room', idx, ':', r.type, r.price, r.spots);
+          console.log('[BD Portal] Restoring room', idx, ': type=' + r.type, 'price=' + r.price, 'spots=' + r.spots);
           const card = createRoomCard({
             type: r.type || '',
             price: r.price || '',
@@ -695,7 +695,7 @@
         });
 
         const indicator = document.getElementById('draftIndicator');
-        if (indicator) indicator.innerText = 'Draft restored from ' + new Date(draft.savedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        if (indicator) indicator.innerText = 'Draft restored';
         console.log('[BD Portal] Draft restored successfully');
         return true;
       }
@@ -704,17 +704,17 @@
       return false;
     }
 
-    function debouncedSave(e) {
-      if (draftDebounceTimer) clearTimeout(draftDebounceTimer);
-      const targetCard = e && e.target ? e.target.closest('.room-card') : null;
-      draftDebounceTimer = setTimeout(function() { saveDraft(targetCard); }, 800);
-    }
-
+    // Save immediately on every input (no debounce for reliability)
     const updateForm = document.getElementById('updateForm');
     if (updateForm) {
-      updateForm.addEventListener('input', debouncedSave);
-      updateForm.addEventListener('change', debouncedSave);
+      updateForm.addEventListener('input', function() { saveDraft(true); });
+      updateForm.addEventListener('change', function() { saveDraft(true); });
     }
+
+    // Also save when user leaves the page
+    window.addEventListener('beforeunload', function() {
+      saveDraft(false);
+    });
 
     if (!isStandalone || locationCode) {
       loadData();
