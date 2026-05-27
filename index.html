@@ -89,6 +89,7 @@
       .price-spots-row { flex-direction: column; gap: 0; }
     }
   </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -195,7 +196,7 @@
             '<img src="rsz_logo.jpg" style="width:80px;height:80px;border-radius:16px;margin-bottom:20px;">' +
             '<p style="font-size:18px;margin-bottom:16px;font-weight:600;">Re-open from WhatsApp</p>' +
             '<p style="color:#94a3b8;margin-bottom:24px;line-height:1.5;">Please go back to your WhatsApp chat and tap the Biofilmed Desire link again. Then add to Home Screen while on that page.</p>' +
-            '<button onclick="window.location.href=\'https://wa.me/\'" style="background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;">Open WhatsApp</button>' +
+            '<button onclick="window.location.href='https://wa.me/'" style="background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;">Open WhatsApp</button>' +
             '</div>';
         } else {
           loadData();
@@ -286,6 +287,7 @@
 
       let reminderData = null;
       let serverData = null;
+      let apiSuccess = false;
 
       try {
         const controller = new AbortController();
@@ -306,15 +308,15 @@
         clearTimeout(timeoutId);
 
         serverData = await dataRes.json();
-        document.getElementById('residenceName').value = serverData.residenceName || '';
-        renderRooms(serverData.rooms || []);
+        apiSuccess = true;
+        console.log('[BD Portal] API success, server rooms:', serverData.rooms ? serverData.rooms.length : 0);
 
         if (reminderRes) {
           reminderData = await reminderRes.json();
         }
       } catch (err) {
-        console.error('[BD Portal] loadData error:', err);
-        renderRooms([]);
+        console.error('[BD Portal] loadData API error:', err);
+        apiSuccess = false;
       }
 
       const loadingScreen = document.getElementById('loadingScreen');
@@ -322,11 +324,26 @@
       if (loadingScreen) loadingScreen.style.display = 'none';
       if (mainContent) mainContent.style.display = 'block';
 
+      // STEP 1: Try to restore draft FIRST (takes precedence over server data)
+      const draftRestored = restoreDraft(serverData);
+      console.log('[BD Portal] Draft restored:', draftRestored);
+
+      // STEP 2: If no draft, fall back to server data
+      if (!draftRestored) {
+        console.log('[BD Portal] No draft, using server data');
+        if (apiSuccess && serverData) {
+          document.getElementById('residenceName').value = serverData.residenceName || '';
+          renderRooms(serverData.rooms || []);
+        } else {
+          // API failed and no draft - show one empty card
+          renderRooms([]);
+        }
+      }
+
+      // STEP 3: Show reminder banner if needed
       if (reminderData && reminderData.needsReminder) {
         showReminderBanner(reminderData);
       }
-
-      restoreDraft(serverData);
     }
 
     function showReminderBanner(reminderData) {
@@ -596,8 +613,15 @@
     let draftDebounceTimer = null;
 
     function getDraft() {
-      try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); }
-      catch (e) { return null; }
+      try { 
+        const raw = localStorage.getItem(DRAFT_KEY);
+        console.log('[BD Portal] getDraft raw:', raw ? 'found' : 'null');
+        return JSON.parse(raw || 'null'); 
+      }
+      catch (e) { 
+        console.error('[BD Portal] getDraft error:', e);
+        return null; 
+      }
     }
 
     function saveDraft(targetCard) {
@@ -609,15 +633,23 @@
       };
 
       cards.forEach(function(card) {
-        draft.rooms.push({
-          type: card.querySelector('.type-select').value,
-          price: card.querySelector('.price-input').value,
-          spots: card.querySelector('.spots-input').value
-          // NOTES, PICTURE, VIDEO are NOT saved to draft
-        });
+        const typeVal = card.querySelector('.type-select').value;
+        const priceVal = card.querySelector('.price-input').value;
+        const spotsVal = card.querySelector('.spots-input').value;
+
+        // Only save if there's actual data (not empty defaults)
+        if (typeVal || priceVal || spotsVal) {
+          draft.rooms.push({
+            type: typeVal,
+            price: priceVal,
+            spots: spotsVal
+            // NOTES, PICTURE, VIDEO are NOT saved to draft
+          });
+        }
       });
 
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      console.log('[BD Portal] Draft saved with', draft.rooms.length, 'rooms');
 
       if (targetCard) {
         const draftEl = targetCard.querySelector('.draft-saved');
@@ -634,25 +666,35 @@
     }
 
     function restoreDraft(serverData) {
+      console.log('[BD Portal] restoreDraft called, serverData rooms:', serverData && serverData.rooms ? serverData.rooms.length : 'none');
+
       const draft = getDraft();
-      if (!draft) return false;
+      if (!draft) {
+        console.log('[BD Portal] No draft found, using server data');
+        return false;
+      }
 
       const ageDays = (Date.now() - (draft.savedAt || 0)) / (1000 * 60 * 60 * 24);
+      console.log('[BD Portal] Draft age:', ageDays.toFixed(2), 'days');
+
       if (ageDays > 7) {
+        console.log('[BD Portal] Draft too old, removing');
         localStorage.removeItem(DRAFT_KEY);
         return false;
       }
 
-      // Restore residence name
-      if (draft.residenceName) {
+      // Restore residence name (draft takes precedence over server)
+      if (draft.residenceName !== undefined) {
         document.getElementById('residenceName').value = draft.residenceName;
+        console.log('[BD Portal] Restored residence name:', draft.residenceName);
       }
 
       // Restore room cards: type, price, spots only (notes/media stay empty)
       if (draft.rooms && draft.rooms.length > 0) {
         const container = document.getElementById('roomContainer');
         container.innerHTML = '';
-        draft.rooms.forEach(function(r) {
+        draft.rooms.forEach(function(r, idx) {
+          console.log('[BD Portal] Restoring room', idx, ':', r.type, r.price, r.spots);
           const card = createRoomCard({
             type: r.type || '',
             price: r.price || '',
@@ -664,10 +706,12 @@
         });
 
         const indicator = document.getElementById('draftIndicator');
-        if (indicator) indicator.innerText = 'Draft restored';
+        if (indicator) indicator.innerText = 'Draft restored from ' + new Date(draft.savedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        console.log('[BD Portal] Draft restored successfully');
         return true;
       }
 
+      console.log('[BD Portal] Draft had no rooms');
       return false;
     }
 
