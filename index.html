@@ -255,6 +255,20 @@
         if (document.querySelectorAll('.room-card').length > 1) div.remove();
         else alert('At least one room card is required.');
       });
+      
+      // Attach save listeners directly to this card's inputs
+      const typeSelect = div.querySelector('.type-select');
+      const priceInput = div.querySelector('.price-input');
+      const spotsInput = div.querySelector('.spots-input');
+      
+      function onCardInput() {
+        saveDraft(true);
+      }
+      
+      typeSelect.addEventListener('change', onCardInput);
+      priceInput.addEventListener('input', onCardInput);
+      spotsInput.addEventListener('input', onCardInput);
+      
       return div;
     }
 
@@ -266,7 +280,9 @@
     }
 
     document.getElementById('addRoomBtn').addEventListener('click', function() {
-      document.getElementById('roomContainer').appendChild(createRoomCard());
+      const newCard = createRoomCard();
+      document.getElementById('roomContainer').appendChild(newCard);
+      saveDraft(true);
     });
 
     function readFileAsBase64(file) {
@@ -643,6 +659,7 @@
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
         console.log('[BD Portal] Draft SAVED:', draft.rooms.length, 'rooms, residence:', draft.residenceName);
+        console.log('[BD Portal] Draft room data:', JSON.stringify(draft.rooms));
       } catch (e) {
         console.error('[BD Portal] Draft save FAILED:', e);
       }
@@ -704,12 +721,10 @@
       return false;
     }
 
-    // Save immediately on every input (no debounce for reliability)
-    const updateForm = document.getElementById('updateForm');
-    if (updateForm) {
-      updateForm.addEventListener('input', function() { saveDraft(true); });
-      updateForm.addEventListener('change', function() { saveDraft(true); });
-    }
+    // Save residence name changes
+    document.getElementById('residenceName').addEventListener('input', function() {
+      saveDraft(true);
+    });
 
     // Also save when user leaves the page
     window.addEventListener('beforeunload', function() {
