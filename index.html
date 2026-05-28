@@ -261,7 +261,7 @@ function showReminderBanner(reminderData) {
   if (!banner) return;
   let html = "";
   if (reminderData.hasExpiredPromise) {
-    html = "<div class=\"reminder-banner stale\"><h4>⚠️ Is this room REALLY available?</h4><p>You noted a tenant was moving out by <strong>" + escapeHtml(reminderData.promisedDate || "a past date") + "</strong>. That date has passed.</p><p style=\"margin-top:8px;\"><strong>Remember:</strong> A room is only "available" when the tenant has <em>actually moved out</em> and you can show it to a new student <em>today</em>. A promise to leave is not the same as available.</p><p style=\"margin-top:8px;\">Please update your spots only when the room is truly ready.</p></div>";
+    html = "<div class=\"reminder-banner stale\"><h4>⚠️ Is this room REALLY available?</h4><p>You noted a tenant was moving out by <strong>" + escapeHtml(reminderData.promisedDate || "a past date") + "</strong>. That date has passed.</p><p style=\"margin-top:8px;\"><strong>Remember:</strong> A room is only \"available\" when the tenant has <em>actually moved out</em> and you can show it to a new student <em>today</em>. A promise to leave is not the same as available.</p><p style=\"margin-top:8px;\">Please update your spots only when the room is truly ready.</p></div>";
   } else if (reminderData.isStale) {
     html = "<div class=\"reminder-banner\"><h4>📅 Your listing is getting stale</h4><p>Last updated: <strong>" + escapeHtml(reminderData.lastUpdate || "unknown") + "</strong></p><p style=\"margin-top:8px;\">Students are searching right now. An outdated listing means missed bookings. Please update your availability.</p></div>";
   }
