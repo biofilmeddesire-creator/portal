@@ -131,99 +131,99 @@ const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isStandalone = window.navigator.standalone === true;
 
 if (locationCode) {
-  localStorage.setItem("bd_portal_id", locationCode);
-  sessionStorage.setItem("bd_portal_id", locationCode);
+  localStorage.setItem("bd_portal_id", locationCode);
+  sessionStorage.setItem("bd_portal_id", locationCode);
 }
 
 // ── DYNAMIC MANIFEST (harmless) ──
 function generateDynamicManifest() {
-  if (!locationCode) return;
-  const baseManifest = {
-    name: "Biofilmed Desire Portal",
-    short_name: "BD Portal",
-    start_url: "/#id=" + encodeURIComponent(locationCode),
-    display: "standalone",
-    background_color: "#0f172a",
-    theme_color: "#0f172a",
-    scope: "/",
-    icons: [
-      { src: "icon-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
-      { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" }
-    ],
-    orientation: "portrait"
-  };
-  const blob = new Blob([JSON.stringify(baseManifest)], { type: "application/json" });
-  const manifestURL = URL.createObjectURL(blob);
-  const manifestLink = document.getElementById("manifest-link");
-  if (manifestLink) manifestLink.href = manifestURL;
+  if (!locationCode) return;
+  const baseManifest = {
+    name: "Biofilmed Desire Portal",
+    short_name: "BD Portal",
+    start_url: "/#id=" + encodeURIComponent(locationCode),
+    display: "standalone",
+    background_color: "#0f172a",
+    theme_color: "#0f172a",
+    scope: "/",
+    icons: [
+      { src: "icon-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
+      { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" }
+    ],
+    orientation: "portrait"
+  };
+  const blob = new Blob([JSON.stringify(baseManifest)], { type: "application/json" });
+  const manifestURL = URL.createObjectURL(blob);
+  const manifestLink = document.getElementById("manifest-link");
+  if (manifestLink) manifestLink.href = manifestURL;
 }
 if (locationCode) generateDynamicManifest();
 
 // ── IOS HINT ──
 if (isIOS && !isStandalone && locationCode) {
-  document.getElementById("iosInstallHint").style.display = "block";
+  document.getElementById("iosInstallHint").style.display = "block";
 }
 
 // ── STANDALONE WITHOUT CODE ──
 if (isStandalone && !locationCode) {
-  setTimeout(() => {
-    locationCode = localStorage.getItem("bd_portal_id") || sessionStorage.getItem("bd_portal_id") || "";
-    if (!locationCode) {
-      document.getElementById("loadingScreen").innerHTML = "<div style=\"color:#fff;text-align:center;padding:40px;font-family:sans-serif;max-width:320px;\"><img src=\"rsz_logo.jpg\" style=\"width:80px;height:80px;border-radius:16px;margin-bottom:20px;\"><p style=\"font-size:18px;margin-bottom:16px;font-weight:600;\">🔗 Re-open from WhatsApp</p><p style=\"color:#94a3b8;margin-bottom:24px;line-height:1.5;\">Please go back to your WhatsApp chat and tap the Biofilmed Desire link again. Then add to Home Screen while on that page.</p><button onclick=\"window.location.href='https://wa.me/'\" style=\"background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;\">Open WhatsApp</button></div>";
-    } else {
-      loadPortal();
-    }
-  }, 500);
+  setTimeout(() => {
+    locationCode = localStorage.getItem("bd_portal_id") || sessionStorage.getItem("bd_portal_id") || "";
+    if (!locationCode) {
+      document.getElementById("loadingScreen").innerHTML = "<div style=\"color:#fff;text-align:center;padding:40px;font-family:sans-serif;max-width:320px;\"><img src=\"rsz_logo.jpg\" style=\"width:80px;height:80px;border-radius:16px;margin-bottom:20px;\"><p style=\"font-size:18px;margin-bottom:16px;font-weight:600;\">🔗 Re-open from WhatsApp</p><p style=\"color:#94a3b8;margin-bottom:24px;line-height:1.5;\">Please go back to your WhatsApp chat and tap the Biofilmed Desire link again. Then add to Home Screen while on that page.</p><button onclick=\"window.location.href='https://wa.me/'\" style=\"background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;\">Open WhatsApp</button></div>";
+    } else {
+      loadPortal();
+    }
+  }, 500);
 }
 
 // ── UI HELPERS ──
 function escapeHtml(text) {
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 function createRoomCard(room) {
-  room = room || { type: "", price: "", spots: 0, rowIndex: "" };
-  const div = document.createElement("div");
-  div.className = "room-card";
-  div.setAttribute("data-rowindex", room.rowIndex || "");
-  let optionsHtml = "";
-  for (let i = 0; i < roomTypeOptions.length; i++) {
-    const opt = roomTypeOptions[i];
-    optionsHtml += "<option value=\"" + escapeHtml(opt) + "\"" + (room.type === opt ? " selected" : "") + ">" + escapeHtml(opt) + "</option>";
-  }
-  div.innerHTML = "<button type=\"button\" class=\"btn-remove\">X</button><div class=\"mb-3\"><label class=\"form-label\">Room Type</label><select class=\"form-select type-select\" required><option value=\"\" disabled" + (!room.type ? " selected" : "") + ">Select Room Type...</option>" + optionsHtml + "</select></div><div class=\"row\"><div class=\"col-6\"><label class=\"form-label\">Monthly Price (R)</label><input type=\"number\" class=\"form-control price-input\" value=\"" + (room.price || "") + "\" min=\"0\" required></div><div class=\"col-6\"><label class=\"form-label\">Spots Available</label><input type=\"number\" class=\"form-control spots-input\" value=\"" + (room.spots || 0) + "\" min=\"0\" required></div></div><div class=\"media-section\"><label class=\"media-label\">📎 Notes & Media for this Room Type</label><div class=\"mb-2\"><textarea class=\"form-control notes-input notes-textarea\" rows=\"2\" placeholder=\"Update pricing or conditions for this room type...\"></textarea></div><div class=\"draft-saved\">💾 Draft saved</div><div class=\"mb-2\"><input type=\"file\" class=\"form-control file-input-sm picture-input\" accept=\"image/*\"></div><div class=\"mb-1\"><input type=\"file\" class=\"form-control file-input-sm video-input\" accept=\"video/*\"></div></div>";
-  div.querySelector(".btn-remove").addEventListener("click", function() {
-    if (document.querySelectorAll(".room-card").length > 1) div.remove();
-    else alert("At least one room card is required.");
-  });
-  return div;
+  room = room || { type: "", price: "", spots: 0, rowIndex: "" };
+  const div = document.createElement("div");
+  div.className = "room-card";
+  div.setAttribute("data-rowindex", room.rowIndex || "");
+  let optionsHtml = "";
+  for (let i = 0; i < roomTypeOptions.length; i++) {
+    const opt = roomTypeOptions[i];
+    optionsHtml += "<option value=\"" + escapeHtml(opt) + "\"" + (room.type === opt ? " selected" : "") + ">" + escapeHtml(opt) + "</option>";
+  }
+  div.innerHTML = "<button type=\"button\" class=\"btn-remove\">X</button><div class=\"mb-3\"><label class=\"form-label\">Room Type</label><select class=\"form-select type-select\" required><option value=\"\" disabled" + (!room.type ? " selected" : "") + ">Select Room Type...</option>" + optionsHtml + "</select></div><div class=\"row\"><div class=\"col-6\"><label class=\"form-label\">Monthly Price (R)</label><input type=\"number\" class=\"form-control price-input\" value=\"" + (room.price || "") + "\" min=\"0\" required></div><div class=\"col-6\"><label class=\"form-label\">Spots Available</label><input type=\"number\" class=\"form-control spots-input\" value=\"" + (room.spots || 0) + "\" min=\"0\" required></div></div><div class=\"media-section\"><label class=\"media-label\">📎 Notes & Media for this Room Type</label><div class=\"mb-2\"><textarea class=\"form-control notes-input notes-textarea\" rows=\"2\" placeholder=\"Update pricing or conditions for this room type...\"></textarea></div><div class=\"draft-saved\">💾 Draft saved</div><div class=\"mb-2\"><input type=\"file\" class=\"form-control file-input-sm picture-input\" accept=\"image/*\"></div><div class=\"mb-1\"><input type=\"file\" class=\"form-control file-input-sm video-input\" accept=\"video/*\"></div></div>";
+  div.querySelector(".btn-remove").addEventListener("click", function() {
+    if (document.querySelectorAll(".room-card").length > 1) div.remove();
+    else alert("At least one room card is required.");
+  });
+  return div;
 }
 
 function renderRooms(rooms) {
-  const container = document.getElementById("roomContainer");
-  container.innerHTML = "";
-  if (!rooms || rooms.length === 0) {
-    container.appendChild(createRoomCard());
-  } else {
-    for (let i = 0; i < rooms.length; i++) {
-      container.appendChild(createRoomCard(rooms[i]));
-    }
-  }
+  const container = document.getElementById("roomContainer");
+  container.innerHTML = "";
+  if (!rooms || rooms.length === 0) {
+    container.appendChild(createRoomCard());
+  } else {
+    for (let i = 0; i < rooms.length; i++) {
+      container.appendChild(createRoomCard(rooms[i]));
+    }
+  }
 }
 
 document.getElementById("addRoomBtn").addEventListener("click", function() {
-  document.getElementById("roomContainer").appendChild(createRoomCard());
+  document.getElementById("roomContainer").appendChild(createRoomCard());
 });
 
 // ── FILE ENCODING (needed for upload, but sent to Worker) ──
 function readFileAsBase64(file) {
-  return new Promise(function(resolve) {
-    const reader = new FileReader();
-    reader.onload = function(e) { resolve({ base64: e.target.result.split(",")[1], mimeType: file.type, name: file.name }); };
-    reader.readAsDataURL(file);
-  });
+  return new Promise(function(resolve) {
+    const reader = new FileReader();
+    reader.onload = function(e) { resolve({ base64: e.target.result.split(",")[1], mimeType: file.type, name: file.name }); };
+    reader.readAsDataURL(file);
+  });
 }
 
 // ── LOAD PORTAL (calls Worker for everything) ──
@@ -236,12 +236,14 @@ async function loadPortal() {
   }
 
   try {
-    // Single call to Worker — it handles data + reminders + drafts
     const res = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "loadPortal", token: locationCode })
+      body: JSON.stringify({ action: "loadPortal", token: locationCode }) 
     });
+    
+    if (!res.ok) throw new Error('Network response was not ok');
+    
     const data = await res.json();
 
     document.getElementById("loadingScreen").style.display = "none";
@@ -252,19 +254,18 @@ async function loadPortal() {
     }
     renderRooms(data.rooms || []);
     
-    // Show reminder banner if Worker sent one
     if (data.reminderHtml) {
       const banner = document.getElementById("reminderBanner");
       banner.innerHTML = data.reminderHtml;
       banner.style.display = "block";
     }
     
-    // Show draft indicator
     if (data.draftRestored) {
       document.getElementById("draftIndicator").innerText = "💾 Draft restored";
     }
 
   } catch (err) {
+    console.error("Load Error:", err);
     document.getElementById("loadingScreen").innerHTML = "<p style=\"color:#fff;padding:20px;text-align:center;font-family:sans-serif;\"><strong>Error loading portal.</strong><br>Please check your connection and try again.</p>";
   }
 }
@@ -274,31 +275,31 @@ let draftDebounceTimer = null;
 const DRAFT_KEY = "bd_portal_draft_v2";
 
 function saveDraft() {
-  const cards = document.querySelectorAll(".room-card");
-  const draft = { residenceName: document.getElementById("residenceName").value, savedAt: Date.now(), rooms: [] };
-  for (let i = 0; i < cards.length; i++) {
-    const card = cards[i];
-    draft.rooms.push({
-      type: card.querySelector(".type-select").value,
-      price: card.querySelector(".price-input").value,
-      spots: card.querySelector(".spots-input").value,
-      rowIndex: card.getAttribute("data-rowindex") || ""
-    });
-  }
-  localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-  // Flash indicators
-  const savedEls = document.querySelectorAll(".draft-saved");
-  for (let i = 0; i < savedEls.length; i++) {
-    savedEls[i].classList.add("show");
-    setTimeout(function(el) { return function() { el.classList.remove("show"); }; }(savedEls[i]), 1500);
-  }
-  const indicator = document.getElementById("draftIndicator");
-  if (indicator) indicator.innerText = "💾 Auto-saved " + new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  const cards = document.querySelectorAll(".room-card");
+  const draft = { residenceName: document.getElementById("residenceName").value, savedAt: Date.now(), rooms: [] };
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    draft.rooms.push({
+      type: card.querySelector(".type-select").value,
+      price: card.querySelector(".price-input").value,
+      spots: card.querySelector(".spots-input").value,
+      rowIndex: card.getAttribute("data-rowindex") || ""
+    });
+  }
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  // Flash indicators
+  const savedEls = document.querySelectorAll(".draft-saved");
+  for (let i = 0; i < savedEls.length; i++) {
+    savedEls[i].classList.add("show");
+    setTimeout(function(el) { return function() { el.classList.remove("show"); }; }(savedEls[i]), 1500);
+  }
+  const indicator = document.getElementById("draftIndicator");
+  if (indicator) indicator.innerText = "💾 Auto-saved " + new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 }
 
 function debouncedSave() {
-  if (draftDebounceTimer) clearTimeout(draftDebounceTimer);
-  draftDebounceTimer = setTimeout(saveDraft, 800);
+  if (draftDebounceTimer) clearTimeout(draftDebounceTimer);
+  draftDebounceTimer = setTimeout(saveDraft, 800);
 }
 
 document.getElementById("updateForm").addEventListener("input", debouncedSave);
@@ -306,107 +307,107 @@ document.getElementById("updateForm").addEventListener("change", debouncedSave);
 
 // ── SUBMIT (all logic moved to Worker) ──
 document.getElementById("submitBtn").addEventListener("click", async function() {
-  const btn = document.getElementById("submitBtn");
-  if (btn.dataset.submitting === "true") return;
-  const msg = document.getElementById("statusMsg");
-  btn.dataset.submitting = "true";
-  btn.disabled = true;
-  btn.innerText = "Submitting...";
-  msg.className = "";
-  msg.innerText = "Please wait...";
+  const btn = document.getElementById("submitBtn");
+  if (btn.dataset.submitting === "true") return;
+  const msg = document.getElementById("statusMsg");
+  btn.dataset.submitting = "true";
+  btn.disabled = true;
+  btn.innerText = "Submitting...";
+  msg.className = "";
+  msg.innerText = "Please wait...";
 
-  // Gather form data (no logic, just collection)
-  const cardEntries = [];
-  const cards = document.querySelectorAll(".room-card");
-  for (let i = 0; i < cards.length; i++) {
-    const card = cards[i];
-    const entry = {
-      type: card.querySelector(".type-select").value,
-      price: parseFloat(card.querySelector(".price-input").value) || 0,
-      spots: parseInt(card.querySelector(".spots-input").value, 10) || 0,
-      rowIndex: card.getAttribute("data-rowindex") || "",
-      notes: card.querySelector(".notes-input").value.trim(),
-      pictureBase64: null, pictureMime: null, pictureName: null,
-      videoBase64: null, videoMime: null, videoName: null
-    };
-    const picFile = card.querySelector(".picture-input").files[0];
-    const vidFile = card.querySelector(".video-input").files[0];
-    if (picFile) {
-      const pic = await readFileAsBase64(picFile);
-      entry.pictureBase64 = pic.base64;
-      entry.pictureMime = pic.mimeType;
-      entry.pictureName = pic.name;
-    }
-    if (vidFile) {
-      const vid = await readFileAsBase64(vidFile);
-      entry.videoBase64 = vid.base64;
-      entry.videoMime = vid.mimeType;
-      entry.videoName = vid.name;
-    }
-    cardEntries.push(entry);
-  }
+  // Gather form data (no logic, just collection)
+  const cardEntries = [];
+  const cards = document.querySelectorAll(".room-card");
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const entry = {
+      type: card.querySelector(".type-select").value,
+      price: parseFloat(card.querySelector(".price-input").value) || 0,
+      spots: parseInt(card.querySelector(".spots-input").value, 10) || 0,
+      rowIndex: card.getAttribute("data-rowindex") || "",
+      notes: card.querySelector(".notes-input").value.trim(),
+      pictureBase64: null, pictureMime: null, pictureName: null,
+      videoBase64: null, videoMime: null, videoName: null
+    };
+    const picFile = card.querySelector(".picture-input").files[0];
+    const vidFile = card.querySelector(".video-input").files[0];
+    if (picFile) {
+      const pic = await readFileAsBase64(picFile);
+      entry.pictureBase64 = pic.base64;
+      entry.pictureMime = pic.mimeType;
+      entry.pictureName = pic.name;
+    }
+    if (vidFile) {
+      const vid = await readFileAsBase64(vidFile);
+      entry.videoBase64 = vid.base64;
+      entry.videoMime = vid.mimeType;
+      entry.videoName = vid.name;
+    }
+    cardEntries.push(entry);
+  }
 
-  try {
-    const res = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "submitData",
-        token: locationCode,
-        residenceName: document.getElementById("residenceName").value,
-        rooms: cardEntries
-      })
-    });
-    const result = await res.json();
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "submitData",
+        token: locationCode,
+        residenceName: document.getElementById("residenceName").value,
+        rooms: cardEntries
+      })
+    });
+    const result = await res.json();
 
-    if (result.status === "Success") {
-      msg.className = "whatsapp-success";
-      msg.innerHTML = result.message || "Data submitted successfully.";
-      localStorage.removeItem(DRAFT_KEY);
-      document.getElementById("draftIndicator").innerText = "";
-      
-      // Render receipt from Worker response
-      if (result.receiptHtml) {
-        document.getElementById("receiptContent").innerHTML = result.receiptHtml;
-        document.getElementById("receiptSection").style.display = "block";
-      }
-    } else {
-      msg.className = "text-danger";
-      msg.innerText = "Error: " + (result.error || "Unknown error");
-    }
-  } catch (err) {
-    msg.className = "text-danger";
-    msg.innerText = "Connection failed. Please try again.";
-  }
+    if (result.status === "Success") {
+      msg.className = "whatsapp-success";
+      msg.innerHTML = result.message || "Data submitted successfully.";
+      localStorage.removeItem(DRAFT_KEY);
+      document.getElementById("draftIndicator").innerText = "";
+      
+      // Render receipt from Worker response
+      if (result.receiptHtml) {
+        document.getElementById("receiptContent").innerHTML = result.receiptHtml;
+        document.getElementById("receiptSection").style.display = "block";
+      }
+    } else {
+      msg.className = "text-danger";
+      msg.innerText = "Error: " + (result.error || "Unknown error");
+    }
+  } catch (err) {
+    msg.className = "text-danger";
+    msg.innerText = "Connection failed. Please try again.";
+  }
 
-  btn.disabled = false;
-  btn.innerText = "Submit Data";
-  btn.dataset.submitting = "false";
+  btn.disabled = false;
+  btn.innerText = "Submit Data";
+  btn.dataset.submitting = "false";
 });
 
 // ── RECEIPT TOGGLE ──
 document.getElementById("receiptToggle").addEventListener("click", function() {
-  const card = document.getElementById("receiptCard");
-  const arrow = document.getElementById("receiptArrow");
-  if (card.classList.contains("show")) {
-    card.classList.remove("show");
-    arrow.innerText = "▼";
-  } else {
-    card.classList.add("show");
-    arrow.innerText = "▲";
-  }
+  const card = document.getElementById("receiptCard");
+  const arrow = document.getElementById("receiptArrow");
+  if (card.classList.contains("show")) {
+    card.classList.remove("show");
+    arrow.innerText = "▼";
+  } else {
+    card.classList.add("show");
+    arrow.innerText = "▲";
+  }
 });
 
 // ── COPY RECEIPT ──
 document.getElementById("receiptCopy").addEventListener("click", async function() {
-  const receiptText = document.getElementById("receiptContent").dataset.copyText;
-  if (navigator.clipboard && receiptText) {
-    await navigator.clipboard.writeText(receiptText);
-    const btn = document.getElementById("receiptCopy");
-    const oldText = btn.innerText;
-    btn.innerText = "✅ Copied!";
-    setTimeout(() => btn.innerText = oldText, 2000);
-  }
+  const receiptText = document.getElementById("receiptContent").dataset.copyText;
+  if (navigator.clipboard && receiptText) {
+    await navigator.clipboard.writeText(receiptText);
+    const btn = document.getElementById("receiptCopy");
+    const oldText = btn.innerText;
+    btn.innerText = "✅ Copied!";
+    setTimeout(() => btn.innerText = oldText, 2000);
+  }
 });
 
 // ── INIT ──
