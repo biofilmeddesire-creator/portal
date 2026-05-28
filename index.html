@@ -82,7 +82,6 @@
     .reminder-banner.stale p { color: #7f1d1d; }
     .reminder-banner .portal-link { display: inline-block; margin-top: 10px; background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
     .reminder-banner .portal-link:hover { background: #1e293b; }
-    /* Samsung / mobile alignment fix - replaces Bootstrap col-6 */
     .price-spots-row { display: flex; gap: 12px; flex-wrap: nowrap; }
     .price-spots-row > div { flex: 1 1 0; min-width: 0; }
     @media (max-width: 360px) {
@@ -133,7 +132,11 @@
   <script>
     const SCRIPT_URL = "https://api.biofilmeddesire.com";
     const QUEUE_KEY = 'bd_offline_queue';
-    const roomTypeOptions = ["Single","RDP (Single)","Commune (Single)","RDP (Full house)","Sharing (Per Bed)","Sharing (Full Room)","Sharing (Private use)","Sharing (3+ Per Room)","Bachelor","1 Bedroom Apartment","2 Bedroom Apartment","3 Bedroom Apartment"];
+    const DRAFT_KEY = 'bd_portal_draft_v3';
+    // Room types are fetched from the server at runtime and cached locally.
+    // They are NOT hardcoded here so competitors inspecting source see nothing.
+    const ROOM_TYPES_CACHE_KEY = 'bd_room_types';
+    let roomTypeOptions = []; // populated in loadData() from server response
 
     const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
     const urlParams = new URLSearchParams(window.location.search);
@@ -306,7 +309,23 @@
         clearTimeout(timeoutId);
 
         serverData = await dataRes.json();
+
+        // Populate room types from server response and cache them locally.
+        // This keeps the room type list out of the page source entirely.
+        if (serverData.roomTypeOptions && serverData.roomTypeOptions.length > 0) {
+          roomTypeOptions = serverData.roomTypeOptions;
+          try { localStorage.setItem(ROOM_TYPES_CACHE_KEY, JSON.stringify(roomTypeOptions)); } catch (e) {}
+        } else {
+          // Fall back to locally cached types from a previous successful load
+          try {
+            const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]');
+            if (cached.length > 0) roomTypeOptions = cached;
+          } catch (e) {}
+        }
+
         document.getElementById('residenceName').value = serverData.residenceName || '';
+        // Render server data — this pre-fills room type, price, and spots.
+        // Notes and media inputs are always left blank for fresh entry.
         renderRooms(serverData.rooms || []);
 
         if (reminderRes) {
@@ -314,6 +333,12 @@
         }
       } catch (err) {
         console.error('[BD Portal] loadData error:', err);
+        // On network failure, try to use cached room types so the add-room
+        // button still works with a correct options list
+        try {
+          const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]');
+          if (cached.length > 0) roomTypeOptions = cached;
+        } catch (e) {}
         renderRooms([]);
       }
 
@@ -326,6 +351,8 @@
         showReminderBanner(reminderData);
       }
 
+      // restoreDraft is called last. It will only activate as a fallback
+      // when the server returned no rooms (e.g. new landlord or fetch error).
       restoreDraft(serverData);
     }
 
@@ -592,7 +619,6 @@
       btn.dataset.submitting = "false";
     });
 
-    const DRAFT_KEY = 'bd_portal_draft_v3';
     let draftDebounceTimer = null;
 
     function getDraft() {
@@ -613,7 +639,8 @@
           type: card.querySelector('.type-select').value,
           price: card.querySelector('.price-input').value,
           spots: card.querySelector('.spots-input').value
-          // NOTES, PICTURE, VIDEO are NOT saved to draft
+          // Notes, pictures, and videos are intentionally NOT saved to draft —
+          // these are always entered fresh on each visit
         });
       });
 
@@ -643,12 +670,19 @@
         return false;
       }
 
-      // Restore residence name
+      // Server data is the authoritative source for room type, price, and spots.
+      // If the server returned rooms, do NOT replace them with draft data.
+      // This is the fix for the pre-fill feature being lost.
+      if (serverData && serverData.rooms && serverData.rooms.length > 0) {
+        return false;
+      }
+
+      // No server rooms — restore draft as a fallback (e.g. new landlord,
+      // or a network error that prevented server data from loading)
       if (draft.residenceName) {
         document.getElementById('residenceName').value = draft.residenceName;
       }
 
-      // Restore room cards: type, price, spots only (notes/media stay empty)
       if (draft.rooms && draft.rooms.length > 0) {
         const container = document.getElementById('roomContainer');
         container.innerHTML = '';
@@ -659,12 +693,12 @@
             spots: r.spots || 0,
             rowIndex: ''
           });
-          // Notes, picture, video inputs stay empty (not restored)
+          // Notes, picture, and video inputs are intentionally left blank
           container.appendChild(card);
         });
 
         const indicator = document.getElementById('draftIndicator');
-        if (indicator) indicator.innerText = 'Draft restored';
+        if (indicator) indicator.innerText = 'Draft restored (last saved state)';
         return true;
       }
 
