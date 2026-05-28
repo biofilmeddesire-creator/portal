@@ -134,6 +134,7 @@
   <script>
     const SCRIPT_URL = "https://api.biofilmeddesire.com";
     const QUEUE_KEY = 'bd_offline_queue';
+    const DRAFT_KEY = 'bd_portal_draft_v3';
     const roomTypeOptions = ["Single","RDP (Single)","Commune (Single)","RDP (Full house)","Sharing (Per Bed)","Sharing (Full Room)","Sharing (Private use)","Sharing (3+ Per Room)","Bachelor","1 Bedroom Apartment","2 Bedroom Apartment","3 Bedroom Apartment"];
 
     const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
@@ -605,7 +606,6 @@
       btn.dataset.submitting = "false";
     });
 
-    const DRAFT_KEY = 'bd_portal_draft_v3';
     let draftDebounceTimer = null;
 
     function getDraft() {
