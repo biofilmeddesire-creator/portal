@@ -78,10 +78,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .reminder-banner.stale h4 { color: #991b1b; }
 .reminder-banner p { font-size: 0.85rem; color: #78350f; margin: 0; line-height: 1.5; }
 .reminder-banner.stale p { color: #7f1d1d; }
-.reminder-banner .portal-link { display: inline-block; margin-top: 10px; background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
-.reminder-banner .portal-link:hover { background: #1e293b; }
 </style>
-<base target="_blank">
 </head>
 <body>
 <div id="loadingScreen">
@@ -109,21 +106,21 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 <div id="receiptSection" style="display:none;">
 <div class="receipt-toggle" id="receiptToggle">📄 View Receipt <span id="receiptArrow">▼</span></div>
 <div class="receipt-card" id="receiptCard">
-<div class="receipt-row" id="receiptResName"></div>
-<div class="receipt-row" id="receiptDate"></div>
-<div class="receipt-row" id="receiptRef"></div>
-<div class="receipt-divider"></div>
-<div id="receiptRooms"></div>
+<div id="receiptContent"></div>
 <button class="receipt-copy" id="receiptCopy">📋 Copy to Clipboard</button>
 </div>
 </div>
 </div>
+
 <script>
-const SCRIPT_URL = "https://api.biofilmeddesire.com";
-const QUEUE_KEY = "bd_offline_queue";
-const DRAFT_KEY = "bd_portal_draft_v2";
+// ── CONFIG ──
+// Worker URL only — no backend URL exposed
+const WORKER_URL = "https://api.biofilmeddesire.com"; // Your worker domain
+
+// ── ROOM TYPES (UI only — harmless to expose) ──
 const roomTypeOptions = ["Single","RDP (Single)","Commune (Single)","RDP (Full house)","Sharing (Per Bed)","Sharing (Full Room)","Sharing (Private use)","Sharing (3+ Per Room)","Bachelor","1 Bedroom Apartment","2 Bedroom Apartment","3 Bedroom Apartment"];
 
+// ── LOCATION CODE ──
 const hashParams = new URLSearchParams(window.location.hash.replace("#", "?"));
 const urlParams = new URLSearchParams(window.location.search);
 let locationCode = hashParams.get("id") || hashParams.get("code") || urlParams.get("id") || urlParams.get("code") || "";
@@ -138,6 +135,7 @@ if (locationCode) {
   sessionStorage.setItem("bd_portal_id", locationCode);
 }
 
+// ── DYNAMIC MANIFEST (harmless) ──
 function generateDynamicManifest() {
   if (!locationCode) return;
   const baseManifest = {
@@ -159,28 +157,29 @@ function generateDynamicManifest() {
   const manifestLink = document.getElementById("manifest-link");
   if (manifestLink) manifestLink.href = manifestURL;
 }
-
 if (locationCode) generateDynamicManifest();
 
+// ── IOS HINT ──
 if (isIOS && !isStandalone && locationCode) {
-  const hint = document.getElementById("iosInstallHint");
-  if (hint) hint.style.display = "block";
+  document.getElementById("iosInstallHint").style.display = "block";
 }
 
+// ── STANDALONE WITHOUT CODE ──
 if (isStandalone && !locationCode) {
-  setTimeout(function() {
+  setTimeout(() => {
     locationCode = localStorage.getItem("bd_portal_id") || sessionStorage.getItem("bd_portal_id") || "";
     if (!locationCode) {
       document.getElementById("loadingScreen").innerHTML = "<div style=\"color:#fff;text-align:center;padding:40px;font-family:sans-serif;max-width:320px;\"><img src=\"rsz_logo.jpg\" style=\"width:80px;height:80px;border-radius:16px;margin-bottom:20px;\"><p style=\"font-size:18px;margin-bottom:16px;font-weight:600;\">🔗 Re-open from WhatsApp</p><p style=\"color:#94a3b8;margin-bottom:24px;line-height:1.5;\">Please go back to your WhatsApp chat and tap the Biofilmed Desire link again. Then add to Home Screen while on that page.</p><button onclick=\"window.location.href='https://wa.me/'\" style=\"background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;\">Open WhatsApp</button></div>";
     } else {
-      loadData();
+      loadPortal();
     }
   }, 500);
 }
 
+// ── UI HELPERS ──
 function escapeHtml(text) {
   const div = document.createElement("div");
-  div.innerText = text;
+  div.textContent = text;
   return div.innerHTML;
 }
 
@@ -192,7 +191,7 @@ function createRoomCard(room) {
   let optionsHtml = "";
   for (let i = 0; i < roomTypeOptions.length; i++) {
     const opt = roomTypeOptions[i];
-    optionsHtml += "<option value=\"" + opt + "\"" + (room.type === opt ? " selected" : "") + ">" + opt + "</option>";
+    optionsHtml += "<option value=\"" + escapeHtml(opt) + "\"" + (room.type === opt ? " selected" : "") + ">" + escapeHtml(opt) + "</option>";
   }
   div.innerHTML = "<button type=\"button\" class=\"btn-remove\">X</button><div class=\"mb-3\"><label class=\"form-label\">Room Type</label><select class=\"form-select type-select\" required><option value=\"\" disabled" + (!room.type ? " selected" : "") + ">Select Room Type...</option>" + optionsHtml + "</select></div><div class=\"row\"><div class=\"col-6\"><label class=\"form-label\">Monthly Price (R)</label><input type=\"number\" class=\"form-control price-input\" value=\"" + (room.price || "") + "\" min=\"0\" required></div><div class=\"col-6\"><label class=\"form-label\">Spots Available</label><input type=\"number\" class=\"form-control spots-input\" value=\"" + (room.spots || 0) + "\" min=\"0\" required></div></div><div class=\"media-section\"><label class=\"media-label\">📎 Notes & Media for this Room Type</label><div class=\"mb-2\"><textarea class=\"form-control notes-input notes-textarea\" rows=\"2\" placeholder=\"Update pricing or conditions for this room type...\"></textarea></div><div class=\"draft-saved\">💾 Draft saved</div><div class=\"mb-2\"><input type=\"file\" class=\"form-control file-input-sm picture-input\" accept=\"image/*\"></div><div class=\"mb-1\"><input type=\"file\" class=\"form-control file-input-sm video-input\" accept=\"video/*\"></div></div>";
   div.querySelector(".btn-remove").addEventListener("click", function() {
@@ -218,6 +217,7 @@ document.getElementById("addRoomBtn").addEventListener("click", function() {
   document.getElementById("roomContainer").appendChild(createRoomCard());
 });
 
+// ── FILE ENCODING (needed for upload, but sent to Worker) ──
 function readFileAsBase64(file) {
   return new Promise(function(resolve) {
     const reader = new FileReader();
@@ -226,143 +226,165 @@ function readFileAsBase64(file) {
   });
 }
 
-async function loadData() {
+// ── LOAD PORTAL (calls Worker for everything) ──
+async function loadPortal() {
   if (!locationCode) {
     if (!isStandalone) {
       document.getElementById("loadingScreen").innerHTML = "<p style=\"color:#fff;padding:20px;text-align:center;font-family:sans-serif;\"><strong>Error:</strong> No residence ID found.<br><br>Please open this portal using the link provided by Biofilmed Desire.</p>";
     }
     return;
   }
-  let reminderData = null;
-  let serverData = null;
+
   try {
-    const [dataRes, reminderRes] = await Promise.all([
-      fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "getLandlordData", token: locationCode }) }),
-      fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "checkReminder", token: locationCode }) }).catch(function() { return null; })
-    ]);
-    serverData = await dataRes.json();
-    if (reminderRes) reminderData = await reminderRes.json();
+    // Single call to Worker — it handles data + reminders + drafts
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "loadPortal", token: locationCode })
+    });
+    const data = await res.json();
+
+    document.getElementById("loadingScreen").style.display = "none";
+    document.getElementById("mainContent").style.display = "block";
+
+    if (data.residenceName) {
+      document.getElementById("residenceName").value = data.residenceName;
+    }
+    renderRooms(data.rooms || []);
+    
+    // Show reminder banner if Worker sent one
+    if (data.reminderHtml) {
+      const banner = document.getElementById("reminderBanner");
+      banner.innerHTML = data.reminderHtml;
+      banner.style.display = "block";
+    }
+    
+    // Show draft indicator
+    if (data.draftRestored) {
+      document.getElementById("draftIndicator").innerText = "💾 Draft restored";
+    }
+
   } catch (err) {
-    serverData = null;
+    document.getElementById("loadingScreen").innerHTML = "<p style=\"color:#fff;padding:20px;text-align:center;font-family:sans-serif;\"><strong>Error loading portal.</strong><br>Please check your connection and try again.</p>";
   }
-  document.getElementById("loadingScreen").style.display = "none";
-  document.getElementById("mainContent").style.display = "block";
+}
 
-  // Try draft first — it wins over server for name/type/price/spots
-  // Notes/picture/video are always blank on load (intentionally ephemeral)
-  const draftRestored = loadDraft();
+// ── DRAFT SAVE (client-side only — harmless, improves UX) ──
+let draftDebounceTimer = null;
+const DRAFT_KEY = "bd_portal_draft_v2";
 
-  // If no draft, fall back to server data
-  if (!draftRestored) {
-    if (serverData) {
-      document.getElementById("residenceName").value = serverData.residenceName || "";
-      renderRooms(serverData.rooms || []);
-    } else {
-      renderRooms([]);
-    }
+function saveDraft() {
+  const cards = document.querySelectorAll(".room-card");
+  const draft = { residenceName: document.getElementById("residenceName").value, savedAt: Date.now(), rooms: [] };
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    draft.rooms.push({
+      type: card.querySelector(".type-select").value,
+      price: card.querySelector(".price-input").value,
+      spots: card.querySelector(".spots-input").value,
+      rowIndex: card.getAttribute("data-rowindex") || ""
+    });
   }
-
-  if (reminderData && reminderData.needsReminder) showReminderBanner(reminderData);
-}
-
-function showReminderBanner(reminderData) {
-  const banner = document.getElementById("reminderBanner");
-  if (!banner) return;
-  let html = "";
-  if (reminderData.hasExpiredPromise) {
-    html = "<div class=\"reminder-banner stale\"><h4>⚠️ Is this room REALLY available?</h4><p>You noted a tenant was moving out by <strong>" + escapeHtml(reminderData.promisedDate || "a past date") + "</strong>. That date has passed.</p><p style=\"margin-top:8px;\"><strong>Remember:</strong> A room is only \"available\" when the tenant has <em>actually moved out</em> and you can show it to a new student <em>today</em>. A promise to leave is not the same as available.</p><p style=\"margin-top:8px;\">Please update your spots only when the room is truly ready.</p></div>";
-  } else if (reminderData.isStale) {
-    html = "<div class=\"reminder-banner\"><h4>📅 Your listing is getting stale</h4><p>Last updated: <strong>" + escapeHtml(reminderData.lastUpdate || "unknown") + "</strong></p><p style=\"margin-top:8px;\">Students are searching right now. An outdated listing means missed bookings. Please update your availability.</p></div>";
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  // Flash indicators
+  const savedEls = document.querySelectorAll(".draft-saved");
+  for (let i = 0; i < savedEls.length; i++) {
+    savedEls[i].classList.add("show");
+    setTimeout(function(el) { return function() { el.classList.remove("show"); }; }(savedEls[i]), 1500);
   }
-  banner.innerHTML = html;
-  banner.style.display = "block";
+  const indicator = document.getElementById("draftIndicator");
+  if (indicator) indicator.innerText = "💾 Auto-saved " + new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 }
 
-function getQueue() {
-  try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]"); }
-  catch (e) { return []; }
+function debouncedSave() {
+  if (draftDebounceTimer) clearTimeout(draftDebounceTimer);
+  draftDebounceTimer = setTimeout(saveDraft, 800);
 }
 
-function saveQueue(queue) {
-  localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
-}
+document.getElementById("updateForm").addEventListener("input", debouncedSave);
+document.getElementById("updateForm").addEventListener("change", debouncedSave);
 
-function addToQueue(payload) {
-  const queue = getQueue();
-  queue.push({ payload: payload, timestamp: Date.now(), attempts: 0 });
-  saveQueue(queue);
-  return queue.length;
-}
-
-function removeFromQueue(index) {
-  const queue = getQueue();
-  queue.splice(index, 1);
-  saveQueue(queue);
-}
-
-async function processQueue() {
-  const queue = getQueue();
-  if (queue.length === 0) return;
+// ── SUBMIT (all logic moved to Worker) ──
+document.getElementById("submitBtn").addEventListener("click", async function() {
+  const btn = document.getElementById("submitBtn");
+  if (btn.dataset.submitting === "true") return;
   const msg = document.getElementById("statusMsg");
-  let successCount = 0;
-  for (let i = queue.length - 1; i >= 0; i--) {
-    const item = queue[i];
-    item.attempts++;
-    try {
-      const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(item.payload) });
-      const result = await res.json();
-      if (result.status === "Success") {
-        removeFromQueue(i);
-        successCount++;
-      } else if (item.attempts >= 3) {
-        removeFromQueue(i);
-      }
-    } catch (err) {
-      if (item.attempts >= 3) removeFromQueue(i);
+  btn.dataset.submitting = "true";
+  btn.disabled = true;
+  btn.innerText = "Submitting...";
+  msg.className = "";
+  msg.innerText = "Please wait...";
+
+  // Gather form data (no logic, just collection)
+  const cardEntries = [];
+  const cards = document.querySelectorAll(".room-card");
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const entry = {
+      type: card.querySelector(".type-select").value,
+      price: parseFloat(card.querySelector(".price-input").value) || 0,
+      spots: parseInt(card.querySelector(".spots-input").value, 10) || 0,
+      rowIndex: card.getAttribute("data-rowindex") || "",
+      notes: card.querySelector(".notes-input").value.trim(),
+      pictureBase64: null, pictureMime: null, pictureName: null,
+      videoBase64: null, videoMime: null, videoName: null
+    };
+    const picFile = card.querySelector(".picture-input").files[0];
+    const vidFile = card.querySelector(".video-input").files[0];
+    if (picFile) {
+      const pic = await readFileAsBase64(picFile);
+      entry.pictureBase64 = pic.base64;
+      entry.pictureMime = pic.mimeType;
+      entry.pictureName = pic.name;
     }
+    if (vidFile) {
+      const vid = await readFileAsBase64(vidFile);
+      entry.videoBase64 = vid.base64;
+      entry.videoMime = vid.mimeType;
+      entry.videoName = vid.name;
+    }
+    cardEntries.push(entry);
   }
-  if (successCount > 0) {
-    msg.className = "whatsapp-success";
-    msg.innerText = successCount + " queued submission(s) sent successfully!";
-    msg.style.display = "block";
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "submitData",
+        token: locationCode,
+        residenceName: document.getElementById("residenceName").value,
+        rooms: cardEntries
+      })
+    });
+    const result = await res.json();
+
+    if (result.status === "Success") {
+      msg.className = "whatsapp-success";
+      msg.innerHTML = result.message || "Data submitted successfully.";
+      localStorage.removeItem(DRAFT_KEY);
+      document.getElementById("draftIndicator").innerText = "";
+      
+      // Render receipt from Worker response
+      if (result.receiptHtml) {
+        document.getElementById("receiptContent").innerHTML = result.receiptHtml;
+        document.getElementById("receiptSection").style.display = "block";
+      }
+    } else {
+      msg.className = "text-danger";
+      msg.innerText = "Error: " + (result.error || "Unknown error");
+    }
+  } catch (err) {
+    msg.className = "text-danger";
+    msg.innerText = "Connection failed. Please try again.";
   }
-}
 
-window.addEventListener("online", function() { processQueue(); });
-if (navigator.onLine) setTimeout(processQueue, 2000);
+  btn.disabled = false;
+  btn.innerText = "Submit Data";
+  btn.dataset.submitting = "false";
+});
 
-let lastReceiptText = "";
-
-function buildReceipt(payload, cardMap) {
-  const now = new Date();
-  const dateStr = now.toLocaleDateString("en-GB") + " " + now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-  const resName = payload.residenceName || "Residence";
-  const ref = payload.token || "N/A";
-  document.getElementById("receiptResName").innerHTML = "<strong>🏠</strong> " + escapeHtml(resName);
-  document.getElementById("receiptDate").innerHTML = "<strong>📅</strong> " + dateStr;
-  document.getElementById("receiptRef").innerHTML = "<strong>🔑</strong> Ref: " + escapeHtml(ref);
-  const roomsDiv = document.getElementById("receiptRooms");
-  roomsDiv.innerHTML = "";
-  const rooms = Array.from(cardMap.values());
-  for (let i = 0; i < rooms.length; i++) {
-    const r = rooms[i];
-    const row = document.createElement("div");
-    row.className = "receipt-row";
-    row.innerHTML = "• <strong>" + escapeHtml(r.type) + "</strong> — R" + r.price + " — " + r.spots + " spot" + (r.spots !== 1 ? "s" : "");
-    roomsDiv.appendChild(row);
-  }
-  const lines = ["Biofilmed Desire Receipt", "Residence: " + resName, "Date: " + dateStr, "Ref: " + ref, ""];
-  for (let i = 0; i < rooms.length; i++) {
-    const r = rooms[i];
-    lines.push("• " + r.type + " — R" + r.price + " — " + r.spots + " spot" + (r.spots !== 1 ? "s" : ""));
-  }
-  lines.push("", "Submitted via BD Portal");
-  lastReceiptText = lines.join("\n");
-  document.getElementById("receiptSection").style.display = "block";
-  document.getElementById("receiptCard").classList.remove("show");
-  document.getElementById("receiptArrow").innerText = "▼";
-}
-
+// ── RECEIPT TOGGLE ──
 document.getElementById("receiptToggle").addEventListener("click", function() {
   const card = document.getElementById("receiptCard");
   const arrow = document.getElementById("receiptArrow");
@@ -375,178 +397,20 @@ document.getElementById("receiptToggle").addEventListener("click", function() {
   }
 });
 
-document.getElementById("receiptCopy").addEventListener("click", function() {
-  if (navigator.clipboard && lastReceiptText) {
-    navigator.clipboard.writeText(lastReceiptText).then(function() {
-      const btn = document.getElementById("receiptCopy");
-      const oldText = btn.innerText;
-      btn.innerText = "✅ Copied!";
-      setTimeout(function() { btn.innerText = oldText; }, 2000);
-    });
+// ── COPY RECEIPT ──
+document.getElementById("receiptCopy").addEventListener("click", async function() {
+  const receiptText = document.getElementById("receiptContent").dataset.copyText;
+  if (navigator.clipboard && receiptText) {
+    await navigator.clipboard.writeText(receiptText);
+    const btn = document.getElementById("receiptCopy");
+    const oldText = btn.innerText;
+    btn.innerText = "✅ Copied!";
+    setTimeout(() => btn.innerText = oldText, 2000);
   }
 });
 
-document.getElementById("submitBtn").addEventListener("click", async function () {
-  const btn = document.getElementById("submitBtn");
-  if (btn.dataset.submitting === "true") return;
-  const msg = document.getElementById("statusMsg");
-  btn.dataset.submitting = "true";
-  btn.disabled = true;
-  btn.innerText = "Authorizing...";
-  msg.className = "";
-  msg.innerText = "Please wait...";
-  const cardEntries = [];
-  const cards = document.querySelectorAll(".room-card");
-  for (let i = 0; i < cards.length; i++) {
-    const card = cards[i];
-    const type = card.querySelector(".type-select").value;
-    const price = parseFloat(card.querySelector(".price-input").value) || 0;
-    const spots = parseInt(card.querySelector(".spots-input").value, 10) || 0;
-    const rowIndex = card.getAttribute("data-rowindex") || "";
-    const notes = card.querySelector(".notes-input").value.trim();
-    const pictureFile = card.querySelector(".picture-input").files[0];
-    const videoFile = card.querySelector(".video-input").files[0];
-    const entry = { type: type, price: price, spots: spots, rowIndex: rowIndex, notes: notes || "", pictureBase64: null, pictureMime: null, pictureName: null, videoBase64: null, videoMime: null, videoName: null };
-    if (pictureFile) {
-      const picData = await readFileAsBase64(pictureFile);
-      entry.pictureBase64 = picData.base64;
-      entry.pictureMime = picData.mimeType;
-      entry.pictureName = picData.name;
-    }
-    if (videoFile) {
-      const vidData = await readFileAsBase64(videoFile);
-      entry.videoBase64 = vidData.base64;
-      entry.videoMime = vidData.mimeType;
-      entry.videoName = vidData.name;
-    }
-    cardEntries.push(entry);
-  }
-  const cardMap = new Map();
-  for (let i = 0; i < cardEntries.length; i++) {
-    const entry = cardEntries[i];
-    const key = entry.type + "||" + entry.price;
-    if (cardMap.has(key)) {
-      const existing = cardMap.get(key);
-      existing.spots += entry.spots;
-      if (!existing.rowIndex && entry.rowIndex) existing.rowIndex = entry.rowIndex;
-      if (entry.notes) existing.notes = existing.notes ? existing.notes + " | " + entry.notes : entry.notes;
-      if (entry.pictureBase64) { existing.pictureBase64 = entry.pictureBase64; existing.pictureMime = entry.pictureMime; existing.pictureName = entry.pictureName; }
-      if (entry.videoBase64) { existing.videoBase64 = entry.videoBase64; existing.videoMime = entry.videoMime; existing.videoName = entry.videoName; }
-    } else {
-      cardMap.set(key, Object.assign({}, entry));
-    }
-  }
-  const payload = { token: locationCode, residenceName: document.getElementById("residenceName").value, dynamicRoomJSON: JSON.stringify(Array.from(cardMap.values())) };
-  if (!navigator.onLine) {
-    const queueLen = addToQueue(payload);
-    msg.className = "whatsapp-success";
-    msg.innerHTML = "⏳ No signal. Your update is saved and will auto-send when connection returns. (" + queueLen + " in queue)";
-    btn.disabled = false;
-    btn.innerText = "Submit Data";
-    btn.dataset.submitting = "false";
-    return;
-  }
-  try {
-    const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-    const result = await res.json();
-    if (result.status === "Success") {
-      msg.className = "whatsapp-success";
-      msg.innerHTML = "Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp.";
-      localStorage.removeItem(DRAFT_KEY);
-      document.getElementById("draftIndicator").innerText = "";
-      buildReceipt(payload, cardMap);
-      processQueue();
-    } else {
-      msg.className = "text-danger";
-      msg.innerText = "Error: " + (result.error || result.status || "Unknown error");
-    }
-  } catch (err) {
-    const queueLen = addToQueue(payload);
-    msg.className = "whatsapp-success";
-    msg.innerHTML = "⏳ Connection failed. Your update is saved and will auto-send when signal returns. (" + queueLen + " in queue)";
-  }
-  btn.disabled = false;
-  btn.innerText = "Submit Data";
-  btn.dataset.submitting = "false";
-});
-
-let draftDebounceTimer = null;
-
-function getDraft() {
-  try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || "null"); }
-  catch (e) { return null; }
-}
-
-// ── CHANGED: saves type/price/spots/rowIndex per card — NO notes (ephemeral) ─
-function saveDraft() {
-  const cards = document.querySelectorAll(".room-card");
-  const draft = { residenceName: document.getElementById("residenceName").value, savedAt: Date.now(), rooms: [] };
-  for (let i = 0; i < cards.length; i++) {
-    const card = cards[i];
-    draft.rooms.push({
-      type:     card.querySelector(".type-select").value,
-      price:    card.querySelector(".price-input").value,
-      spots:    card.querySelector(".spots-input").value,
-      rowIndex: card.getAttribute("data-rowindex") || ""
-    });
-  }
-  localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-  const savedEls = document.querySelectorAll(".draft-saved");
-  for (let i = 0; i < savedEls.length; i++) {
-    savedEls[i].classList.add("show");
-    setTimeout(function(el) { return function() { el.classList.remove("show"); }; }(savedEls[i]), 1500);
-  }
-  const indicator = document.getElementById("draftIndicator");
-  if (indicator) indicator.innerText = "💾 Auto-saved " + new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-}
-
-// ── CHANGED: always restores name/type/price/spots from draft if draft exists.
-//    Notes are intentionally NOT restored — they are always blank on load.     ─
-function loadDraft() {
-  const draft = getDraft();
-  if (!draft) return false;
-  const ageDays = (Date.now() - (draft.savedAt || 0)) / (1000 * 60 * 60 * 24);
-  if (ageDays > 7) {
-    localStorage.removeItem(DRAFT_KEY);
-    return false;
-  }
-  // Always restore residence name from draft
-  if (draft.residenceName) {
-    document.getElementById("residenceName").value = draft.residenceName;
-  }
-  // Always restore room cards (type/price/spots) — notes left blank intentionally
-  if (draft.rooms && draft.rooms.length > 0) {
-    const container = document.getElementById("roomContainer");
-    container.innerHTML = "";
-    for (let i = 0; i < draft.rooms.length; i++) {
-      const r = draft.rooms[i];
-      container.appendChild(createRoomCard({
-        type:     r.type     || "",
-        price:    r.price    || "",
-        spots:    r.spots    || 0,
-        rowIndex: r.rowIndex || ""
-      }));
-    }
-    const indicator = document.getElementById("draftIndicator");
-    if (indicator) indicator.innerText = "💾 Draft restored";
-    return true;
-  }
-  // Draft had a name but no rooms — still counts as partial restore
-  return draft.residenceName ? true : false;
-}
-
-function debouncedSave() {
-  if (draftDebounceTimer) clearTimeout(draftDebounceTimer);
-  draftDebounceTimer = setTimeout(saveDraft, 800);
-}
-
-const updateForm = document.getElementById("updateForm");
-if (updateForm) {
-  updateForm.addEventListener("input", debouncedSave);
-  updateForm.addEventListener("change", debouncedSave);
-}
-
-if (!isStandalone || locationCode) loadData();
+// ── INIT ──
+if (!isStandalone || locationCode) loadPortal();
 </script>
 </body>
 </html>
