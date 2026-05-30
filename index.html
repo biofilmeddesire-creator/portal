@@ -88,7 +88,6 @@
       .price-spots-row { flex-direction: column; gap: 0; }
     }
   </style>
-<base target="_blank">
 </head>
 <body>
 
@@ -131,22 +130,18 @@
   </div>
 
   <script>
-    // === OBFUSCATED API LAYER ===
-    // No backend implementation details are referenced in this file.
     const API_URL = "https://api.biofilmeddesire.com/v1/sync";
     const QUEUE_KEY = 'q';
     const DRAFT_KEY = 'dV';
     const CATEGORY_CACHE_KEY = 'cC';
     let categoryOptions = [];
 
-    // Opaque operation codes — meaningless without server-side mapping
     const OP = {
       FETCH: 'LYLb6Uke',
       REMIND: 'v1JCz55v',
       SYNC: 'QxfPysew'
     };
 
-    // Opaque payload field keys
     const K = {
       ACTION: 'a',
       TOKEN: 't',
@@ -234,7 +229,7 @@
             '<img src="rsz_logo.jpg" style="width:80px;height:80px;border-radius:16px;margin-bottom:20px;">' +
             '<p style="font-size:18px;margin-bottom:16px;font-weight:600;">Re-open from WhatsApp</p>' +
             '<p style="color:#94a3b8;margin-bottom:24px;line-height:1.5;">Please go back to your WhatsApp chat and tap the Biofilmed Desire link again. Then add to Home Screen while on that page.</p>' +
-            '<button onclick="window.location.href='https://wa.me/'" style="background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;">Open WhatsApp</button>' +
+            '<button onclick="window.location.href=\'https://wa.me/\'" style="background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;">Open WhatsApp</button>' +
             '</div>';
         } else {
           loadData();
