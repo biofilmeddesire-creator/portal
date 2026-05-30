@@ -130,6 +130,8 @@
   </div>
 
   <script>
+    // All API traffic routes exclusively through the secure proxy endpoint.
+    // No backend service details are referenced anywhere in this file.
     const SCRIPT_URL = "https://api.biofilmeddesire.com";
     const QUEUE_KEY = 'bd_offline_queue';
     const DRAFT_KEY = 'bd_portal_draft_v3';
@@ -240,15 +242,17 @@
           '</div>' +
         '</div>' +
         '<div class="media-section">' +
-          '<label class="media-label">Notes & Media for this Room Type</label>' +
+          '<label class="media-label">📎 Notes & Media for this Room Type</label>' +
           '<div class="mb-2">' +
             '<textarea class="form-control notes-input notes-textarea" rows="2" placeholder="Update pricing or conditions for this room type..."></textarea>' +
           '</div>' +
           '<div class="draft-saved">Draft saved</div>' +
           '<div class="mb-2">' +
+            '<label class="media-label">📸 Picture</label>' +
             '<input type="file" class="form-control file-input-sm picture-input" accept="image/*">' +
           '</div>' +
           '<div class="mb-1">' +
+            '<label class="media-label">🎥 Video</label>' +
             '<input type="file" class="form-control file-input-sm video-input" accept="video/*">' +
           '</div>' +
         '</div>';
@@ -672,13 +676,11 @@
 
       // Server data is the authoritative source for room type, price, and spots.
       // If the server returned rooms, do NOT replace them with draft data.
-      // This is the fix for the pre-fill feature being lost.
       if (serverData && serverData.rooms && serverData.rooms.length > 0) {
         return false;
       }
 
-      // No server rooms — restore draft as a fallback (e.g. new landlord,
-      // or a network error that prevented server data from loading)
+      // No server rooms — restore draft as a fallback
       if (draft.residenceName) {
         document.getElementById('residenceName').value = draft.residenceName;
       }
@@ -693,7 +695,6 @@
             spots: r.spots || 0,
             rowIndex: ''
           });
-          // Notes, picture, and video inputs are intentionally left blank
           container.appendChild(card);
         });
 
