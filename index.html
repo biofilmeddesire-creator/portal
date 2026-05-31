@@ -130,44 +130,13 @@
   </div>
 
   <script>
-    const API_URL = "https://api.biofilmeddesire.com/v1/sync";
-    const QUEUE_KEY = 'q';
-    const DRAFT_KEY = 'dV';
-    const CATEGORY_CACHE_KEY = 'cC';
-    let categoryOptions = [];
-
-    const OP = {
-      FETCH: 'LYLb6Uke',
-      REMIND: 'v1JCz55v',
-      SYNC: 'QxfPysew'
-    };
-
-    const K = {
-      ACTION: 'a',
-      TOKEN: 't',
-      RESIDENCE: 'rN',
-      PAYLOAD: 'pD',
-      CATEGORY: 'cT',
-      VALUE: 'v',
-      COUNT: 'c',
-      REF: 'rI',
-      NOTES: 'n',
-      IMAGE_BLOB: 'iB',
-      IMAGE_TYPE: 'iM',
-      IMAGE_NAME: 'iN',
-      MEDIA_BLOB: 'mB',
-      MEDIA_TYPE: 'mM',
-      MEDIA_NAME: 'mN',
-      NEEDS_ALERT: 'nR',
-      EXPIRED_FLAG: 'hE',
-      DEADLINE: 'dP',
-      STALE_FLAG: 'iS',
-      LAST_TOUCH: 'lU',
-      CATEGORY_OPTS: 'cO',
-      DATA: 'd',
-      STATUS: 's',
-      ERROR: 'e'
-    };
+    const SCRIPT_URL = "https://api.biofilmeddesire.com";
+    const QUEUE_KEY = 'bd_offline_queue';
+    const DRAFT_KEY = 'bd_portal_draft_v3';
+    // Room types are fetched from the server at runtime and cached locally.
+    // They are NOT hardcoded here so competitors inspecting source see nothing.
+    const ROOM_TYPES_CACHE_KEY = 'bd_room_types';
+    let roomTypeOptions = []; // populated in loadData() from server response
 
     const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
     const urlParams = new URLSearchParams(window.location.search);
@@ -176,18 +145,18 @@
                        urlParams.get('id') || urlParams.get('code') || '';
 
     if (!locationCode) {
-      locationCode = localStorage.getItem('iD') || '';
+      locationCode = localStorage.getItem('bd_portal_id') || '';
     }
     if (!locationCode) {
-      locationCode = sessionStorage.getItem('iD') || '';
+      locationCode = sessionStorage.getItem('bd_portal_id') || '';
     }
 
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.navigator.standalone === true;
 
     if (locationCode) {
-      localStorage.setItem('iD', locationCode);
-      sessionStorage.setItem('iD', locationCode);
+      localStorage.setItem('bd_portal_id', locationCode);
+      sessionStorage.setItem('bd_portal_id', locationCode);
     }
 
     function generateDynamicManifest() {
@@ -222,7 +191,7 @@
 
     if (isStandalone && !locationCode) {
       setTimeout(function() {
-        locationCode = localStorage.getItem('iD') || sessionStorage.getItem('iD') || '';
+        locationCode = localStorage.getItem('bd_portal_id') || sessionStorage.getItem('bd_portal_id') || '';
         if (!locationCode) {
           document.getElementById('loadingScreen').innerHTML =
             '<div style="color:#fff;text-align:center;padding:40px;font-family:sans-serif;max-width:320px;">' +
@@ -244,44 +213,42 @@
     }
 
     function createRoomCard(room) {
-      room = room || { cT: '', v: '', c: 0, rI: '' };
+      room = room || { type: '', price: '', spots: 0, rowIndex: '' };
       const div = document.createElement('div');
       div.className = 'room-card';
-      div.setAttribute('data-ref', room.rI || '');
-      const optionsHtml = categoryOptions.map(function(opt) {
-        return '<option value="' + opt + '"' + (room.cT === opt ? ' selected' : '') + '>' + opt + '</option>';
+      div.setAttribute('data-rowindex', room.rowIndex || '');
+      const optionsHtml = roomTypeOptions.map(function(opt) {
+        return '<option value="' + opt + '"' + (room.type === opt ? ' selected' : '') + '>' + opt + '</option>';
       }).join('');
       div.innerHTML =
         '<button type="button" class="btn-remove">X</button>' +
         '<div class="mb-3">' +
           '<label class="form-label">Room Type</label>' +
           '<select class="form-select type-select" required>' +
-            '<option value="" disabled' + (!room.cT ? ' selected' : '') + '>Select Room Type...</option>' +
+            '<option value="" disabled' + (!room.type ? ' selected' : '') + '>Select Room Type...</option>' +
             optionsHtml +
           '</select>' +
         '</div>' +
         '<div class="price-spots-row">' +
           '<div>' +
             '<label class="form-label">Monthly Price (R)</label>' +
-            '<input type="number" class="form-control price-input" value="' + (room.v || '') + '" min="0" required>' +
+            '<input type="number" class="form-control price-input" value="' + (room.price || '') + '" min="0" required>' +
           '</div>' +
           '<div>' +
             '<label class="form-label">Spots Available</label>' +
-            '<input type="number" class="form-control spots-input" value="' + (room.c || 0) + '" min="0" required>' +
+            '<input type="number" class="form-control spots-input" value="' + (room.spots || 0) + '" min="0" required>' +
           '</div>' +
         '</div>' +
         '<div class="media-section">' +
-          '<label class="media-label">&#128206; Notes & Media for this Room Type</label>' +
+          '<label class="media-label">Notes & Media for this Room Type</label>' +
           '<div class="mb-2">' +
             '<textarea class="form-control notes-input notes-textarea" rows="2" placeholder="Update pricing or conditions for this room type..."></textarea>' +
           '</div>' +
           '<div class="draft-saved">Draft saved</div>' +
           '<div class="mb-2">' +
-            '<label class="media-label">&#128248; Picture</label>' +
             '<input type="file" class="form-control file-input-sm picture-input" accept="image/*">' +
           '</div>' +
           '<div class="mb-1">' +
-            '<label class="media-label">&#127909; Video</label>' +
             '<input type="file" class="form-control file-input-sm video-input" accept="video/*">' +
           '</div>' +
         '</div>';
@@ -306,7 +273,7 @@
     function readFileAsBase64(file) {
       return new Promise(function(resolve) {
         const reader = new FileReader();
-        reader.onload = function(e) { resolve({ blob: e.target.result.split(',')[1], mime: file.type, name: file.name }); };
+        reader.onload = function(e) { resolve({ base64: e.target.result.split(',')[1], mimeType: file.type, name: file.name }); };
         reader.readAsDataURL(file);
       });
     }
@@ -320,22 +287,22 @@
         return;
       }
 
-      let alertData = null;
+      let reminderData = null;
       let serverData = null;
 
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(function() { controller.abort(); }, 10000);
 
-        const [dataRes, alertRes] = await Promise.all([
-          fetch(API_URL, {
+        const [dataRes, reminderRes] = await Promise.all([
+          fetch(SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify({ [K.ACTION]: OP.FETCH, [K.TOKEN]: locationCode }),
+            body: JSON.stringify({ action: 'getLandlordData', token: locationCode }),
             signal: controller.signal
           }),
-          fetch(API_URL, {
+          fetch(SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify({ [K.ACTION]: OP.REMIND, [K.TOKEN]: locationCode }),
+            body: JSON.stringify({ action: 'checkReminder', token: locationCode }),
             signal: controller.signal
           }).catch(function() { return null; })
         ]);
@@ -343,27 +310,34 @@
 
         serverData = await dataRes.json();
 
-        if (serverData.cO && serverData.cO.length > 0) {
-          categoryOptions = serverData.cO;
-          try { localStorage.setItem(CATEGORY_CACHE_KEY, JSON.stringify(categoryOptions)); } catch (e) {}
+        // Populate room types from server response and cache them locally.
+        // This keeps the room type list out of the page source entirely.
+        if (serverData.roomTypeOptions && serverData.roomTypeOptions.length > 0) {
+          roomTypeOptions = serverData.roomTypeOptions;
+          try { localStorage.setItem(ROOM_TYPES_CACHE_KEY, JSON.stringify(roomTypeOptions)); } catch (e) {}
         } else {
+          // Fall back to locally cached types from a previous successful load
           try {
-            const cached = JSON.parse(localStorage.getItem(CATEGORY_CACHE_KEY) || '[]');
-            if (cached.length > 0) categoryOptions = cached;
+            const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]');
+            if (cached.length > 0) roomTypeOptions = cached;
           } catch (e) {}
         }
 
-        document.getElementById('residenceName').value = serverData.rN || '';
-        renderRooms(serverData.d || []);
+        document.getElementById('residenceName').value = serverData.residenceName || '';
+        // Render server data — this pre-fills room type, price, and spots.
+        // Notes and media inputs are always left blank for fresh entry.
+        renderRooms(serverData.rooms || []);
 
-        if (alertRes) {
-          alertData = await alertRes.json();
+        if (reminderRes) {
+          reminderData = await reminderRes.json();
         }
       } catch (err) {
         console.error('[BD Portal] loadData error:', err);
+        // On network failure, try to use cached room types so the add-room
+        // button still works with a correct options list
         try {
-          const cached = JSON.parse(localStorage.getItem(CATEGORY_CACHE_KEY) || '[]');
-          if (cached.length > 0) categoryOptions = cached;
+          const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]');
+          if (cached.length > 0) roomTypeOptions = cached;
         } catch (e) {}
         renderRooms([]);
       }
@@ -373,32 +347,34 @@
       if (loadingScreen) loadingScreen.style.display = 'none';
       if (mainContent) mainContent.style.display = 'block';
 
-      if (alertData && alertData.nR) {
-        showAlertBanner(alertData);
+      if (reminderData && reminderData.needsReminder) {
+        showReminderBanner(reminderData);
       }
 
+      // restoreDraft is called last. It will only activate as a fallback
+      // when the server returned no rooms (e.g. new landlord or fetch error).
       restoreDraft(serverData);
     }
 
-    function showAlertBanner(alertData) {
+    function showReminderBanner(reminderData) {
       const banner = document.getElementById('reminderBanner');
       if (!banner) return;
 
       let html = '';
 
-      if (alertData.hE) {
+      if (reminderData.hasExpiredPromise) {
         html =
           '<div class="reminder-banner stale">' +
             '<h4>Is this room REALLY available?</h4>' +
-            '<p>You noted a tenant was moving out by <strong>' + escapeHtml(alertData.dP || 'a past date') + '</strong>. That date has passed.</p>' +
+            '<p>You noted a tenant was moving out by <strong>' + escapeHtml(reminderData.promisedDate || 'a past date') + '</strong>. That date has passed.</p>' +
             '<p style="margin-top:8px;"><strong>Remember:</strong> A room is only "available" when the tenant has <em>actually moved out</em> and you can show it to a new student <em>today</em>. A promise to leave is not the same as available.</p>' +
             '<p style="margin-top:8px;">Please update your spots only when the room is truly ready.</p>' +
           '</div>';
-      } else if (alertData.iS) {
+      } else if (reminderData.isStale) {
         html =
           '<div class="reminder-banner">' +
             '<h4>Your listing is getting stale</h4>' +
-            '<p>Last updated: <strong>' + escapeHtml(alertData.lU || 'unknown') + '</strong></p>' +
+            '<p>Last updated: <strong>' + escapeHtml(reminderData.lastUpdate || 'unknown') + '</strong></p>' +
             '<p style="margin-top:8px;">Students are searching right now. An outdated listing means missed bookings. Please update your availability.</p>' +
           '</div>';
       }
@@ -441,13 +417,13 @@
         item.attempts++;
 
         try {
-          const res = await fetch(API_URL, {
+          const res = await fetch(SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify(item.payload)
           });
           const result = await res.json();
 
-          if (result.s === 'Success') {
+          if (result.status === 'Success') {
             removeFromQueue(i);
             successCount++;
           } else if (item.attempts >= 3) {
@@ -480,8 +456,8 @@
     function buildReceipt(payload, cardMap) {
       const now = new Date();
       const dateStr = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-      const resName = payload.rN || 'Residence';
-      const ref = payload.t || 'N/A';
+      const resName = payload.residenceName || 'Residence';
+      const ref = payload.token || 'N/A';
 
       document.getElementById('receiptResName').innerHTML = '<strong>Residence:</strong> ' + escapeHtml(resName);
       document.getElementById('receiptDate').innerHTML = '<strong>Date:</strong> ' + dateStr;
@@ -493,13 +469,13 @@
       rooms.forEach(function(r) {
         const row = document.createElement('div');
         row.className = 'receipt-row';
-        row.innerHTML = '* <strong>' + escapeHtml(r.cT) + '</strong> -- R' + r.v + ' -- ' + r.c + ' spot' + (r.c !== 1 ? 's' : '');
+        row.innerHTML = '* <strong>' + escapeHtml(r.type) + '</strong> -- R' + r.price + ' -- ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : '');
         roomsDiv.appendChild(row);
       });
 
       const lines = ['Biofilmed Desire Receipt', 'Residence: ' + resName, 'Date: ' + dateStr, 'Ref: ' + ref, ''];
       rooms.forEach(function(r) {
-        lines.push('* ' + r.cT + ' -- R' + r.v + ' -- ' + r.c + ' spot' + (r.c !== 1 ? 's' : ''));
+        lines.push('* ' + r.type + ' -- R' + r.price + ' -- ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : ''));
       });
       lines.push('', 'Submitted via BD Portal');
       lastReceiptText = lines.join('\n');
@@ -547,32 +523,32 @@
 
       for (let i = 0; i < cards.length; i++) {
         const card = cards[i];
-        const cT = card.querySelector('.type-select').value;
-        const v = parseFloat(card.querySelector('.price-input').value) || 0;
-        const c = parseInt(card.querySelector('.spots-input').value, 10) || 0;
-        const rI = card.getAttribute('data-ref') || '';
-        const n = card.querySelector('.notes-input').value.trim();
+        const type = card.querySelector('.type-select').value;
+        const price = parseFloat(card.querySelector('.price-input').value) || 0;
+        const spots = parseInt(card.querySelector('.spots-input').value, 10) || 0;
+        const rowIndex = card.getAttribute('data-rowindex') || '';
+        const notes = card.querySelector('.notes-input').value.trim();
         const pictureFile = card.querySelector('.picture-input').files[0];
         const videoFile = card.querySelector('.video-input').files[0];
 
         const entry = {
-          [K.CATEGORY]: cT, [K.VALUE]: v, [K.COUNT]: c, [K.REF]: rI,
-          [K.NOTES]: n || '',
-          [K.IMAGE_BLOB]: null, [K.IMAGE_TYPE]: null, [K.IMAGE_NAME]: null,
-          [K.MEDIA_BLOB]: null, [K.MEDIA_TYPE]: null, [K.MEDIA_NAME]: null
+          type: type, price: price, spots: spots, rowIndex: rowIndex,
+          notes: notes || '',
+          pictureBase64: null, pictureMime: null, pictureName: null,
+          videoBase64: null, videoMime: null, videoName: null
         };
 
         if (pictureFile) {
           const picData = await readFileAsBase64(pictureFile);
-          entry[K.IMAGE_BLOB] = picData.blob;
-          entry[K.IMAGE_TYPE] = picData.mime;
-          entry[K.IMAGE_NAME] = picData.name;
+          entry.pictureBase64 = picData.base64;
+          entry.pictureMime = picData.mimeType;
+          entry.pictureName = picData.name;
         }
         if (videoFile) {
           const vidData = await readFileAsBase64(videoFile);
-          entry[K.MEDIA_BLOB] = vidData.blob;
-          entry[K.MEDIA_TYPE] = vidData.mime;
-          entry[K.MEDIA_NAME] = vidData.name;
+          entry.videoBase64 = vidData.base64;
+          entry.videoMime = vidData.mimeType;
+          entry.videoName = vidData.name;
         }
 
         cardEntries.push(entry);
@@ -580,23 +556,23 @@
 
       const cardMap = new Map();
       cardEntries.forEach(function(entry) {
-        const key = entry[K.CATEGORY] + '||' + entry[K.VALUE];
+        const key = entry.type + '||' + entry.price;
         if (cardMap.has(key)) {
           const existing = cardMap.get(key);
-          existing[K.COUNT] += entry[K.COUNT];
-          if (!existing[K.REF] && entry[K.REF]) existing[K.REF] = entry[K.REF];
-          if (entry[K.NOTES]) {
-            existing[K.NOTES] = existing[K.NOTES] ? existing[K.NOTES] + ' | ' + entry[K.NOTES] : entry[K.NOTES];
+          existing.spots += entry.spots;
+          if (!existing.rowIndex && entry.rowIndex) existing.rowIndex = entry.rowIndex;
+          if (entry.notes) {
+            existing.notes = existing.notes ? existing.notes + ' | ' + entry.notes : entry.notes;
           }
-          if (entry[K.IMAGE_BLOB]) {
-            existing[K.IMAGE_BLOB] = entry[K.IMAGE_BLOB];
-            existing[K.IMAGE_TYPE] = entry[K.IMAGE_TYPE];
-            existing[K.IMAGE_NAME] = entry[K.IMAGE_NAME];
+          if (entry.pictureBase64) {
+            existing.pictureBase64 = entry.pictureBase64;
+            existing.pictureMime = entry.pictureMime;
+            existing.pictureName = entry.pictureName;
           }
-          if (entry[K.MEDIA_BLOB]) {
-            existing[K.MEDIA_BLOB] = entry[K.MEDIA_BLOB];
-            existing[K.MEDIA_TYPE] = entry[K.MEDIA_TYPE];
-            existing[K.MEDIA_NAME] = entry[K.MEDIA_NAME];
+          if (entry.videoBase64) {
+            existing.videoBase64 = entry.videoBase64;
+            existing.videoMime = entry.videoMime;
+            existing.videoName = entry.videoName;
           }
         } else {
           cardMap.set(key, Object.assign({}, entry));
@@ -604,9 +580,9 @@
       });
 
       const payload = {
-        [K.TOKEN]: locationCode,
-        [K.RESIDENCE]: document.getElementById('residenceName').value,
-        [K.PAYLOAD]: JSON.stringify(Array.from(cardMap.values()))
+        token: locationCode,
+        residenceName: document.getElementById('residenceName').value,
+        dynamicRoomJSON: JSON.stringify(Array.from(cardMap.values()))
       };
 
       if (!navigator.onLine) {
@@ -620,9 +596,9 @@
       }
 
       try {
-        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await res.json();
-        if (result.s === 'Success') {
+        if (result.status === 'Success') {
           msg.className = 'whatsapp-success';
           msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp.';
           localStorage.removeItem(DRAFT_KEY);
@@ -631,7 +607,7 @@
           processQueue();
         } else {
           msg.className = 'text-danger';
-          msg.innerText = 'Error: ' + (result.e || result.s || 'Unknown error');
+          msg.innerText = 'Error: ' + (result.error || result.status || 'Unknown error');
         }
       } catch (err) {
         const queueLen = addToQueue(payload);
@@ -653,16 +629,18 @@
     function saveDraft(targetCard) {
       const cards = document.querySelectorAll('.room-card');
       const draft = {
-        rN: document.getElementById('residenceName').value,
+        residenceName: document.getElementById('residenceName').value,
         savedAt: Date.now(),
-        d: []
+        rooms: []
       };
 
       cards.forEach(function(card) {
-        draft.d.push({
-          cT: card.querySelector('.type-select').value,
-          v: card.querySelector('.price-input').value,
-          c: card.querySelector('.spots-input').value
+        draft.rooms.push({
+          type: card.querySelector('.type-select').value,
+          price: card.querySelector('.price-input').value,
+          spots: card.querySelector('.spots-input').value
+          // Notes, pictures, and videos are intentionally NOT saved to draft —
+          // these are always entered fresh on each visit
         });
       });
 
@@ -692,24 +670,30 @@
         return false;
       }
 
-      if (serverData && serverData.d && serverData.d.length > 0) {
+      // Server data is the authoritative source for room type, price, and spots.
+      // If the server returned rooms, do NOT replace them with draft data.
+      // This is the fix for the pre-fill feature being lost.
+      if (serverData && serverData.rooms && serverData.rooms.length > 0) {
         return false;
       }
 
-      if (draft.rN) {
-        document.getElementById('residenceName').value = draft.rN;
+      // No server rooms — restore draft as a fallback (e.g. new landlord,
+      // or a network error that prevented server data from loading)
+      if (draft.residenceName) {
+        document.getElementById('residenceName').value = draft.residenceName;
       }
 
-      if (draft.d && draft.d.length > 0) {
+      if (draft.rooms && draft.rooms.length > 0) {
         const container = document.getElementById('roomContainer');
         container.innerHTML = '';
-        draft.d.forEach(function(r) {
+        draft.rooms.forEach(function(r) {
           const card = createRoomCard({
-            cT: r.cT || '',
-            v: r.v || '',
-            c: r.c || 0,
-            rI: ''
+            type: r.type || '',
+            price: r.price || '',
+            spots: r.spots || 0,
+            rowIndex: ''
           });
+          // Notes, picture, and video inputs are intentionally left blank
           container.appendChild(card);
         });
 
