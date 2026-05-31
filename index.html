@@ -9,9 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="BD Portal">
   <title>BiofilmedDesire Residence Portal</title>
-
   <link id="manifest-link" rel="manifest" href="/manifest.json">
-
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
@@ -27,13 +25,7 @@
     .container { max-width: 500px; width: 100%; background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin: auto; border-top: 5px solid #0f172a; position: relative; }
     .top-right-logo { position: absolute; top: 15px; right: 15px; width: 55px; height: 55px; object-fit: cover; border-radius: 50%; border: 1px solid #e2e8f0; background-color: white; }
     h2 { font-family: 'Playfair Display', serif; font-weight: 600; text-align: left; margin-bottom: 30px; color: #0f172a; font-size: 1.4rem; padding-right: 65px; }
-    @media (max-width: 576px) {
-      body { padding: 20px 10px; }
-      .container { padding: 25px 15px; border-radius: 8px; }
-      .top-right-logo { width: 45px; height: 45px; top: 10px; right: 10px; }
-      h2 { font-size: 1.25rem; padding-right: 50px; margin-bottom: 20px; }
-      .room-card { padding: 15px; }
-    }
+    @media (max-width: 576px) { body { padding: 20px 10px; } .container { padding: 25px 15px; border-radius: 8px; } .top-right-logo { width: 45px; height: 45px; top: 10px; right: 10px; } h2 { font-size: 1.25rem; padding-right: 50px; margin-bottom: 20px; } .room-card { padding: 15px; } }
     .form-label { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; display: block; }
     .room-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; position: relative; }
     .btn-remove { position: absolute; top: 10px; right: 10px; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px; padding: 2px 8px; font-weight: bold; font-size: 0.8rem; min-width: 28px; min-height: 28px; cursor: pointer; }
@@ -47,21 +39,18 @@
     .text-danger { color: #dc2626; font-size: 0.9rem; margin-top: 15px; text-align: center; }
     input, select, textarea { font-size: 16px !important; min-height: 44px; width: 100%; }
     input[type="number"] { -moz-appearance: textfield; }
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
     #loadingScreen img { width: 120px; height: 120px; border-radius: 24px; object-fit: cover; border: 2px solid rgba(255,255,255,0.1); }
     #loadingScreen p { color: #94a3b8; font-family: sans-serif; margin-top: 16px; font-size: 14px; letter-spacing: 0.5px; }
     #statusMsg { margin-top: 20px; text-align: center; font-weight: 600; padding: 12px; border-radius: 6px; }
     #iosInstallHint { display: none; text-align: center; padding: 20px; background: #f1f5f9; border-radius: 8px; margin-bottom: 20px; }
     #iosInstallHint p { margin: 0; font-size: 0.85rem; color: #475569; }
-    #iosInstallHint .share-icon { font-size: 1.2rem; }
     .media-section { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
     .media-label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 6px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
     .file-input-sm { font-size: 14px !important; min-height: 38px; }
     .notes-textarea { min-height: 60px; resize: vertical; }
     .receipt-toggle { color: #0f172a; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; }
-    .receipt-toggle:hover { color: #334155; }
     .receipt-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-top: 10px; text-align: left; display: none; }
     .receipt-card.show { display: block; animation: fadeIn 0.2s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
@@ -69,8 +58,6 @@
     .receipt-row strong { color: #0f172a; }
     .receipt-divider { border-top: 1px dashed #e2e8f0; margin: 10px 0; }
     .receipt-copy { background: #0f172a; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; }
-    .receipt-copy:hover { background: #1e293b; }
-    .receipt-copy:active { transform: scale(0.98); }
     .draft-saved { font-size: 0.7rem; color: #10b981; text-align: right; margin-top: 4px; opacity: 0; transition: opacity 0.3s; }
     .draft-saved.show { opacity: 1; }
     .draft-indicator { font-size: 0.7rem; color: #94a3b8; text-align: center; margin-bottom: 15px; }
@@ -80,31 +67,23 @@
     .reminder-banner.stale h4 { color: #991b1b; }
     .reminder-banner p { font-size: 0.85rem; color: #78350f; margin: 0; line-height: 1.5; }
     .reminder-banner.stale p { color: #7f1d1d; }
-    .reminder-banner .portal-link { display: inline-block; margin-top: 10px; background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; }
-    .reminder-banner .portal-link:hover { background: #1e293b; }
     .price-spots-row { display: flex; gap: 12px; flex-wrap: nowrap; }
     .price-spots-row > div { flex: 1 1 0; min-width: 0; }
-    @media (max-width: 360px) {
-      .price-spots-row { flex-direction: column; gap: 0; }
-    }
+    @media (max-width: 360px) { .price-spots-row { flex-direction: column; gap: 0; } }
   </style>
 </head>
 <body>
-
   <div id="loadingScreen">
     <img src="rsz_logo.jpg" alt="Biofilmed Desire">
     <p>Loading portal...</p>
   </div>
-
   <div class="container" id="mainContent" style="display:none;">
     <img src="rsz_logo.jpg" alt="Desire Logo" class="top-right-logo" onerror="this.style.display='none'">
     <h2>BiofilmedDesire Residence Portal</h2>
-
     <div id="iosInstallHint">
-      <p><span class="share-icon">&#128241;</span> <strong>For best experience:</strong> Tap the <strong>Share</strong> button below, then <strong>"Add to Home Screen"</strong>. This keeps you logged in every time.</p>
+      <p><strong>For best experience:</strong> Tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong>.</p>
     </div>
     <div id="reminderBanner" style="display:none;"></div>
-
     <form id="updateForm">
       <div class="mb-4">
         <label class="form-label">Name of Residence</label>
@@ -130,60 +109,35 @@
   </div>
 
   <script>
-    // All API traffic routes exclusively through the secure proxy endpoint.
-    // No backend service details are referenced anywhere in this file.
-    const SCRIPT_URL = "https://api.biofilmeddesire.com";
+    // ORIGINAL — PRIVATE REFERENCE VERSION (clear field names)
+    const SCRIPT_URL = "https://api.biofilmeddesire.com/v1/sync";
     const QUEUE_KEY = 'bd_offline_queue';
     const DRAFT_KEY = 'bd_portal_draft_v3';
-    // Room types are fetched from the server at runtime and cached locally.
-    // They are NOT hardcoded here so competitors inspecting source see nothing.
     const ROOM_TYPES_CACHE_KEY = 'bd_room_types';
-    let roomTypeOptions = []; // populated in loadData() from server response
+    const PORTAL_ID_KEY = 'bd_portal_id';
+    let roomTypeOptions = [];
 
     const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
     const urlParams = new URLSearchParams(window.location.search);
-
-    let locationCode = hashParams.get('id') || hashParams.get('code') ||
-                       urlParams.get('id') || urlParams.get('code') || '';
-
-    if (!locationCode) {
-      locationCode = localStorage.getItem('bd_portal_id') || '';
-    }
-    if (!locationCode) {
-      locationCode = sessionStorage.getItem('bd_portal_id') || '';
-    }
+    let locationCode = hashParams.get('id') || hashParams.get('code') || urlParams.get('id') || urlParams.get('code') || '';
+    if (!locationCode) locationCode = localStorage.getItem(PORTAL_ID_KEY) || '';
+    if (!locationCode) locationCode = sessionStorage.getItem(PORTAL_ID_KEY) || '';
 
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.navigator.standalone === true;
 
     if (locationCode) {
-      localStorage.setItem('bd_portal_id', locationCode);
-      sessionStorage.setItem('bd_portal_id', locationCode);
+      localStorage.setItem(PORTAL_ID_KEY, locationCode);
+      sessionStorage.setItem(PORTAL_ID_KEY, locationCode);
     }
 
     function generateDynamicManifest() {
       if (!locationCode) return;
-      const baseManifest = {
-        name: "Biofilmed Desire Portal",
-        short_name: "BD Portal",
-        start_url: "/#id=" + encodeURIComponent(locationCode),
-        display: "standalone",
-        background_color: "#0f172a",
-        theme_color: "#0f172a",
-        scope: "/",
-        icons: [
-          { src: "icon-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
-          { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" }
-        ],
-        orientation: "portrait"
-      };
-      const blob = new Blob([JSON.stringify(baseManifest)], { type: 'application/json' });
-      const manifestURL = URL.createObjectURL(blob);
-      const manifestLink = document.getElementById('manifest-link');
-      if (manifestLink) manifestLink.href = manifestURL;
-      console.log('[BD Portal] Manifest start_url:', baseManifest.start_url);
+      const manifest = { name:"Biofilmed Desire Portal", short_name:"BD Portal", start_url:"/#id="+encodeURIComponent(locationCode), display:"standalone", background_color:"#0f172a", theme_color:"#0f172a", scope:"/", icons:[{src:"icon-192.png",sizes:"192x192",type:"image/png",purpose:"any maskable"},{src:"icon-512.png",sizes:"512x512",type:"image/png",purpose:"any maskable"}], orientation:"portrait" };
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+      const link = document.getElementById('manifest-link');
+      if (link) link.href = URL.createObjectURL(blob);
     }
-
     if (locationCode) generateDynamicManifest();
 
     if (isIOS && !isStandalone && locationCode) {
@@ -193,29 +147,23 @@
 
     if (isStandalone && !locationCode) {
       setTimeout(function() {
-        locationCode = localStorage.getItem('bd_portal_id') || sessionStorage.getItem('bd_portal_id') || '';
+        locationCode = localStorage.getItem(PORTAL_ID_KEY) || sessionStorage.getItem(PORTAL_ID_KEY) || '';
         if (!locationCode) {
           document.getElementById('loadingScreen').innerHTML =
             '<div style="color:#fff;text-align:center;padding:40px;font-family:sans-serif;max-width:320px;">' +
             '<img src="rsz_logo.jpg" style="width:80px;height:80px;border-radius:16px;margin-bottom:20px;">' +
             '<p style="font-size:18px;margin-bottom:16px;font-weight:600;">Re-open from WhatsApp</p>' +
-            '<p style="color:#94a3b8;margin-bottom:24px;line-height:1.5;">Please go back to your WhatsApp chat and tap the Biofilmed Desire link again. Then add to Home Screen while on that page.</p>' +
+            '<p style="color:#94a3b8;margin-bottom:24px;line-height:1.5;">Please go back to WhatsApp and tap the link again, then add to Home Screen.</p>' +
             '<button onclick="window.location.href=\'https://wa.me/\'" style="background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;">Open WhatsApp</button>' +
             '</div>';
-        } else {
-          loadData();
-        }
+        } else { loadData(); }
       }, 500);
     }
 
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.innerText = text;
-      return div.innerHTML;
-    }
+    function escapeHtml(text) { const div = document.createElement('div'); div.innerText = text; return div.innerHTML; }
 
     function createRoomCard(room) {
-      room = room || { type: '', price: '', spots: 0, rowIndex: '' };
+      room = room || { rowIndex: '', type: '', price: '', spots: 0 };
       const div = document.createElement('div');
       div.className = 'room-card';
       div.setAttribute('data-rowindex', room.rowIndex || '');
@@ -224,37 +172,20 @@
       }).join('');
       div.innerHTML =
         '<button type="button" class="btn-remove">X</button>' +
-        '<div class="mb-3">' +
-          '<label class="form-label">Room Type</label>' +
-          '<select class="form-select type-select" required>' +
-            '<option value="" disabled' + (!room.type ? ' selected' : '') + '>Select Room Type...</option>' +
-            optionsHtml +
-          '</select>' +
-        '</div>' +
+        '<div class="mb-3"><label class="form-label">Room Type</label>' +
+        '<select class="form-select type-select" required>' +
+        '<option value="" disabled' + (!room.type ? ' selected' : '') + '>Select Room Type...</option>' +
+        optionsHtml + '</select></div>' +
         '<div class="price-spots-row">' +
-          '<div>' +
-            '<label class="form-label">Monthly Price (R)</label>' +
-            '<input type="number" class="form-control price-input" value="' + (room.price || '') + '" min="0" required>' +
-          '</div>' +
-          '<div>' +
-            '<label class="form-label">Spots Available</label>' +
-            '<input type="number" class="form-control spots-input" value="' + (room.spots || 0) + '" min="0" required>' +
-          '</div>' +
+        '<div><label class="form-label">Monthly Price (R)</label><input type="number" class="form-control price-input" value="' + (room.price || '') + '" min="0" required></div>' +
+        '<div><label class="form-label">Spots Available</label><input type="number" class="form-control spots-input" value="' + (room.spots || 0) + '" min="0" required></div>' +
         '</div>' +
         '<div class="media-section">' +
-          '<label class="media-label">📎 Notes & Media for this Room Type</label>' +
-          '<div class="mb-2">' +
-            '<textarea class="form-control notes-input notes-textarea" rows="2" placeholder="Update pricing or conditions for this room type..."></textarea>' +
-          '</div>' +
-          '<div class="draft-saved">Draft saved</div>' +
-          '<div class="mb-2">' +
-            '<label class="media-label">📸 Picture</label>' +
-            '<input type="file" class="form-control file-input-sm picture-input" accept="image/*">' +
-          '</div>' +
-          '<div class="mb-1">' +
-            '<label class="media-label">🎥 Video</label>' +
-            '<input type="file" class="form-control file-input-sm video-input" accept="video/*">' +
-          '</div>' +
+        '<label class="media-label">Notes & Media for this Room Type</label>' +
+        '<div class="mb-2"><textarea class="form-control notes-input notes-textarea" rows="2" placeholder="Update pricing or conditions..."></textarea></div>' +
+        '<div class="draft-saved">Draft saved</div>' +
+        '<div class="mb-2"><label class="media-label">Picture</label><input type="file" class="form-control file-input-sm picture-input" accept="image/*"></div>' +
+        '<div class="mb-1"><label class="media-label">Video</label><input type="file" class="form-control file-input-sm video-input" accept="video/*"></div>' +
         '</div>';
       div.querySelector('.btn-remove').addEventListener('click', function() {
         if (document.querySelectorAll('.room-card').length > 1) div.remove();
@@ -267,12 +198,14 @@
       const container = document.getElementById('roomContainer');
       container.innerHTML = '';
       if (!rooms || rooms.length === 0) { container.appendChild(createRoomCard()); }
-      else { rooms.forEach(function(r) { container.appendChild(createRoomCard(r)); }); }
+      else {
+        rooms.forEach(function(r) {
+          container.appendChild(createRoomCard({ rowIndex: r.rowIndex || '', type: r.type || '', price: r.price || '', spots: r.spots || 0 }));
+        });
+      }
     }
 
-    document.getElementById('addRoomBtn').addEventListener('click', function() {
-      document.getElementById('roomContainer').appendChild(createRoomCard());
-    });
+    document.getElementById('addRoomBtn').addEventListener('click', function() { document.getElementById('roomContainer').appendChild(createRoomCard()); });
 
     function readFileAsBase64(file) {
       return new Promise(function(resolve) {
@@ -284,247 +217,120 @@
 
     async function loadData() {
       if (!locationCode) {
-        if (!isStandalone) {
-          document.getElementById('loadingScreen').innerHTML =
-            '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;"><strong>Error:</strong> No residence ID found.<br><br>Please open this portal using the link provided by Biofilmed Desire.</p>';
-        }
+        if (!isStandalone) document.getElementById('loadingScreen').innerHTML = '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;"><strong>Error:</strong> No residence ID found.<br><br>Please open this portal using the link provided by Biofilmed Desire.</p>';
         return;
       }
-
-      let reminderData = null;
-      let serverData = null;
-
+      let reminderData = null; let serverData = null;
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(function() { controller.abort(); }, 10000);
-
         const [dataRes, reminderRes] = await Promise.all([
-          fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'getLandlordData', token: locationCode }),
-            signal: controller.signal
-          }),
-          fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'checkReminder', token: locationCode }),
-            signal: controller.signal
-          }).catch(function() { return null; })
+          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'getLandlordData', token: locationCode }), signal: controller.signal }),
+          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'checkReminder', token: locationCode }), signal: controller.signal }).catch(function() { return null; })
         ]);
         clearTimeout(timeoutId);
-
         serverData = await dataRes.json();
-
-        // Populate room types from server response and cache them locally.
-        // This keeps the room type list out of the page source entirely.
         if (serverData.roomTypeOptions && serverData.roomTypeOptions.length > 0) {
           roomTypeOptions = serverData.roomTypeOptions;
           try { localStorage.setItem(ROOM_TYPES_CACHE_KEY, JSON.stringify(roomTypeOptions)); } catch (e) {}
         } else {
-          // Fall back to locally cached types from a previous successful load
-          try {
-            const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]');
-            if (cached.length > 0) roomTypeOptions = cached;
-          } catch (e) {}
+          try { const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]'); if (cached.length > 0) roomTypeOptions = cached; } catch (e) {}
         }
-
         document.getElementById('residenceName').value = serverData.residenceName || '';
-        // Render server data — this pre-fills room type, price, and spots.
-        // Notes and media inputs are always left blank for fresh entry.
         renderRooms(serverData.rooms || []);
-
-        if (reminderRes) {
-          reminderData = await reminderRes.json();
-        }
+        if (reminderRes) reminderData = await reminderRes.json();
       } catch (err) {
-        console.error('[BD Portal] loadData error:', err);
-        // On network failure, try to use cached room types so the add-room
-        // button still works with a correct options list
-        try {
-          const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]');
-          if (cached.length > 0) roomTypeOptions = cached;
-        } catch (e) {}
+        try { const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]'); if (cached.length > 0) roomTypeOptions = cached; } catch (e) {}
         renderRooms([]);
       }
-
-      const loadingScreen = document.getElementById('loadingScreen');
-      const mainContent = document.getElementById('mainContent');
-      if (loadingScreen) loadingScreen.style.display = 'none';
-      if (mainContent) mainContent.style.display = 'block';
-
-      if (reminderData && reminderData.needsReminder) {
-        showReminderBanner(reminderData);
-      }
-
-      // restoreDraft is called last. It will only activate as a fallback
-      // when the server returned no rooms (e.g. new landlord or fetch error).
+      const ls = document.getElementById('loadingScreen'); const mc = document.getElementById('mainContent');
+      if (ls) ls.style.display = 'none'; if (mc) mc.style.display = 'block';
+      if (reminderData && reminderData.needsReminder) showReminderBanner(reminderData);
       restoreDraft(serverData);
     }
 
-    function showReminderBanner(reminderData) {
-      const banner = document.getElementById('reminderBanner');
-      if (!banner) return;
-
+    function showReminderBanner(d) {
+      const banner = document.getElementById('reminderBanner'); if (!banner) return;
       let html = '';
-
-      if (reminderData.hasExpiredPromise) {
-        html =
-          '<div class="reminder-banner stale">' +
-            '<h4>Is this room REALLY available?</h4>' +
-            '<p>You noted a tenant was moving out by <strong>' + escapeHtml(reminderData.promisedDate || 'a past date') + '</strong>. That date has passed.</p>' +
-            '<p style="margin-top:8px;"><strong>Remember:</strong> A room is only "available" when the tenant has <em>actually moved out</em> and you can show it to a new student <em>today</em>. A promise to leave is not the same as available.</p>' +
-            '<p style="margin-top:8px;">Please update your spots only when the room is truly ready.</p>' +
-          '</div>';
-      } else if (reminderData.isStale) {
-        html =
-          '<div class="reminder-banner">' +
-            '<h4>Your listing is getting stale</h4>' +
-            '<p>Last updated: <strong>' + escapeHtml(reminderData.lastUpdate || 'unknown') + '</strong></p>' +
-            '<p style="margin-top:8px;">Students are searching right now. An outdated listing means missed bookings. Please update your availability.</p>' +
-          '</div>';
+      if (d.hasExpiredPromise) {
+        html = '<div class="reminder-banner stale"><h4>Is this room REALLY available?</h4><p>You noted a tenant was moving out by <strong>' + escapeHtml(d.promisedDate || 'a past date') + '</strong>. That date has passed.</p><p style="margin-top:8px;"><strong>Remember:</strong> A room is only "available" when the tenant has <em>actually moved out</em>.</p><p style="margin-top:8px;">Please update your spots only when the room is truly ready.</p></div>';
+      } else if (d.isStale) {
+        html = '<div class="reminder-banner"><h4>Your listing is getting stale</h4><p>Last updated: <strong>' + escapeHtml(d.lastUpdate || 'unknown') + '</strong></p><p style="margin-top:8px;">Students are searching right now. Please update your availability.</p></div>';
       }
-
-      banner.innerHTML = html;
-      banner.style.display = 'block';
+      banner.innerHTML = html; banner.style.display = 'block';
     }
 
-    function getQueue() {
-      try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }
-      catch (e) { return []; }
-    }
-
-    function saveQueue(queue) {
-      localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
-    }
-
-    function addToQueue(payload) {
-      const queue = getQueue();
-      queue.push({ payload: payload, timestamp: Date.now(), attempts: 0 });
-      saveQueue(queue);
-      return queue.length;
-    }
-
-    function removeFromQueue(index) {
-      const queue = getQueue();
-      queue.splice(index, 1);
-      saveQueue(queue);
-    }
+    function getQueue() { try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch (e) { return []; } }
+    function saveQueue(q) { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
+    function addToQueue(payload) { const q = getQueue(); q.push({ payload, timestamp: Date.now(), attempts: 0 }); saveQueue(q); return q.length; }
+    function removeFromQueue(i) { const q = getQueue(); q.splice(i, 1); saveQueue(q); }
 
     async function processQueue() {
-      const queue = getQueue();
-      if (queue.length === 0) return;
-
-      const msg = document.getElementById('statusMsg');
-      let successCount = 0;
-
-      for (let i = queue.length - 1; i >= 0; i--) {
-        const item = queue[i];
-        item.attempts++;
-
+      const q = getQueue(); if (q.length === 0) return;
+      const msg = document.getElementById('statusMsg'); let sc = 0;
+      for (let i = q.length - 1; i >= 0; i--) {
+        const item = q[i]; item.attempts++;
         try {
-          const res = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify(item.payload)
-          });
+          const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(item.payload) });
           const result = await res.json();
-
-          if (result.status === 'Success') {
-            removeFromQueue(i);
-            successCount++;
-          } else if (item.attempts >= 3) {
-            removeFromQueue(i);
-          }
-        } catch (err) {
-          if (item.attempts >= 3) {
-            removeFromQueue(i);
-          }
-        }
+          if (result.status === 'Success') { removeFromQueue(i); sc++; }
+          else if (item.attempts >= 3) removeFromQueue(i);
+        } catch (err) { if (item.attempts >= 3) removeFromQueue(i); }
       }
-
-      if (successCount > 0) {
-        msg.className = 'whatsapp-success';
-        msg.innerText = successCount + ' queued submission(s) sent successfully!';
-        msg.style.display = 'block';
-      }
+      if (sc > 0) { msg.className = 'whatsapp-success'; msg.innerText = sc + ' queued submission(s) sent successfully!'; msg.style.display = 'block'; }
     }
 
-    window.addEventListener('online', function() {
-      processQueue();
-    });
-
-    if (navigator.onLine) {
-      setTimeout(processQueue, 2000);
-    }
+    window.addEventListener('online', function() { processQueue(); });
+    if (navigator.onLine) setTimeout(processQueue, 2000);
 
     let lastReceiptText = '';
-
     function buildReceipt(payload, cardMap) {
       const now = new Date();
-      const dateStr = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-      const resName = payload.residenceName || 'Residence';
-      const ref = payload.token || 'N/A';
-
+      const dateStr = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+      const resName = payload.residenceName || 'Residence'; const ref = payload.token || 'N/A';
       document.getElementById('receiptResName').innerHTML = '<strong>Residence:</strong> ' + escapeHtml(resName);
       document.getElementById('receiptDate').innerHTML = '<strong>Date:</strong> ' + dateStr;
       document.getElementById('receiptRef').innerHTML = '<strong>Ref:</strong> ' + escapeHtml(ref);
-
-      const roomsDiv = document.getElementById('receiptRooms');
-      roomsDiv.innerHTML = '';
+      const roomsDiv = document.getElementById('receiptRooms'); roomsDiv.innerHTML = '';
       const rooms = Array.from(cardMap.values());
-      rooms.forEach(function(r) {
-        const row = document.createElement('div');
-        row.className = 'receipt-row';
-        row.innerHTML = '* <strong>' + escapeHtml(r.type) + '</strong> -- R' + r.price + ' -- ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : '');
-        roomsDiv.appendChild(row);
-      });
-
       const lines = ['Biofilmed Desire Receipt', 'Residence: ' + resName, 'Date: ' + dateStr, 'Ref: ' + ref, ''];
       rooms.forEach(function(r) {
+        const row = document.createElement('div'); row.className = 'receipt-row';
+        row.innerHTML = '* <strong>' + escapeHtml(r.type) + '</strong> -- R' + r.price + ' -- ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : '');
+        roomsDiv.appendChild(row);
         lines.push('* ' + r.type + ' -- R' + r.price + ' -- ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : ''));
       });
       lines.push('', 'Submitted via BD Portal');
       lastReceiptText = lines.join('\n');
-
       document.getElementById('receiptSection').style.display = 'block';
       document.getElementById('receiptCard').classList.remove('show');
       document.getElementById('receiptArrow').innerText = 'v';
     }
 
     document.getElementById('receiptToggle').addEventListener('click', function() {
-      const card = document.getElementById('receiptCard');
-      const arrow = document.getElementById('receiptArrow');
-      if (card.classList.contains('show')) {
-        card.classList.remove('show');
-        arrow.innerText = 'v';
-      } else {
-        card.classList.add('show');
-        arrow.innerText = '^';
-      }
+      const card = document.getElementById('receiptCard'); const arrow = document.getElementById('receiptArrow');
+      if (card.classList.contains('show')) { card.classList.remove('show'); arrow.innerText = 'v'; }
+      else { card.classList.add('show'); arrow.innerText = '^'; }
     });
 
     document.getElementById('receiptCopy').addEventListener('click', function() {
       if (navigator.clipboard && lastReceiptText) {
         navigator.clipboard.writeText(lastReceiptText).then(function() {
-          const btn = document.getElementById('receiptCopy');
-          const oldText = btn.innerText;
-          btn.innerText = 'Copied!';
-          setTimeout(function() { btn.innerText = oldText; }, 2000);
+          const btn = document.getElementById('receiptCopy'); const old = btn.innerText;
+          btn.innerText = 'Copied!'; setTimeout(function() { btn.innerText = old; }, 2000);
         });
       }
     });
 
-    document.getElementById('submitBtn').addEventListener('click', async function () {
+    document.getElementById('submitBtn').addEventListener('click', async function() {
       const btn = document.getElementById('submitBtn');
       if (btn.dataset.submitting === "true") return;
       const msg = document.getElementById('statusMsg');
-      btn.dataset.submitting = "true";
-      btn.disabled = true;
-      btn.innerText = 'Authorizing...';
-      msg.className = '';
-      msg.innerText = 'Please wait...';
+      btn.dataset.submitting = "true"; btn.disabled = true; btn.innerText = 'Authorizing...';
+      msg.className = ''; msg.innerText = 'Please wait...';
 
       const cardEntries = [];
       const cards = document.querySelectorAll('.room-card');
-
       for (let i = 0; i < cards.length; i++) {
         const card = cards[i];
         const type = card.querySelector('.type-select').value;
@@ -534,193 +340,87 @@
         const notes = card.querySelector('.notes-input').value.trim();
         const pictureFile = card.querySelector('.picture-input').files[0];
         const videoFile = card.querySelector('.video-input').files[0];
-
-        const entry = {
-          type: type, price: price, spots: spots, rowIndex: rowIndex,
-          notes: notes || '',
-          pictureBase64: null, pictureMime: null, pictureName: null,
-          videoBase64: null, videoMime: null, videoName: null
-        };
-
-        if (pictureFile) {
-          const picData = await readFileAsBase64(pictureFile);
-          entry.pictureBase64 = picData.base64;
-          entry.pictureMime = picData.mimeType;
-          entry.pictureName = picData.name;
-        }
-        if (videoFile) {
-          const vidData = await readFileAsBase64(videoFile);
-          entry.videoBase64 = vidData.base64;
-          entry.videoMime = vidData.mimeType;
-          entry.videoName = vidData.name;
-        }
-
+        const entry = { type, price, spots, rowIndex, notes: notes || '', pictureBase64: null, pictureMime: null, pictureName: null, videoBase64: null, videoMime: null, videoName: null };
+        if (pictureFile) { const pd = await readFileAsBase64(pictureFile); entry.pictureBase64 = pd.base64; entry.pictureMime = pd.mimeType; entry.pictureName = pd.name; }
+        if (videoFile) { const vd = await readFileAsBase64(videoFile); entry.videoBase64 = vd.base64; entry.videoMime = vd.mimeType; entry.videoName = vd.name; }
         cardEntries.push(entry);
       }
-
       const cardMap = new Map();
       cardEntries.forEach(function(entry) {
         const key = entry.type + '||' + entry.price;
         if (cardMap.has(key)) {
-          const existing = cardMap.get(key);
-          existing.spots += entry.spots;
-          if (!existing.rowIndex && entry.rowIndex) existing.rowIndex = entry.rowIndex;
-          if (entry.notes) {
-            existing.notes = existing.notes ? existing.notes + ' | ' + entry.notes : entry.notes;
-          }
-          if (entry.pictureBase64) {
-            existing.pictureBase64 = entry.pictureBase64;
-            existing.pictureMime = entry.pictureMime;
-            existing.pictureName = entry.pictureName;
-          }
-          if (entry.videoBase64) {
-            existing.videoBase64 = entry.videoBase64;
-            existing.videoMime = entry.videoMime;
-            existing.videoName = entry.videoName;
-          }
-        } else {
-          cardMap.set(key, Object.assign({}, entry));
-        }
+          const ex = cardMap.get(key);
+          ex.spots += entry.spots;
+          if (!ex.rowIndex && entry.rowIndex) ex.rowIndex = entry.rowIndex;
+          if (entry.notes) ex.notes = ex.notes ? ex.notes + ' | ' + entry.notes : entry.notes;
+          if (entry.pictureBase64) { ex.pictureBase64 = entry.pictureBase64; ex.pictureMime = entry.pictureMime; ex.pictureName = entry.pictureName; }
+          if (entry.videoBase64) { ex.videoBase64 = entry.videoBase64; ex.videoMime = entry.videoMime; ex.videoName = entry.videoName; }
+        } else { cardMap.set(key, Object.assign({}, entry)); }
       });
 
       const payload = {
+        action: 'updateData',
         token: locationCode,
         residenceName: document.getElementById('residenceName').value,
         dynamicRoomJSON: JSON.stringify(Array.from(cardMap.values()))
       };
 
       if (!navigator.onLine) {
-        const queueLen = addToQueue(payload);
-        msg.className = 'whatsapp-success';
-        msg.innerHTML = 'No signal. Your update is saved and will auto-send when connection returns. (' + queueLen + ' in queue)';
-        btn.disabled = false;
-        btn.innerText = 'Submit Data';
-        btn.dataset.submitting = "false";
-        return;
+        const ql = addToQueue(payload);
+        msg.className = 'whatsapp-success'; msg.innerHTML = 'No signal. Your update is saved and will auto-send when connection returns. (' + ql + ' in queue)';
+        btn.disabled = false; btn.innerText = 'Submit Data'; btn.dataset.submitting = "false"; return;
       }
-
       try {
         const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await res.json();
         if (result.status === 'Success') {
-          msg.className = 'whatsapp-success';
-          msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp.';
-          localStorage.removeItem(DRAFT_KEY);
-          document.getElementById('draftIndicator').innerText = '';
-          buildReceipt(payload, cardMap);
-          processQueue();
-        } else {
-          msg.className = 'text-danger';
-          msg.innerText = 'Error: ' + (result.error || result.status || 'Unknown error');
-        }
+          msg.className = 'whatsapp-success'; msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp.';
+          localStorage.removeItem(DRAFT_KEY); document.getElementById('draftIndicator').innerText = '';
+          buildReceipt(payload, cardMap); processQueue();
+        } else { msg.className = 'text-danger'; msg.innerText = 'Error: ' + (result.error || result.status || 'Unknown error'); }
       } catch (err) {
-        const queueLen = addToQueue(payload);
-        msg.className = 'whatsapp-success';
-        msg.innerHTML = 'Connection failed. Your update is saved and will auto-send when signal returns. (' + queueLen + ' in queue)';
+        const ql = addToQueue(payload);
+        msg.className = 'whatsapp-success'; msg.innerHTML = 'Connection failed. Your update is saved and will auto-send when signal returns. (' + ql + ' in queue)';
       }
-      btn.disabled = false;
-      btn.innerText = 'Submit Data';
-      btn.dataset.submitting = "false";
+      btn.disabled = false; btn.innerText = 'Submit Data'; btn.dataset.submitting = "false";
     });
 
     let draftDebounceTimer = null;
-
-    function getDraft() {
-      try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); }
-      catch (e) { return null; }
-    }
+    function getDraft() { try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { return null; } }
 
     function saveDraft(targetCard) {
       const cards = document.querySelectorAll('.room-card');
-      const draft = {
-        residenceName: document.getElementById('residenceName').value,
-        savedAt: Date.now(),
-        rooms: []
-      };
-
-      cards.forEach(function(card) {
-        draft.rooms.push({
-          type: card.querySelector('.type-select').value,
-          price: card.querySelector('.price-input').value,
-          spots: card.querySelector('.spots-input').value
-          // Notes, pictures, and videos are intentionally NOT saved to draft —
-          // these are always entered fresh on each visit
-        });
-      });
-
+      const draft = { residenceName: document.getElementById('residenceName').value, savedAt: Date.now(), rooms: [] };
+      cards.forEach(function(card) { draft.rooms.push({ type: card.querySelector('.type-select').value, price: card.querySelector('.price-input').value, spots: card.querySelector('.spots-input').value }); });
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-
-      if (targetCard) {
-        const draftEl = targetCard.querySelector('.draft-saved');
-        if (draftEl) {
-          draftEl.classList.add('show');
-          setTimeout(function() { draftEl.classList.remove('show'); }, 1500);
-        }
-      }
-
-      const indicator = document.getElementById('draftIndicator');
-      if (indicator) {
-        indicator.innerText = 'Auto-saved ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-      }
+      if (targetCard) { const el = targetCard.querySelector('.draft-saved'); if (el) { el.classList.add('show'); setTimeout(function() { el.classList.remove('show'); }, 1500); } }
+      const ind = document.getElementById('draftIndicator'); if (ind) ind.innerText = 'Auto-saved ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
     }
 
     function restoreDraft(serverData) {
-      const draft = getDraft();
-      if (!draft) return false;
-
-      const ageDays = (Date.now() - (draft.savedAt || 0)) / (1000 * 60 * 60 * 24);
-      if (ageDays > 7) {
-        localStorage.removeItem(DRAFT_KEY);
-        return false;
-      }
-
-      // Server data is the authoritative source for room type, price, and spots.
-      // If the server returned rooms, do NOT replace them with draft data.
-      if (serverData && serverData.rooms && serverData.rooms.length > 0) {
-        return false;
-      }
-
-      // No server rooms — restore draft as a fallback
-      if (draft.residenceName) {
-        document.getElementById('residenceName').value = draft.residenceName;
-      }
-
+      const draft = getDraft(); if (!draft) return false;
+      if ((Date.now() - (draft.savedAt || 0)) / (1000 * 60 * 60 * 24) > 7) { localStorage.removeItem(DRAFT_KEY); return false; }
+      if (serverData && serverData.rooms && serverData.rooms.length > 0) return false;
+      if (draft.residenceName) document.getElementById('residenceName').value = draft.residenceName;
       if (draft.rooms && draft.rooms.length > 0) {
-        const container = document.getElementById('roomContainer');
-        container.innerHTML = '';
-        draft.rooms.forEach(function(r) {
-          const card = createRoomCard({
-            type: r.type || '',
-            price: r.price || '',
-            spots: r.spots || 0,
-            rowIndex: ''
-          });
-          container.appendChild(card);
-        });
-
-        const indicator = document.getElementById('draftIndicator');
-        if (indicator) indicator.innerText = 'Draft restored (last saved state)';
+        const container = document.getElementById('roomContainer'); container.innerHTML = '';
+        draft.rooms.forEach(function(r) { container.appendChild(createRoomCard({ rowIndex: '', type: r.type || '', price: r.price || '', spots: r.spots || 0 })); });
+        const ind = document.getElementById('draftIndicator'); if (ind) ind.innerText = 'Draft restored (last saved state)';
         return true;
       }
-
       return false;
     }
 
     function debouncedSave(e) {
       if (draftDebounceTimer) clearTimeout(draftDebounceTimer);
-      const targetCard = e && e.target ? e.target.closest('.room-card') : null;
-      draftDebounceTimer = setTimeout(function() { saveDraft(targetCard); }, 800);
+      const tc = e && e.target ? e.target.closest('.room-card') : null;
+      draftDebounceTimer = setTimeout(function() { saveDraft(tc); }, 800);
     }
 
     const updateForm = document.getElementById('updateForm');
-    if (updateForm) {
-      updateForm.addEventListener('input', debouncedSave);
-      updateForm.addEventListener('change', debouncedSave);
-    }
+    if (updateForm) { updateForm.addEventListener('input', debouncedSave); updateForm.addEventListener('change', debouncedSave); }
 
-    if (!isStandalone || locationCode) {
-      loadData();
-    }
+    if (!isStandalone || locationCode) { loadData(); }
   </script>
 </body>
 </html>
