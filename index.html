@@ -65,12 +65,12 @@
     .reminder-banner.stale { background: #fee2e2; border-color: #ef4444; }
     .reminder-banner h4 { font-size: 0.95rem; font-weight: 600; color: #92400e; margin-bottom: 8px; }
     .reminder-banner.stale h4 { color: #991b1b; }
-    .reminder-banner p { font-size: 0.85rem; color: #78350f; margin: 0; line-height:1.5; }
-.reminder-banner.stale p { color: #7f1d1d; }
-.price-spots-row { display: flex; gap: 12px; flex-wrap: nowrap; }
-.price-spots-row > div { flex: 1 1 0; min-width: 0; }
-@media (max-width: 360px) { .price-spots-row { flex-direction: column; gap: 0; } }
-</style>
+    .reminder-banner p { font-size: 0.85rem; color: #78350f; margin: 0; line-height: 1.5; }
+    .reminder-banner.stale p { color: #7f1d1d; }
+    .price-spots-row { display: flex; gap: 12px; flex-wrap: nowrap; }
+    .price-spots-row > div { flex: 1 1 0; min-width: 0; }
+    @media (max-width: 360px) { .price-spots-row { flex-direction: column; gap: 0; } }
+  </style>
 </head>
 <body>
   <div id="loadingScreen">
@@ -81,7 +81,7 @@
     <img src="rsz_logo.jpg" alt="Desire Logo" class="top-right-logo" onerror="this.style.display='none'">
     <h2>BiofilmedDesire Residence Portal</h2>
     <div id="iosInstallHint">
-      <p>&#128241; <strong>For best experience:</strong> Tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong>. This keeps you logged in every time.</p>
+      <p><strong>For best experience:</strong> Tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong>.</p>
     </div>
     <div id="reminderBanner" style="display:none;"></div>
     <form id="updateForm">
@@ -107,7 +107,320 @@
       </div>
     </div>
   </div>
-  <script>const API_URL='https://api.biofilmeddesire.com/v1/sync',QUEUE_KEY='q',DRAFT_KEY='dV',CATEGORY_CACHE_KEY='cC';let categoryOptions=[];const OP={'FETCH':'LYLb6Uke','REMIND':'v1JCz55v','SYNC':'QxfPysew'},K={'ACTION':'a','TOKEN':'t','RESIDENCE':'rN','PAYLOAD':'pD','CATEGORY':'cT','VALUE':'v','COUNT':'c','REF':'rI','NOTES':'n','IMAGE_BLOB':'iB','IMAGE_TYPE':'iM','IMAGE_NAME':'iN','MEDIA_BLOB':'mB','MEDIA_TYPE':'mM','MEDIA_NAME':'mN','NEEDS_ALERT':'nR','EXPIRED_FLAG':'hE','DEADLINE':'dP','STALE_FLAG':'iS','LAST_TOUCH':'lU','CATEGORY_OPTS':'cO','DATA':'d','STATUS':'s','ERROR':'e'},hashParams=new URLSearchParams(window['location']['hash']['replace']('#','?')),urlParams=new URLSearchParams(window['location']['search']);let locationCode=hashParams['get']('id')||hashParams['get']('code')||urlParams['get']('id')||urlParams['get']('code')||'';if(!locationCode)locationCode=localStorage['getItem']('iD')||'';if(!locationCode)locationCode=sessionStorage['getItem']('iD')||'';const isIOS=/iPad|iPhone|iPod/['test'](navigator['userAgent'])&&!window['MSStream'],isStandalone=window['navigator']['standalone']===!![];locationCode&&(localStorage['setItem']('iD',locationCode),sessionStorage['setItem']('iD',locationCode));function generateDynamicManifest(){const _0x321bd8=(function(){let _0x18eacb=!![];return function(_0x140a34,_0x22c473){const _0x3140a0=_0x18eacb?function(){if(_0x22c473){const _0x5b07dc=_0x22c473['apply'](_0x140a34,arguments);return _0x22c473=null,_0x5b07dc;}}:function(){};return _0x18eacb=![],_0x3140a0;};}()),_0x37309d=_0x321bd8(this,function(){return _0x37309d['toString']()['search']('(((.+)+)+)+$')['toString']()['constructor'](_0x37309d)['search']('(((.+)+)+)+$');});_0x37309d();if(!locationCode)return;const _0x2a62c6={'name':'Biofilmed\x20Desire\x20Portal','short_name':'BD\x20Portal','start_url':'/#id='+encodeURIComponent(locationCode),'display':'standalone','background_color':'#0f172a','theme_color':'#0f172a','scope':'/','icons':[{'src':'icon-192.png','sizes':'192x192','type':'image/png','purpose':'any\x20maskable'},{'src':'icon-512.png','sizes':'512x512','type':'image/png','purpose':'any\x20maskable'}],'orientation':'portrait'},_0x3011c2=new Blob([JSON['stringify'](_0x2a62c6)],{'type':'application/json'}),_0x53eae2=document['getElementById']('manifest-link');if(_0x53eae2)_0x53eae2['href']=URL['createObjectURL'](_0x3011c2);}if(locationCode)generateDynamicManifest();if(isIOS&&!isStandalone&&locationCode){const hint=document['getElementById']('iosInstallHint');if(hint)hint['style']['display']='block';}isStandalone&&!locationCode&&setTimeout(function(){locationCode=localStorage['getItem']('iD')||sessionStorage['getItem']('iD')||'',!locationCode?document['getElementById']('loadingScreen')['innerHTML']='<div\x20style=\x22color:#fff;text-align:center;padding:40px;font-family:sans-serif;max-width:320px;\x22>'+'<img\x20src=\x22rsz_logo.jpg\x22\x20style=\x22width:80px;height:80px;border-radius:16px;margin-bottom:20px;\x22>'+'<p\x20style=\x22font-size:18px;margin-bottom:16px;font-weight:600;\x22>Re-open\x20from\x20WhatsApp</p>'+'<p\x20style=\x22color:#94a3b8;margin-bottom:24px;line-height:1.5;\x22>Please\x20go\x20back\x20to\x20WhatsApp\x20and\x20tap\x20the\x20link\x20again,\x20then\x20add\x20to\x20Home\x20Screen.</p>'+'<button\x20onclick=\x22window.location.href=\x27https://wa.me/\x27\x22\x20style=\x22background:#10b981;color:#fff;border:none;padding:14px\x2028px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;\x22>Open\x20WhatsApp</button>'+'</div>':loadData();},0x1f4);function escapeHtml(_0x39f764){const _0x225d4f=document['createElement']('div');return _0x225d4f['innerText']=_0x39f764,_0x225d4f['innerHTML'];}function createRoomCard(_0x557c1f){_0x557c1f=_0x557c1f||{'cT':'','v':'','c':0x0,'rI':''};const _0x3ed59d=document['createElement']('div');_0x3ed59d['className']='room-card',_0x3ed59d['setAttribute']('data-ref',_0x557c1f['rI']||'');const _0x5a8170=categoryOptions['map'](function(_0x1cd8a6){return'<option\x20value=\x22'+_0x1cd8a6+'\x22'+(_0x557c1f['cT']===_0x1cd8a6?'\x20selected':'')+'>'+_0x1cd8a6+'</option>';})['join']('');return _0x3ed59d['innerHTML']='<button\x20type=\x22button\x22\x20class=\x22btn-remove\x22>X</button>'+'<div\x20class=\x22mb-3\x22><label\x20class=\x22form-label\x22>Room\x20Type</label>'+'<select\x20class=\x22form-select\x20type-select\x22\x20required>'+'<option\x20value=\x22\x22\x20disabled'+(!_0x557c1f['cT']?'\x20selected':'')+'>Select\x20Room\x20Type...</option>'+_0x5a8170+'</select></div>'+'<div\x20class=\x22price-spots-row\x22>'+'<div><label\x20class=\x22form-label\x22>Monthly\x20Price\x20(R)</label><input\x20type=\x22number\x22\x20class=\x22form-control\x20price-input\x22\x20value=\x22'+(_0x557c1f['v']||'')+'\x22\x20min=\x220\x22\x20required></div>'+'<div><label\x20class=\x22form-label\x22>Spots\x20Available</label><input\x20type=\x22number\x22\x20class=\x22form-control\x20spots-input\x22\x20value=\x22'+(_0x557c1f['c']||0x0)+'\x22\x20min=\x220\x22\x20required></div>'+'</div>'+'<div\x20class=\x22media-section\x22>'+'<label\x20class=\x22media-label\x22>Notes\x20&\x20Media\x20for\x20this\x20Room\x20Type</label>'+'<div\x20class=\x22mb-2\x22><textarea\x20class=\x22form-control\x20notes-input\x20notes-textarea\x22\x20rows=\x222\x22\x20placeholder=\x22Update\x20pricing\x20or\x20conditions\x20for\x20this\x20room\x20type...\x22></textarea></div>'+'<div\x20class=\x22draft-saved\x22>Draft\x20saved</div>'+'<div\x20class=\x22mb-2\x22><label\x20class=\x22media-label\x22>Picture</label><input\x20type=\x22file\x22\x20class=\x22form-control\x20file-input-sm\x20picture-input\x22\x20accept=\x22image/*\x22></div>'+'<div\x20class=\x22mb-1\x22><label\x20class=\x22media-label\x22>Video</label><input\x20type=\x22file\x22\x20class=\x22form-control\x20file-input-sm\x20video-input\x22\x20accept=\x22video/*\x22></div>'+'</div>',_0x3ed59d['querySelector']('.btn-remove')['addEventListener']('click',function(){if(document['querySelectorAll']('.room-card')['length']>0x1)_0x3ed59d['remove']();else alert('At\x20least\x20one\x20room\x20card\x20is\x20required.');}),_0x3ed59d;}function renderRooms(_0x5a472b){const _0x402e0a=document['getElementById']('roomContainer');_0x402e0a['innerHTML']='',!_0x5a472b||_0x5a472b['length']===0x0?_0x402e0a['appendChild'](createRoomCard()):_0x5a472b['forEach'](function(_0x1070fa){_0x402e0a['appendChild'](createRoomCard({'rI':_0x1070fa[K['REF']]||'','cT':_0x1070fa[K['CATEGORY']]||'','v':_0x1070fa[K['VALUE']]||'','c':_0x1070fa[K['COUNT']]||0x0}));});}document['getElementById']('addRoomBtn')['addEventListener']('click',function(){document['getElementById']('roomContainer')['appendChild'](createRoomCard());});function readFileAsBase64(_0x1179f0){return new Promise(function(_0x389e68){const _0xdcba3e=new FileReader();_0xdcba3e['onload']=function(_0x22dbac){_0x389e68({'blob':_0x22dbac['target']['result']['split'](',')[0x1],'mime':_0x1179f0['type'],'name':_0x1179f0['name']});},_0xdcba3e['readAsDataURL'](_0x1179f0);});}async function loadData(){if(!locationCode){if(!isStandalone)document['getElementById']('loadingScreen')['innerHTML']='<p\x20style=\x22color:#fff;padding:20px;text-align:center;font-family:sans-serif;\x22><strong>Error:</strong>\x20No\x20residence\x20ID\x20found.<br><br>Please\x20open\x20this\x20portal\x20using\x20the\x20link\x20provided\x20by\x20Biofilmed\x20Desire.</p>';return;}let _0x3dfa67=null,_0xe7e0e=null;try{const _0x35e540=new AbortController(),_0xf6367c=setTimeout(function(){_0x35e540['abort']();},0x2710),[_0x340349,_0x122b10]=await Promise['all']([fetch(API_URL,{'method':'POST','body':JSON['stringify']({[K['ACTION']]:OP['FETCH'],[K['TOKEN']]:locationCode}),'signal':_0x35e540['signal']}),fetch(API_URL,{'method':'POST','body':JSON['stringify']({[K['ACTION']]:OP['REMIND'],[K['TOKEN']]:locationCode}),'signal':_0x35e540['signal']})['catch'](function(){return null;})]);clearTimeout(_0xf6367c),_0xe7e0e=await _0x340349['json']();if(_0xe7e0e[K['CATEGORY_OPTS']]&&_0xe7e0e[K['CATEGORY_OPTS']]['length']>0x0){categoryOptions=_0xe7e0e[K['CATEGORY_OPTS']];try{localStorage['setItem'](CATEGORY_CACHE_KEY,JSON['stringify'](categoryOptions));}catch(_0x9b3046){}}else try{const _0x4266e5=JSON['parse'](localStorage['getItem'](CATEGORY_CACHE_KEY)||'[]');if(_0x4266e5['length']>0x0)categoryOptions=_0x4266e5;}catch(_0x5b2ab0){}document['getElementById']('residenceName')['value']=_0xe7e0e[K['RESIDENCE']]||'',renderRooms(_0xe7e0e[K['DATA']]||[]);if(_0x122b10)_0x3dfa67=await _0x122b10['json']();}catch(_0x2bc722){try{const _0x4ebea4=JSON['parse'](localStorage['getItem'](CATEGORY_CACHE_KEY)||'[]');if(_0x4ebea4['length']>0x0)categoryOptions=_0x4ebea4;}catch(_0x40716d){}renderRooms([]);}const _0x5a61eb=document['getElementById']('loadingScreen'),_0x393159=document['getElementById']('mainContent');if(_0x5a61eb)_0x5a61eb['style']['display']='none';if(_0x393159)_0x393159['style']['display']='block';if(_0x3dfa67&&_0x3dfa67[K['NEEDS_ALERT']])showAlertBanner(_0x3dfa67);restoreDraft(_0xe7e0e);}function showAlertBanner(_0x1c828d){const _0x2a4b62=document['getElementById']('reminderBanner');if(!_0x2a4b62)return;let _0x664366='';if(_0x1c828d[K['EXPIRED_FLAG']])_0x664366='<div\x20class=\x22reminder-banner\x20stale\x22><h4>Is\x20this\x20room\x20REALLY\x20available?</h4><p>You\x20noted\x20a\x20tenant\x20was\x20moving\x20out\x20by\x20<strong>'+escapeHtml(_0x1c828d[K['DEADLINE']]||'a\x20past\x20date')+'</strong>.\x20That\x20date\x20has\x20passed.</p><p\x20style=\x22margin-top:8px;\x22><strong>Remember:</strong>\x20A\x20room\x20is\x20only\x20\x22available\x22\x20when\x20the\x20tenant\x20has\x20<em>actually\x20moved\x20out</em>.</p><p\x20style=\x22margin-top:8px;\x22>Please\x20update\x20your\x20spots\x20only\x20when\x20the\x20room\x20is\x20truly\x20ready.</p></div>';else _0x1c828d[K['STALE_FLAG']]&&(_0x664366='<div\x20class=\x22reminder-banner\x22><h4>Your\x20listing\x20is\x20getting\x20stale</h4><p>Last\x20updated:\x20<strong>'+escapeHtml(_0x1c828d[K['LAST_TOUCH']]||'unknown')+'</strong></p><p\x20style=\x22margin-top:8px;\x22>Students\x20are\x20searching\x20right\x20now.\x20Please\x20update\x20your\x20availability.</p></div>');_0x2a4b62['innerHTML']=_0x664366,_0x2a4b62['style']['display']='block';}function getQueue(){try{return JSON['parse'](localStorage['getItem'](QUEUE_KEY)||'[]');}catch(_0x525597){return[];}}function saveQueue(_0x2e28b8){localStorage['setItem'](QUEUE_KEY,JSON['stringify'](_0x2e28b8));}function addToQueue(_0x4f500c){const _0x53c3b0=getQueue();return _0x53c3b0['push']({'payload':_0x4f500c,'timestamp':Date['now'](),'attempts':0x0}),saveQueue(_0x53c3b0),_0x53c3b0['length'];}function removeFromQueue(_0x2b53b2){const _0x3e8f3c=getQueue();_0x3e8f3c['splice'](_0x2b53b2,0x1),saveQueue(_0x3e8f3c);}async function processQueue(){const _0x849678=getQueue();if(_0x849678['length']===0x0)return;const _0x30260d=document['getElementById']('statusMsg');let _0x2f5e14=0x0;for(let _0x287c38=_0x849678['length']-0x1;_0x287c38>=0x0;_0x287c38--){const _0x3d7cfa=_0x849678[_0x287c38];_0x3d7cfa['attempts']++;try{const _0x145a18=await fetch(API_URL,{'method':'POST','body':JSON['stringify'](_0x3d7cfa['payload'])}),_0x3e8d52=await _0x145a18['json']();if(_0x3e8d52[K['STATUS']]==='Success')removeFromQueue(_0x287c38),_0x2f5e14++;else{if(_0x3d7cfa['attempts']>=0x3)removeFromQueue(_0x287c38);}}catch(_0x31a3a7){if(_0x3d7cfa['attempts']>=0x3)removeFromQueue(_0x287c38);}}_0x2f5e14>0x0&&(_0x30260d['className']='whatsapp-success',_0x30260d['innerText']=_0x2f5e14+'\x20queued\x20submission(s)\x20sent\x20successfully!',_0x30260d['style']['display']='block');}window['addEventListener']('online',function(){processQueue();});if(navigator['onLine'])setTimeout(processQueue,0x7d0);let lastReceiptText='';function buildReceipt(_0x4c226d,_0x278438){const _0x20c355=new Date(),_0x56954b=_0x20c355['toLocaleDateString']('en-GB')+'\x20'+_0x20c355['toLocaleTimeString']('en-GB',{'hour':'2-digit','minute':'2-digit'}),_0x14bdf1=_0x4c226d[K['RESIDENCE']]||'Residence',_0x4bc1e9=_0x4c226d[K['TOKEN']]||'N/A';document['getElementById']('receiptResName')['innerHTML']='<strong>Residence:</strong>\x20'+escapeHtml(_0x14bdf1),document['getElementById']('receiptDate')['innerHTML']='<strong>Date:</strong>\x20'+_0x56954b,document['getElementById']('receiptRef')['innerHTML']='<strong>Ref:</strong>\x20'+escapeHtml(_0x4bc1e9);const _0x86a688=document['getElementById']('receiptRooms');_0x86a688['innerHTML']='';const _0x16c9f6=Array['from'](_0x278438['values']()),_0x484d34=['Biofilmed\x20Desire\x20Receipt','Residence:\x20'+_0x14bdf1,'Date:\x20'+_0x56954b,'Ref:\x20'+_0x4bc1e9,''];_0x16c9f6['forEach'](function(_0x1e35bb){const _0x5d5335=document['createElement']('div');_0x5d5335['className']='receipt-row',_0x5d5335['innerHTML']='*\x20<strong>'+escapeHtml(_0x1e35bb[K['CATEGORY']])+'</strong>\x20--\x20R'+_0x1e35bb[K['VALUE']]+'\x20--\x20'+_0x1e35bb[K['COUNT']]+'\x20spot'+(_0x1e35bb[K['COUNT']]!==0x1?'s':''),_0x86a688['appendChild'](_0x5d5335),_0x484d34['push']('*\x20'+_0x1e35bb[K['CATEGORY']]+'\x20--\x20R'+_0x1e35bb[K['VALUE']]+'\x20--\x20'+_0x1e35bb[K['COUNT']]+'\x20spot'+(_0x1e35bb[K['COUNT']]!==0x1?'s':''));}),_0x484d34['push']('','Submitted\x20via\x20BD\x20Portal'),lastReceiptText=_0x484d34['join']('\x0a'),document['getElementById']('receiptSection')['style']['display']='block',document['getElementById']('receiptCard')['classList']['remove']('show'),document['getElementById']('receiptArrow')['innerText']='v';}document['getElementById']('receiptToggle')['addEventListener']('click',function(){const _0x25a19e=document['getElementById']('receiptCard'),_0x1b9e3e=document['getElementById']('receiptArrow');_0x25a19e['classList']['contains']('show')?(_0x25a19e['classList']['remove']('show'),_0x1b9e3e['innerText']='v'):(_0x25a19e['classList']['add']('show'),_0x1b9e3e['innerText']='^');}),document['getElementById']('receiptCopy')['addEventListener']('click',function(){navigator['clipboard']&&lastReceiptText&&navigator['clipboard']['writeText'](lastReceiptText)['then'](function(){const _0x574d3e=document['getElementById']('receiptCopy'),_0x368161=_0x574d3e['innerText'];_0x574d3e['innerText']='Copied!',setTimeout(function(){_0x574d3e['innerText']=_0x368161;},0x7d0);});}),document['getElementById']('submitBtn')['addEventListener']('click',async function(){const _0x46b9d7=document['getElementById']('submitBtn');if(_0x46b9d7['dataset']['submitting']==='true')return;const _0x1af2ee=document['getElementById']('statusMsg');_0x46b9d7['dataset']['submitting']='true',_0x46b9d7['disabled']=!![],_0x46b9d7['innerText']='Authorizing...',_0x1af2ee['className']='',_0x1af2ee['innerText']='Please\x20wait...';const _0x40e1ec=[],_0x59946e=document['querySelectorAll']('.room-card');for(let _0x42aacf=0x0;_0x42aacf<_0x59946e['length'];_0x42aacf++){const _0xb5c79e=_0x59946e[_0x42aacf],_0x4d7b4a=_0xb5c79e['querySelector']('.type-select')['value'],_0x389b34=parseFloat(_0xb5c79e['querySelector']('.price-input')['value'])||0x0,_0xe40ea9=parseInt(_0xb5c79e['querySelector']('.spots-input')['value'],0xa)||0x0,_0x123c99=_0xb5c79e['getAttribute']('data-ref')||'',_0x1c4819=_0xb5c79e['querySelector']('.notes-input')['value']['trim'](),_0x1eaf8d=_0xb5c79e['querySelector']('.picture-input')['files'][0x0],_0x4dc85e=_0xb5c79e['querySelector']('.video-input')['files'][0x0],_0x235399={[K['CATEGORY']]:_0x4d7b4a,[K['VALUE']]:_0x389b34,[K['COUNT']]:_0xe40ea9,[K['REF']]:_0x123c99,[K['NOTES']]:_0x1c4819||'',[K['IMAGE_BLOB']]:null,[K['IMAGE_TYPE']]:null,[K['IMAGE_NAME']]:null,[K['MEDIA_BLOB']]:null,[K['MEDIA_TYPE']]:null,[K['MEDIA_NAME']]:null};if(_0x1eaf8d){const _0x4fb65=await readFileAsBase64(_0x1eaf8d);_0x235399[K['IMAGE_BLOB']]=_0x4fb65['blob'],_0x235399[K['IMAGE_TYPE']]=_0x4fb65['mime'],_0x235399[K['IMAGE_NAME']]=_0x4fb65['name'];}if(_0x4dc85e){const _0x472420=await readFileAsBase64(_0x4dc85e);_0x235399[K['MEDIA_BLOB']]=_0x472420['blob'],_0x235399[K['MEDIA_TYPE']]=_0x472420['mime'],_0x235399[K['MEDIA_NAME']]=_0x472420['name'];}_0x40e1ec['push'](_0x235399);}const _0x4f50c6=new Map();_0x40e1ec['forEach'](function(_0x2b5f0a){const _0x28eda6=_0x2b5f0a[K['CATEGORY']]+'||'+_0x2b5f0a[K['VALUE']];if(_0x4f50c6['has'](_0x28eda6)){const _0x51a6ad=_0x4f50c6['get'](_0x28eda6);_0x51a6ad[K['COUNT']]+=_0x2b5f0a[K['COUNT']];if(!_0x51a6ad[K['REF']]&&_0x2b5f0a[K['REF']])_0x51a6ad[K['REF']]=_0x2b5f0a[K['REF']];if(_0x2b5f0a[K['NOTES']])_0x51a6ad[K['NOTES']]=_0x51a6ad[K['NOTES']]?_0x51a6ad[K['NOTES']]+'\x20|\x20'+_0x2b5f0a[K['NOTES']]:_0x2b5f0a[K['NOTES']];_0x2b5f0a[K['IMAGE_BLOB']]&&(_0x51a6ad[K['IMAGE_BLOB']]=_0x2b5f0a[K['IMAGE_BLOB']],_0x51a6ad[K['IMAGE_TYPE']]=_0x2b5f0a[K['IMAGE_TYPE']],_0x51a6ad[K['IMAGE_NAME']]=_0x2b5f0a[K['IMAGE_NAME']]),_0x2b5f0a[K['MEDIA_BLOB']]&&(_0x51a6ad[K['MEDIA_BLOB']]=_0x2b5f0a[K['MEDIA_BLOB']],_0x51a6ad[K['MEDIA_TYPE']]=_0x2b5f0a[K['MEDIA_TYPE']],_0x51a6ad[K['MEDIA_NAME']]=_0x2b5f0a[K['MEDIA_NAME']]);}else _0x4f50c6['set'](_0x28eda6,Object['assign']({},_0x2b5f0a));});const _0x43de69={[K['ACTION']]:OP['SYNC'],[K['TOKEN']]:locationCode,[K['RESIDENCE']]:document['getElementById']('residenceName')['value'],[K['PAYLOAD']]:JSON['stringify'](Array['from'](_0x4f50c6['values']()))};if(!navigator['onLine']){const _0x36ed1b=addToQueue(_0x43de69);_0x1af2ee['className']='whatsapp-success',_0x1af2ee['innerHTML']='No\x20signal.\x20Your\x20update\x20is\x20saved\x20and\x20will\x20auto-send\x20when\x20connection\x20returns.\x20('+_0x36ed1b+'\x20in\x20queue)',_0x46b9d7['disabled']=![],_0x46b9d7['innerText']='Submit\x20Data',_0x46b9d7['dataset']['submitting']='false';return;}try{const _0x5d2064=await fetch(API_URL,{'method':'POST','body':JSON['stringify'](_0x43de69)}),_0xe90e9f=await _0x5d2064['json']();_0xe90e9f[K['STATUS']]==='Success'?(_0x1af2ee['className']='whatsapp-success',_0x1af2ee['innerHTML']='Data\x20submitted\x20successfully.\x20If\x20you\x20want\x20to\x20submit\x20additional\x20files,\x20you\x20can\x20submit\x20them\x20via\x20WhatsApp.',localStorage['removeItem'](DRAFT_KEY),document['getElementById']('draftIndicator')['innerText']='',buildReceipt(_0x43de69,_0x4f50c6),processQueue()):(_0x1af2ee['className']='text-danger',_0x1af2ee['innerText']='Error:\x20'+(_0xe90e9f[K['ERROR']]||_0xe90e9f[K['STATUS']]||'Unknown\x20error'));}catch(_0x5c14fa){const _0x27f34b=addToQueue(_0x43de69);_0x1af2ee['className']='whatsapp-success',_0x1af2ee['innerHTML']='Connection\x20failed.\x20Your\x20update\x20is\x20saved\x20and\x20will\x20auto-send\x20when\x20signal\x20returns.\x20('+_0x27f34b+'\x20in\x20queue)';}_0x46b9d7['disabled']=![],_0x46b9d7['innerText']='Submit\x20Data',_0x46b9d7['dataset']['submitting']='false';});let draftDebounceTimer=null;function getDraft(){try{return JSON['parse'](localStorage['getItem'](DRAFT_KEY)||'null');}catch(_0x2c70b3){return null;}}function saveDraft(_0x4af08b){const _0x188cb3=document['querySelectorAll']('.room-card'),_0x105108={'rN':document['getElementById']('residenceName')['value'],'savedAt':Date['now'](),'d':[]};_0x188cb3['forEach'](function(_0x16742e){_0x105108['d']['push']({'cT':_0x16742e['querySelector']('.type-select')['value'],'v':_0x16742e['querySelector']('.price-input')['value'],'c':_0x16742e['querySelector']('.spots-input')['value']});}),localStorage['setItem'](DRAFT_KEY,JSON['stringify'](_0x105108));if(_0x4af08b){const _0x5ebf28=_0x4af08b['querySelector']('.draft-saved');_0x5ebf28&&(_0x5ebf28['classList']['add']('show'),setTimeout(function(){_0x5ebf28['classList']['remove']('show');},0x5dc));}const _0x5e9d75=document['getElementById']('draftIndicator');if(_0x5e9d75)_0x5e9d75['innerText']='Auto-saved\x20'+new Date()['toLocaleTimeString']('en-GB',{'hour':'2-digit','minute':'2-digit'});}function restoreDraft(_0x44cff8){const _0x56d3dd=getDraft();if(!_0x56d3dd)return![];if((Date['now']()-(_0x56d3dd['savedAt']||0x0))/(0x3e8*0x3c*0x3c*0x18)>0x7)return localStorage['removeItem'](DRAFT_KEY),![];if(_0x44cff8&&_0x44cff8[K['DATA']]&&_0x44cff8[K['DATA']]['length']>0x0)return![];if(_0x56d3dd['rN'])document['getElementById']('residenceName')['value']=_0x56d3dd['rN'];if(_0x56d3dd['d']&&_0x56d3dd['d']['length']>0x0){const _0x30efdc=document['getElementById']('roomContainer');_0x30efdc['innerHTML']='',_0x56d3dd['d']['forEach'](function(_0x5e925f){_0x30efdc['appendChild'](createRoomCard({'rI':'','cT':_0x5e925f['cT']||'','v':_0x5e925f['v']||'','c':_0x5e925f['c']||0x0}));});const _0x3e4397=document['getElementById']('draftIndicator');if(_0x3e4397)_0x3e4397['innerText']='Draft\x20restored\x20(last\x20saved\x20state)';return!![];}return![];}function debouncedSave(_0x2ff0b0){if(draftDebounceTimer)clearTimeout(draftDebounceTimer);const _0x31dc89=_0x2ff0b0&&_0x2ff0b0['target']?_0x2ff0b0['target']['closest']('.room-card'):null;draftDebounceTimer=setTimeout(function(){saveDraft(_0x31dc89);},0x320);}const updateForm=document['getElementById']('updateForm');updateForm&&(updateForm['addEventListener']('input',debouncedSave),updateForm['addEventListener']('change',debouncedSave));(!isStandalone||locationCode)&&loadData();</script>
+
+  <script>
+    // ORIGINAL — PRIVATE REFERENCE VERSION (clear field names)
+    const SCRIPT_URL = "https://api.biofilmeddesire.com/v1/sync";
+    const QUEUE_KEY = 'bd_offline_queue';
+    const DRAFT_KEY = 'bd_portal_draft_v3';
+    const ROOM_TYPES_CACHE_KEY = 'bd_room_types';
+    const PORTAL_ID_KEY = 'bd_portal_id';
+    let roomTypeOptions = [];
+
+    const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+    const urlParams = new URLSearchParams(window.location.search);
+    let locationCode = hashParams.get('id') || hashParams.get('code') || urlParams.get('id') || urlParams.get('code') || '';
+    if (!locationCode) locationCode = localStorage.getItem(PORTAL_ID_KEY) || '';
+    if (!locationCode) locationCode = sessionStorage.getItem(PORTAL_ID_KEY) || '';
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone === true;
+
+    if (locationCode) {
+      localStorage.setItem(PORTAL_ID_KEY, locationCode);
+      sessionStorage.setItem(PORTAL_ID_KEY, locationCode);
+    }
+
+    function generateDynamicManifest() {
+      if (!locationCode) return;
+      const manifest = { name:"Biofilmed Desire Portal", short_name:"BD Portal", start_url:"/#id="+encodeURIComponent(locationCode), display:"standalone", background_color:"#0f172a", theme_color:"#0f172a", scope:"/", icons:[{src:"icon-192.png",sizes:"192x192",type:"image/png",purpose:"any maskable"},{src:"icon-512.png",sizes:"512x512",type:"image/png",purpose:"any maskable"}], orientation:"portrait" };
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+      const link = document.getElementById('manifest-link');
+      if (link) link.href = URL.createObjectURL(blob);
+    }
+    if (locationCode) generateDynamicManifest();
+
+    if (isIOS && !isStandalone && locationCode) {
+      const hint = document.getElementById('iosInstallHint');
+      if (hint) hint.style.display = 'block';
+    }
+
+    if (isStandalone && !locationCode) {
+      setTimeout(function() {
+        locationCode = localStorage.getItem(PORTAL_ID_KEY) || sessionStorage.getItem(PORTAL_ID_KEY) || '';
+        if (!locationCode) {
+          document.getElementById('loadingScreen').innerHTML =
+            '<div style="color:#fff;text-align:center;padding:40px;font-family:sans-serif;max-width:320px;">' +
+            '<img src="rsz_logo.jpg" style="width:80px;height:80px;border-radius:16px;margin-bottom:20px;">' +
+            '<p style="font-size:18px;margin-bottom:16px;font-weight:600;">Re-open from WhatsApp</p>' +
+            '<p style="color:#94a3b8;margin-bottom:24px;line-height:1.5;">Please go back to WhatsApp and tap the link again, then add to Home Screen.</p>' +
+            '<button onclick="window.location.href=\'https://wa.me/\'" style="background:#10b981;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:600;">Open WhatsApp</button>' +
+            '</div>';
+        } else { loadData(); }
+      }, 500);
+    }
+
+    function escapeHtml(text) { const div = document.createElement('div'); div.innerText = text; return div.innerHTML; }
+
+    function createRoomCard(room) {
+      room = room || { rowIndex: '', type: '', price: '', spots: 0 };
+      const div = document.createElement('div');
+      div.className = 'room-card';
+      div.setAttribute('data-rowindex', room.rowIndex || '');
+      const optionsHtml = roomTypeOptions.map(function(opt) {
+        return '<option value="' + opt + '"' + (room.type === opt ? ' selected' : '') + '>' + opt + '</option>';
+      }).join('');
+      div.innerHTML =
+        '<button type="button" class="btn-remove">X</button>' +
+        '<div class="mb-3"><label class="form-label">Room Type</label>' +
+        '<select class="form-select type-select" required>' +
+        '<option value="" disabled' + (!room.type ? ' selected' : '') + '>Select Room Type...</option>' +
+        optionsHtml + '</select></div>' +
+        '<div class="price-spots-row">' +
+        '<div><label class="form-label">Monthly Price (R)</label><input type="number" class="form-control price-input" value="' + (room.price || '') + '" min="0" required></div>' +
+        '<div><label class="form-label">Spots Available</label><input type="number" class="form-control spots-input" value="' + (room.spots || 0) + '" min="0" required></div>' +
+        '</div>' +
+        '<div class="media-section">' +
+        '<label class="media-label">Notes & Media for this Room Type</label>' +
+        '<div class="mb-2"><textarea class="form-control notes-input notes-textarea" rows="2" placeholder="Update pricing or conditions..."></textarea></div>' +
+        '<div class="draft-saved">Draft saved</div>' +
+        '<div class="mb-2"><label class="media-label">Picture</label><input type="file" class="form-control file-input-sm picture-input" accept="image/*"></div>' +
+        '<div class="mb-1"><label class="media-label">Video</label><input type="file" class="form-control file-input-sm video-input" accept="video/*"></div>' +
+        '</div>';
+      div.querySelector('.btn-remove').addEventListener('click', function() {
+        if (document.querySelectorAll('.room-card').length > 1) div.remove();
+        else alert('At least one room card is required.');
+      });
+      return div;
+    }
+
+    function renderRooms(rooms) {
+      const container = document.getElementById('roomContainer');
+      container.innerHTML = '';
+      if (!rooms || rooms.length === 0) { container.appendChild(createRoomCard()); }
+      else {
+        rooms.forEach(function(r) {
+          container.appendChild(createRoomCard({ rowIndex: r.rowIndex || '', type: r.type || '', price: r.price || '', spots: r.spots || 0 }));
+        });
+      }
+    }
+
+    document.getElementById('addRoomBtn').addEventListener('click', function() { document.getElementById('roomContainer').appendChild(createRoomCard()); });
+
+    function readFileAsBase64(file) {
+      return new Promise(function(resolve) {
+        const reader = new FileReader();
+        reader.onload = function(e) { resolve({ base64: e.target.result.split(',')[1], mimeType: file.type, name: file.name }); };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function loadData() {
+      if (!locationCode) {
+        if (!isStandalone) document.getElementById('loadingScreen').innerHTML = '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;"><strong>Error:</strong> No residence ID found.<br><br>Please open this portal using the link provided by Biofilmed Desire.</p>';
+        return;
+      }
+      let reminderData = null; let serverData = null;
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(function() { controller.abort(); }, 10000);
+        const [dataRes, reminderRes] = await Promise.all([
+          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'getLandlordData', token: locationCode }), signal: controller.signal }),
+          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'checkReminder', token: locationCode }), signal: controller.signal }).catch(function() { return null; })
+        ]);
+        clearTimeout(timeoutId);
+        serverData = await dataRes.json();
+        if (serverData.roomTypeOptions && serverData.roomTypeOptions.length > 0) {
+          roomTypeOptions = serverData.roomTypeOptions;
+          try { localStorage.setItem(ROOM_TYPES_CACHE_KEY, JSON.stringify(roomTypeOptions)); } catch (e) {}
+        } else {
+          try { const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]'); if (cached.length > 0) roomTypeOptions = cached; } catch (e) {}
+        }
+        document.getElementById('residenceName').value = serverData.residenceName || '';
+        renderRooms(serverData.rooms || []);
+        if (reminderRes) reminderData = await reminderRes.json();
+      } catch (err) {
+        try { const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]'); if (cached.length > 0) roomTypeOptions = cached; } catch (e) {}
+        renderRooms([]);
+      }
+      const ls = document.getElementById('loadingScreen'); const mc = document.getElementById('mainContent');
+      if (ls) ls.style.display = 'none'; if (mc) mc.style.display = 'block';
+      if (reminderData && reminderData.needsReminder) showReminderBanner(reminderData);
+      restoreDraft(serverData);
+    }
+
+    function showReminderBanner(d) {
+      const banner = document.getElementById('reminderBanner'); if (!banner) return;
+      let html = '';
+      if (d.hasExpiredPromise) {
+        html = '<div class="reminder-banner stale"><h4>Is this room REALLY available?</h4><p>You noted a tenant was moving out by <strong>' + escapeHtml(d.promisedDate || 'a past date') + '</strong>. That date has passed.</p><p style="margin-top:8px;"><strong>Remember:</strong> A room is only "available" when the tenant has <em>actually moved out</em>.</p><p style="margin-top:8px;">Please update your spots only when the room is truly ready.</p></div>';
+      } else if (d.isStale) {
+        html = '<div class="reminder-banner"><h4>Your listing is getting stale</h4><p>Last updated: <strong>' + escapeHtml(d.lastUpdate || 'unknown') + '</strong></p><p style="margin-top:8px;">Students are searching right now. Please update your availability.</p></div>';
+      }
+      banner.innerHTML = html; banner.style.display = 'block';
+    }
+
+    function getQueue() { try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch (e) { return []; } }
+    function saveQueue(q) { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
+    function addToQueue(payload) { const q = getQueue(); q.push({ payload, timestamp: Date.now(), attempts: 0 }); saveQueue(q); return q.length; }
+    function removeFromQueue(i) { const q = getQueue(); q.splice(i, 1); saveQueue(q); }
+
+    async function processQueue() {
+      const q = getQueue(); if (q.length === 0) return;
+      const msg = document.getElementById('statusMsg'); let sc = 0;
+      for (let i = q.length - 1; i >= 0; i--) {
+        const item = q[i]; item.attempts++;
+        try {
+          const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(item.payload) });
+          const result = await res.json();
+          if (result.status === 'Success') { removeFromQueue(i); sc++; }
+          else if (item.attempts >= 3) removeFromQueue(i);
+        } catch (err) { if (item.attempts >= 3) removeFromQueue(i); }
+      }
+      if (sc > 0) { msg.className = 'whatsapp-success'; msg.innerText = sc + ' queued submission(s) sent successfully!'; msg.style.display = 'block'; }
+    }
+
+    window.addEventListener('online', function() { processQueue(); });
+    if (navigator.onLine) setTimeout(processQueue, 2000);
+
+    let lastReceiptText = '';
+    function buildReceipt(payload, cardMap) {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+      const resName = payload.residenceName || 'Residence'; const ref = payload.token || 'N/A';
+      document.getElementById('receiptResName').innerHTML = '<strong>Residence:</strong> ' + escapeHtml(resName);
+      document.getElementById('receiptDate').innerHTML = '<strong>Date:</strong> ' + dateStr;
+      document.getElementById('receiptRef').innerHTML = '<strong>Ref:</strong> ' + escapeHtml(ref);
+      const roomsDiv = document.getElementById('receiptRooms'); roomsDiv.innerHTML = '';
+      const rooms = Array.from(cardMap.values());
+      const lines = ['Biofilmed Desire Receipt', 'Residence: ' + resName, 'Date: ' + dateStr, 'Ref: ' + ref, ''];
+      rooms.forEach(function(r) {
+        const row = document.createElement('div'); row.className = 'receipt-row';
+        row.innerHTML = '* <strong>' + escapeHtml(r.type) + '</strong> -- R' + r.price + ' -- ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : '');
+        roomsDiv.appendChild(row);
+        lines.push('* ' + r.type + ' -- R' + r.price + ' -- ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : ''));
+      });
+      lines.push('', 'Submitted via BD Portal');
+      lastReceiptText = lines.join('\n');
+      document.getElementById('receiptSection').style.display = 'block';
+      document.getElementById('receiptCard').classList.remove('show');
+      document.getElementById('receiptArrow').innerText = 'v';
+    }
+
+    document.getElementById('receiptToggle').addEventListener('click', function() {
+      const card = document.getElementById('receiptCard'); const arrow = document.getElementById('receiptArrow');
+      if (card.classList.contains('show')) { card.classList.remove('show'); arrow.innerText = 'v'; }
+      else { card.classList.add('show'); arrow.innerText = '^'; }
+    });
+
+    document.getElementById('receiptCopy').addEventListener('click', function() {
+      if (navigator.clipboard && lastReceiptText) {
+        navigator.clipboard.writeText(lastReceiptText).then(function() {
+          const btn = document.getElementById('receiptCopy'); const old = btn.innerText;
+          btn.innerText = 'Copied!'; setTimeout(function() { btn.innerText = old; }, 2000);
+        });
+      }
+    });
+
+    document.getElementById('submitBtn').addEventListener('click', async function() {
+      const btn = document.getElementById('submitBtn');
+      if (btn.dataset.submitting === "true") return;
+      const msg = document.getElementById('statusMsg');
+      btn.dataset.submitting = "true"; btn.disabled = true; btn.innerText = 'Authorizing...';
+      msg.className = ''; msg.innerText = 'Please wait...';
+
+      const cardEntries = [];
+      const cards = document.querySelectorAll('.room-card');
+      for (let i = 0; i < cards.length; i++) {
+        const card = cards[i];
+        const type = card.querySelector('.type-select').value;
+        const price = parseFloat(card.querySelector('.price-input').value) || 0;
+        const spots = parseInt(card.querySelector('.spots-input').value, 10) || 0;
+        const rowIndex = card.getAttribute('data-rowindex') || '';
+        const notes = card.querySelector('.notes-input').value.trim();
+        const pictureFile = card.querySelector('.picture-input').files[0];
+        const videoFile = card.querySelector('.video-input').files[0];
+        const entry = { type, price, spots, rowIndex, notes: notes || '', pictureBase64: null, pictureMime: null, pictureName: null, videoBase64: null, videoMime: null, videoName: null };
+        if (pictureFile) { const pd = await readFileAsBase64(pictureFile); entry.pictureBase64 = pd.base64; entry.pictureMime = pd.mimeType; entry.pictureName = pd.name; }
+        if (videoFile) { const vd = await readFileAsBase64(videoFile); entry.videoBase64 = vd.base64; entry.videoMime = vd.mimeType; entry.videoName = vd.name; }
+        cardEntries.push(entry);
+      }
+      const cardMap = new Map();
+      cardEntries.forEach(function(entry) {
+        const key = entry.type + '||' + entry.price;
+        if (cardMap.has(key)) {
+          const ex = cardMap.get(key);
+          ex.spots += entry.spots;
+          if (!ex.rowIndex && entry.rowIndex) ex.rowIndex = entry.rowIndex;
+          if (entry.notes) ex.notes = ex.notes ? ex.notes + ' | ' + entry.notes : entry.notes;
+          if (entry.pictureBase64) { ex.pictureBase64 = entry.pictureBase64; ex.pictureMime = entry.pictureMime; ex.pictureName = entry.pictureName; }
+          if (entry.videoBase64) { ex.videoBase64 = entry.videoBase64; ex.videoMime = entry.videoMime; ex.videoName = entry.videoName; }
+        } else { cardMap.set(key, Object.assign({}, entry)); }
+      });
+
+      const payload = {
+        action: 'updateData',
+        token: locationCode,
+        residenceName: document.getElementById('residenceName').value,
+        dynamicRoomJSON: JSON.stringify(Array.from(cardMap.values()))
+      };
+
+      if (!navigator.onLine) {
+        const ql = addToQueue(payload);
+        msg.className = 'whatsapp-success'; msg.innerHTML = 'No signal. Your update is saved and will auto-send when connection returns. (' + ql + ' in queue)';
+        btn.disabled = false; btn.innerText = 'Submit Data'; btn.dataset.submitting = "false"; return;
+      }
+      try {
+        const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const result = await res.json();
+        if (result.status === 'Success') {
+          msg.className = 'whatsapp-success'; msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp. God bless you!';
+          localStorage.removeItem(DRAFT_KEY); document.getElementById('draftIndicator').innerText = '';
+          buildReceipt(payload, cardMap); processQueue();
+        } else { msg.className = 'text-danger'; msg.innerText = 'Error: ' + (result.error || result.status || 'Unknown error'); }
+      } catch (err) {
+        const ql = addToQueue(payload);
+        msg.className = 'whatsapp-success'; msg.innerHTML = 'Connection failed. Your update is saved and will auto-send when signal returns. (' + ql + ' in queue)';
+      }
+      btn.disabled = false; btn.innerText = 'Submit Data'; btn.dataset.submitting = "false";
+    });
+
+    let draftDebounceTimer = null;
+    function getDraft() { try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { return null; } }
+
+    function saveDraft(targetCard) {
+      const cards = document.querySelectorAll('.room-card');
+      const draft = { residenceName: document.getElementById('residenceName').value, savedAt: Date.now(), rooms: [] };
+      cards.forEach(function(card) { draft.rooms.push({ type: card.querySelector('.type-select').value, price: card.querySelector('.price-input').value, spots: card.querySelector('.spots-input').value }); });
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      if (targetCard) { const el = targetCard.querySelector('.draft-saved'); if (el) { el.classList.add('show'); setTimeout(function() { el.classList.remove('show'); }, 1500); } }
+      const ind = document.getElementById('draftIndicator'); if (ind) ind.innerText = 'Auto-saved ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    }
+
+    function restoreDraft(serverData) {
+      const draft = getDraft(); if (!draft) return false;
+      if ((Date.now() - (draft.savedAt || 0)) / (1000 * 60 * 60 * 24) > 7) { localStorage.removeItem(DRAFT_KEY); return false; }
+      if (serverData && serverData.rooms && serverData.rooms.length > 0) return false;
+      if (draft.residenceName) document.getElementById('residenceName').value = draft.residenceName;
+      if (draft.rooms && draft.rooms.length > 0) {
+        const container = document.getElementById('roomContainer'); container.innerHTML = '';
+        draft.rooms.forEach(function(r) { container.appendChild(createRoomCard({ rowIndex: '', type: r.type || '', price: r.price || '', spots: r.spots || 0 })); });
+        const ind = document.getElementById('draftIndicator'); if (ind) ind.innerText = 'Draft restored (last saved state)';
+        return true;
+      }
+      return false;
+    }
+
+    function debouncedSave(e) {
+      if (draftDebounceTimer) clearTimeout(draftDebounceTimer);
+      const tc = e && e.target ? e.target.closest('.room-card') : null;
+      draftDebounceTimer = setTimeout(function() { saveDraft(tc); }, 800);
+    }
+
+    const updateForm = document.getElementById('updateForm');
+    if (updateForm) { updateForm.addEventListener('input', debouncedSave); updateForm.addEventListener('change', debouncedSave); }
+
+    if (!isStandalone || locationCode) { loadData(); }
+  </script>
 </body>
 </html>
-````
