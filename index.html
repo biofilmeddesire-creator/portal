@@ -118,6 +118,14 @@
 
     const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
     const urlParams = new URLSearchParams(window.location.search);
+    (function() {
+      var op = localStorage.getItem('bd_portal_id') || sessionStorage.getItem('bd_portal_id');
+      if (op) { localStorage.setItem('pid', op); sessionStorage.setItem('pid', op); localStorage.removeItem('bd_portal_id'); sessionStorage.removeItem('bd_portal_id'); }
+      var oq = localStorage.getItem('bd_offline_queue'); if (oq) { localStorage.setItem('q_v1', oq); localStorage.removeItem('bd_offline_queue'); }
+      var od = localStorage.getItem('bd_portal_draft_v3'); if (od) { localStorage.setItem('d_v3', od); localStorage.removeItem('bd_portal_draft_v3'); }
+      var ort = localStorage.getItem('bd_room_types'); if (ort) { localStorage.setItem('rt_cache', ort); localStorage.removeItem('bd_room_types'); }
+    })();
+
     let locationCode = hashParams.get('id') || hashParams.get('code') || urlParams.get('id') || urlParams.get('code') || '';
     if (!locationCode) locationCode = localStorage.getItem(PORTAL_ID_KEY) || '';
     if (!locationCode) locationCode = sessionStorage.getItem(PORTAL_ID_KEY) || '';
