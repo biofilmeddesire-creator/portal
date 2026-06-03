@@ -381,7 +381,7 @@
         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await res.json();
         if (result.status === 'Success') {
-          msg.className = 'whatsapp-success'; msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp.';
+          msg.className = 'whatsapp-success'; msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp. God bless you!';
           localStorage.removeItem(DRAFT_KEY); document.getElementById('draftIndicator').innerText = '';
           buildReceipt(payload, cardMap); processQueue();
         } else { msg.className = 'text-danger'; msg.innerText = 'Error: ' + (result.error || result.status || 'Unknown error'); }
