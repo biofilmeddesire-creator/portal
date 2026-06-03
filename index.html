@@ -109,12 +109,11 @@
   </div>
 
   <script>
-    // ORIGINAL — PRIVATE REFERENCE VERSION (clear field names)
     const SCRIPT_URL = "https://api.biofilmeddesire.com/v1/sync";
-    const QUEUE_KEY = 'bd_offline_queue';
-    const DRAFT_KEY = 'bd_portal_draft_v3';
-    const ROOM_TYPES_CACHE_KEY = 'bd_room_types';
-    const PORTAL_ID_KEY = 'bd_portal_id';
+    const QUEUE_KEY = 'q_v1';
+    const DRAFT_KEY = 'd_v3';
+    const ROOM_TYPES_CACHE_KEY = 'rt_cache';
+    const PORTAL_ID_KEY = 'pid';
     let roomTypeOptions = [];
 
     const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
@@ -374,7 +373,7 @@
         const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
         const result = await res.json();
         if (result.status === 'Success') {
-          msg.className = 'whatsapp-success'; msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp.';
+          msg.className = 'whatsapp-success'; msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via WhatsApp. God bless you!';
           localStorage.removeItem(DRAFT_KEY); document.getElementById('draftIndicator').innerText = '';
           buildReceipt(payload, cardMap); processQueue();
         } else { msg.className = 'text-danger'; msg.innerText = 'Error: ' + (result.error || result.status || 'Unknown error'); }
