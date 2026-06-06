@@ -503,7 +503,7 @@
         const result = await res.json();
         if (result.status === 'Success') {
           msg.className = 'whatsapp-success';
-        const waMessage = "Hi Desire, I have additional files for my residence: " + (document.getElementById('residenceName').value || '');
+        const waMessage = "Hi BiofimedDesire, I have additional files for my residence: " + (document.getElementById('residenceName').value || '');
         const waLink = "https://wa.me/" + YOUR_WHATSAPP + "?text=" + encodeURIComponent(waMessage);
         msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via <a href="' + waLink + '" target="_blank" style="color: #15803d; text-decoration: underline; font-weight: 600;"> WhatsApp</a>. God bless you!';
 
