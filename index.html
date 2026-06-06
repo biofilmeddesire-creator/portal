@@ -61,12 +61,6 @@
     .draft-saved { font-size: 0.7rem; color: #10b981; text-align: right; margin-top: 4px; opacity: 0; transition: opacity 0.3s; }
     .draft-saved.show { opacity: 1; }
     .draft-indicator { font-size: 0.7rem; color: #94a3b8; text-align: center; margin-bottom: 15px; }
-    .reminder-banner { background: #fef3c7; border: 1px solid #f59e0b; border-radius: 10px; padding: 16px; margin-bottom: 20px; text-align: left; }
-    .reminder-banner.stale { background: #fee2e2; border-color: #ef4444; }
-    .reminder-banner h4 { font-size: 0.95rem; font-weight: 600; color: #92400e; margin-bottom: 8px; }
-    .reminder-banner.stale h4 { color: #991b1b; }
-    .reminder-banner p { font-size: 0.85rem; color: #78350f; margin: 0; line-height: 1.5; }
-    .reminder-banner.stale p { color: #7f1d1d; }
     .price-spots-row { display: flex; gap: 12px; flex-wrap: nowrap; }
     .price-spots-row > div { flex: 1 1 0; min-width: 0; }
     @media (max-width: 360px) { .price-spots-row { flex-direction: column; gap: 0; } }
@@ -178,7 +172,6 @@
     <div id="iosInstallHint">
       <p><strong>For best experience:</strong> Tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong>.</p>
     </div>
-    <div id="reminderBanner" style="display:none;"></div>
     
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <!-- STATUS BADGE — ALWAYS VISIBLE                                  -->
@@ -330,7 +323,7 @@
         '<div><label class="form-label">Spots Available</label><input type="number" class="form-control spots-input" value="' + (room.spots || 0) + '" min="0" required></div>' +
         '</div>' +
         '<div class="media-section">' +
-        '<label class="media-label">Notes & Media for this Room Type</label>' +
+        '<label class="media-label">Notes</label>' +
         '<div class="mb-2"><textarea class="form-control notes-input notes-textarea" rows="2" placeholder="Update pricing or conditions..."></textarea></div>' +
         '<div class="draft-saved">Draft saved</div>' +
         '<div class="mb-2"><label class="media-label">Picture</label><input type="file" class="form-control file-input-sm picture-input" accept="image/*"></div>' +
@@ -369,14 +362,11 @@
         if (!isStandalone) document.getElementById('loadingScreen').innerHTML = '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;"><strong>Error:</strong> No residence ID found.<br><br>Please open this portal using the link provided by Biofilmed Desire.</p>';
         return;
       }
-      let reminderData = null; let serverData = null;
+      let serverData = null;
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(function() { controller.abort(); }, 10000);
-        const [dataRes, reminderRes] = await Promise.all([
-          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getLandlordData', token: locationCode }), signal: controller.signal }),
-          fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'checkReminder', token: locationCode }), signal: controller.signal }).catch(function() { return null; })
-        ]);
+        const dataRes = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getLandlordData', token: locationCode }), signal: controller.signal });
         clearTimeout(timeoutId);
         serverData = await dataRes.json();
         if (serverData.roomTypeOptions && serverData.roomTypeOptions.length > 0) {
@@ -387,28 +377,16 @@
         }
         document.getElementById('residenceName').value = serverData.residenceName || '';
         renderRooms(serverData.rooms || []);
-        if (reminderRes) reminderData = await reminderRes.json();
       } catch (err) {
         try { const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]'); if (cached.length > 0) roomTypeOptions = cached; } catch (e) {}
         renderRooms([]);
       }
       const ls = document.getElementById('loadingScreen'); const mc = document.getElementById('mainContent');
       if (ls) ls.style.display = 'none'; if (mc) mc.style.display = 'block';
-      if (reminderData && reminderData.needsReminder) showReminderBanner(reminderData);
       restoreDraft(serverData);
       checkStatus();
     }
 
-    function showReminderBanner(d) {
-      const banner = document.getElementById('reminderBanner'); if (!banner) return;
-      let html = '';
-      if (d.hasExpiredPromise) {
-        html = '<div class="reminder-banner stale"><h4>Is this room REALLY available?</h4><p>You noted a tenant was moving out by <strong>' + escapeHtml(d.promisedDate || 'a past date') + '</strong>. That date has passed.</p><p style="margin-top:8px;"><strong>Remember:</strong> A room is only "available" when the tenant has <em>actually moved out</em>.</p><p style="margin-top:8px;">Please update your spots only when the room is truly ready.</p></div>';
-      } else if (d.isStale) {
-        html = '<div class="reminder-banner"><h4>Your listing is getting stale</h4><p>Last updated: <strong>' + escapeHtml(d.lastUpdate || 'unknown') + '</strong></p><p style="margin-top:8px;">Students are searching right now. Please update your availability.</p></div>';
-      }
-      banner.innerHTML = html; banner.style.display = 'block';
-    }
 
     function getQueue() { try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch (e) { return []; } }
     function saveQueue(q) { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
@@ -525,7 +503,7 @@
         const result = await res.json();
         if (result.status === 'Success') {
           msg.className = 'whatsapp-success';
-        const waMessage = "Hi BiofilmedDesire, I have additional files for my residence: " + (document.getElementById('residenceName').value || '');
+        const waMessage = "Hi Desire, I have additional files for my residence: " + (document.getElementById('residenceName').value || '');
         const waLink = "https://wa.me/" + YOUR_WHATSAPP + "?text=" + encodeURIComponent(waMessage);
         msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via <a href="' + waLink + '" target="_blank" style="color: #15803d; text-decoration: underline; font-weight: 600;"> WhatsApp</a>. God bless you!';
 
@@ -609,9 +587,7 @@
         let badgeToShow = null;
         if (daysSince <= STATUS_THRESHOLDS.ACTIVE) {
           badgeToShow = document.getElementById('badgeActive');
-          const parsedDate = new Date(lastUpdate);
-        const formatted = !isNaN(parsedDate) ? parsedDate.toLocaleDateString('en-GB') + ' ' + parsedDate.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}) : lastUpdate;
-        document.getElementById('activeLastUpdate').textContent = formatted;
+          document.getElementById('activeLastUpdate').textContent = lastUpdate;
         } else if (daysSince <= STATUS_THRESHOLDS.WARNING) {
           const snooze = localStorage.getItem('bd_warn_snooze_' + locationCode);
           const now = Date.now();
@@ -621,9 +597,7 @@
             document.getElementById('warnDaysLeft').textContent = Math.max(1, daysLeft);
           } else {
             badgeToShow = document.getElementById('badgeActive');
-            const parsedDate2 = new Date(lastUpdate);
-        const formatted2 = !isNaN(parsedDate2) ? parsedDate2.toLocaleDateString('en-GB') + ' ' + parsedDate2.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}) : lastUpdate;
-        document.getElementById('activeLastUpdate').textContent = formatted2 + ' (reminder snoozed)';
+            document.getElementById('activeLastUpdate').textContent = lastUpdate + ' (reminder snoozed)';
           }
         } else if (daysSince <= STATUS_THRESHOLDS.PAUSED) {
           badgeToShow = document.getElementById('badgePaused');
