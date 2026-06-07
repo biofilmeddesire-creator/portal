@@ -629,21 +629,46 @@
       document.getElementById('activeLastUpdate').textContent = lastUpdate.replace(' (reminder snoozed)', '') + ' (reminder snoozed)';
     }
 
-    // Example JavaScript for your web client logic
-if (response.success) {
-  if (response.role === "MASTER") {
-    // Show welcome message, show room inputs, UNHIDE owner settings panel
-    alert("Welcome " + response.name);
-    document.getElementById("owner-settings").style.display = "block";
-  } else if (response.role === "CARETAKER") {
-    // Show welcome message, show room inputs, HIDE owner settings panel completely
-    alert("Logged in as Caretaker: " + response.name);
-    document.getElementById("owner-settings").style.display = "none";
-  }
-} else {
-  alert("Error: " + response.error);
-}
-
+       // ── LOGIN GATE ──
+    document.getElementById('loginBtn').addEventListener('click', async function() {
+      const btn = document.getElementById('loginBtn');
+      const errDiv = document.getElementById('loginError');
+      const tokenVal = document.getElementById('loginToken').value.trim();
+      const pinVal = document.getElementById('loginPin').value.trim();
+      if (!tokenVal || !pinVal) { errDiv.innerText = 'Please enter both your token and PIN.'; errDiv.style.display = 'block'; return; }
+      btn.disabled = true; btn.innerText = 'Verifying...'; errDiv.style.display = 'none';
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'verifyPortalLogin', security_token: tokenVal, pin: pinVal })
+        });
+        const response = await res.json();
+        if (response.success) {
+          document.getElementById('loginGate').style.display = 'none';
+          document.getElementById('portalBody').style.display = 'block';
+          if (response.role === 'MASTER') {
+            document.getElementById('ownerSettings').style.display = 'block';
+          } else if (response.role === 'CARETAKER') {
+            document.getElementById('ownerSettings').style.display = 'none';
+          }
+          checkStatus();
+        } else {
+          const msgs = { INCORRECT_PIN: 'Incorrect PIN. Please try again.', INVALID_TOKEN: 'Token not recognised. Please check your link.' };
+          errDiv.innerText = msgs[response.error] || 'Login failed. Please try again.';
+          errDiv.style.display = 'block';
+        }
+      } catch (err) {
+        errDiv.innerText = 'Connection error. Please check your signal and try again.';
+        errDiv.style.display = 'block';
+      }
+      btn.disabled = false; btn.innerText = 'Sign In';
+    });
+ 
+    // Allow Enter key on PIN field to trigger login
+    document.getElementById('loginPin').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') document.getElementById('loginBtn').click();
+    });
+ 
 </script>
-</body>
+  </body>
 </html>
