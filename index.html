@@ -179,7 +179,28 @@
 
         <div id="ownerSettings" style="display:none; margin-top:30px; padding:20px; background:#f1f5f9; border-radius:8px; border:1px solid #cbd5e1;">
             <h3 style="font-size:1rem; color:#0f172a; font-weight:600; margin-bottom:10px;">Master Settings (Owner Only)</h3>
-            <p style="font-size:0.8rem; color:#475569; margin-bottom:0;">Manage your staff access permissions and update caretaker PINs here.</p>
+            <p style="font-size:0.8rem; color:#475569; margin-bottom:15px;">Manage your staff access permissions and update caretaker PINs here.</p>
+            
+            <div style="background:#ffffff; border:1px solid #e2e8f0; padding:15px; border-radius:8px; margin-bottom:15px;">
+                <label class="form-label" style="color:#0f172a;">Caretaker 1</label>
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="staff1_name" class="form-control" placeholder="Name" style="flex:2;">
+                    <input type="password" id="staff1_pin" class="form-control" placeholder="PIN" maxlength="4" style="flex:1; text-align:center; letter-spacing:0.2em;">
+                </div>
+                <input type="tel" id="staff1_phone" class="form-control" placeholder="Phone Number">
+            </div>
+
+            <div style="background:#ffffff; border:1px solid #e2e8f0; padding:15px; border-radius:8px; margin-bottom:15px;">
+                <label class="form-label" style="color:#0f172a;">Caretaker 2</label>
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="staff2_name" class="form-control" placeholder="Name" style="flex:2;">
+                    <input type="password" id="staff2_pin" class="form-control" placeholder="PIN" maxlength="4" style="flex:1; text-align:center; letter-spacing:0.2em;">
+                </div>
+                <input type="tel" id="staff2_phone" class="form-control" placeholder="Phone Number">
+            </div>
+
+            <button type="button" class="btn-submit" id="saveStaffBtn" style="background-color:#15803d; margin-top:5px;">Save Staff Settings</button>
+            <div id="settingsMsg" style="text-align:center; font-size:0.85rem; font-weight:600; margin-top:10px; display:none;"></div>
         </div>
         </div>
 
