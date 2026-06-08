@@ -1,438 +1,265 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
 <meta name="theme-color" content="#0f172a">
-
 <meta name="mobile-web-app-capable" content="yes">
-
 <meta name="apple-mobile-web-app-capable" content="yes">
-
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
 <meta name="apple-mobile-web-app-title" content="BD Portal">
-
 <title>BiofilmedDesire Residence Portal</title>
-
 <link id="manifest-link" rel="manifest" href="/manifest.json">
-
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
-
 <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
-
 <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png">
-
 <link rel="apple-touch-icon" sizes="120x120" href="icon-192.png">
-
 <link rel="shortcut icon" href="icon-192.png">
-
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
 <style>
-
 * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-touch-callout: none; box-sizing: border-box; }
-
 body { background-color: #f8fafc; font-family: 'Inter', sans-serif; padding: 40px 15px; color: #1e293b; -webkit-text-size-adjust: 100%; overscroll-behavior-y: none; }
-
-.container { max-width: 500px; width: 100%; background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin: auto; border-top: 5px solid #0f172a; position: relative; }
-
-.top-right-logo { position: absolute; top: 15px; right: 15px; width: 55px; height: 55px; object-fit: cover; border-radius: 50%; border: 1px solid #e2e8f0; background-color: white; }
-
+.container { max-width: 500px; width: 100%; background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin: auto;
+border-top: 5px solid #0f172a; position: relative; }
+.top-right-logo { position: absolute; top: 15px; right: 15px; width: 55px; height: 55px; object-fit: cover; border-radius: 50%; border: 1px solid #e2e8f0;
+background-color: white; }
 h2 { font-family: 'Playfair Display', serif; font-weight: 600; text-align: left; margin-bottom: 30px; color: #0f172a; font-size: 1.4rem; padding-right: 65px; }
-
-@media (max-width: 576px) { body { padding: 20px 10px; } .container { padding: 25px 15px; border-radius: 8px; } .top-right-logo { width: 45px; height: 45px; top: 10px; right: 10px; } h2 { font-size: 1.25rem; padding-right: 50px; margin-bottom: 20px; } .room-card { padding: 15px; } }
-
+@media (max-width: 576px) { body { padding: 20px 10px; } .container { padding: 25px 15px; border-radius: 8px;
+} .top-right-logo { width: 45px; height: 45px; top: 10px; right: 10px; } h2 { font-size: 1.25rem; padding-right: 50px; margin-bottom: 20px;
+} .room-card { padding: 15px; } }
 .form-label { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; display: block; }
-
 .room-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; position: relative; }
-
-.btn-remove { position: absolute; top: 10px; right: 10px; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px; padding: 2px 8px; font-weight: bold; font-size: 0.8rem; min-width: 28px; min-height: 28px; cursor: pointer; }
-
+.btn-remove { position: absolute; top: 10px; right: 10px; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px; padding: 2px 8px;
+font-weight: bold; font-size: 0.8rem; min-width: 28px; min-height: 28px; cursor: pointer; }
 .btn-remove:hover { background: #fca5a5; }
-
-.btn-add { background-color: #e2e8f0; color: #0f172a; font-weight: 600; border: none; border-radius: 6px; padding: 12px; width: 100%; margin-bottom: 25px; min-height: 44px; cursor: pointer; }
-
+.btn-add { background-color: #e2e8f0; color: #0f172a; font-weight: 600; border: none; border-radius: 6px; padding: 12px; width: 100%; margin-bottom: 25px; min-height: 44px;
+cursor: pointer; }
 .btn-add:hover { background-color: #cbd5e1; }
-
-.btn-submit { width: 100%; padding: 14px; font-weight: 600; background-color: #0f172a; color: white; border: none; border-radius: 6px; margin-top: 15px; min-height: 48px; font-size: 1rem; cursor: pointer; }
-
+.btn-submit { width: 100%; padding: 14px; font-weight: 600; background-color: #0f172a; color: white; border: none; border-radius: 6px; margin-top: 15px; min-height: 48px;
+font-size: 1rem; cursor: pointer; }
 .btn-submit:hover { background-color: #1e293b; }
-
 .btn-submit:active { background-color: #334155; transform: scale(0.98); }
-
 .whatsapp-success { color: #15803d; font-size: 0.9rem; margin-top: 15px; text-align: center; font-weight: 500; }
-
 .text-danger { color: #dc2626; font-size: 0.9rem; margin-top: 15px; text-align: center; }
-
 input, select, textarea { font-size: 16px !important; min-height: 44px; width: 100%; }
-
 input[type="number"] { -moz-appearance: textfield; }
-
 input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
-#loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
-
+#loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: flex; flex-direction: column; align-items: center;
+justify-content: center; z-index: 9999; }
 #loadingScreen img { width: 120px; height: 120px; border-radius: 24px; object-fit: cover; border: 2px solid rgba(255,255,255,0.1); }
-
 #loadingScreen p { color: #94a3b8; font-family: sans-serif; margin-top: 16px; font-size: 14px; letter-spacing: 0.5px; }
-
 #statusMsg { margin-top: 20px; text-align: center; font-weight: 600; padding: 12px; border-radius: 6px; }
-
 #iosInstallHint { display: none; text-align: center; padding: 20px; background: #f1f5f9; border-radius: 8px; margin-bottom: 20px; }
-
 #iosInstallHint p { margin: 0; font-size: 0.85rem; color: #475569; }
-
 .media-section { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
-
 .media-label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 6px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-
 .file-input-sm { font-size: 14px !important; min-height: 38px; }
-
 .notes-textarea { min-height: 60px; resize: vertical; }
-
 .receipt-toggle { color: #0f172a; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; }
-
 .receipt-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-top: 10px; text-align: left; display: none; }
-
 .receipt-card.show { display: block; animation: fadeIn 0.2s ease; }
-
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-
 .receipt-row { font-size: 0.85rem; color: #475569; margin-bottom: 6px; }
-
 .receipt-row strong { color: #0f172a; }
-
 .receipt-divider { border-top: 1px dashed #e2e8f0; margin: 10px 0; }
-
-.receipt-copy { background: #0f172a; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; }
-
+.receipt-copy { background: #0f172a; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+margin-top: 10px; width: 100%; }
 .draft-saved { font-size: 0.7rem; color: #10b981; text-align: right; margin-top: 4px; opacity: 0; transition: opacity 0.3s; }
-
 .draft-saved.show { opacity: 1; }
-
 .draft-indicator { font-size: 0.7rem; color: #94a3b8; text-align: center; margin-bottom: 15px; }
-
 .price-spots-row { display: flex; gap: 12px; flex-wrap: nowrap; }
-
 .price-spots-row > div { flex: 1 1 0; min-width: 0; }
-
 @media (max-width: 360px) { .price-spots-row { flex-direction: column; gap: 0; } }
-
 /* STATUS BADGE --- ALWAYS VISIBLE */
-
-.status-badge { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.4; animation: fadeIn 0.3s ease-out; }
-
+.status-badge { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.4;
+animation: fadeIn 0.3s ease-out; }
 .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
-
 .status-text { flex: 1; }
-
 .status-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
-
 .status-meta { font-size: 0.8rem; opacity: 0.7; margin-top: 4px; }
-
 .status-desc { font-size: 0.8rem; opacity: 0.85; margin-top: 4px; }
-
 .status-active { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
-
 .status-active .status-dot { background: #22c55e; }
-
 .status-warning { background: #fefce8; border: 1px solid #fde047; color: #854d0e; }
-
 .status-warning .status-dot { background: #eab308; animation: pulse 2s infinite; }
-
 .status-paused { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; }
-
 .status-paused .status-dot { background: #f97316; }
-
 .status-inactive { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
-
 .status-inactive .status-dot { background: #ef4444; }
-
-@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(234,179,8,0.4); } 50% { box-shadow: 0 0 0 6px rgba(234,179,8,0); } }
-
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(234,179,8,0.4);
+} 50% { box-shadow: 0 0 0 6px rgba(234,179,8,0); } }
 .warning-actions { display: flex; gap: 8px; margin-top: 10px; }
-
-.warning-btn { flex: 1; padding: 8px 10px; border-radius: 6px; border: none; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
-
+.warning-btn { flex: 1; padding: 8px 10px; border-radius: 6px; border: none; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+}
 .warning-btn-primary { background: #0f172a; color: white; }
-
 .warning-btn-secondary { background: transparent; color: #854d0e; border: 1px solid #fde047; }
-
 /* Custom Additions for Password Eye Toggle and Formatting */
-
 .password-wrapper { position: relative; width: 100%; display: block; }
-
 .password-wrapper input { padding-right: 40px; }
-
-.eye-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; width: 20px; height: 20px; color: #64748b; user-select: none; display: flex; align-items: center; justify-content: center; }
-
+.eye-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; width: 20px; height: 20px; color: #64748b; user-select: none;
+display: flex; align-items: center; justify-content: center; }
 .eye-icon:hover { color: #0f172a; }
-
 .eye-icon svg { width: 20px; height: 20px; }
-
-#loginGate h3 { font-family: 'Inter', sans-serif; font-size: 1.1rem; color: #475569; margin-bottom: 5px; font-weight: 500; }
-
-#loginGate h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #0f172a; margin-bottom: 25px; text-align: center; padding: 0; }
-
+#loginGate h3, #setupGate h3 { font-family: 'Inter', sans-serif; font-size: 1.1rem; color: #475569; margin-bottom: 5px; font-weight: 500; }
+#loginGate h2, #setupGate h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #0f172a; margin-bottom: 25px; text-align: center; padding: 0; }
 .login-welcome { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: #0f172a; font-weight: 600; text-align: center; margin-bottom: 5px; padding: 0; }
-
 .login-to { font-family: 'Inter', sans-serif; font-size: 1rem; color: #64748b; text-align: center; margin-bottom: 5px; font-weight: 500; }
-
 .login-residence { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #0f172a; font-weight: 600; text-align: center; margin-bottom: 5px; padding: 0; }
-
 .login-portal { font-family: 'Inter', sans-serif; font-size: 1rem; color: #64748b; text-align: center; margin-bottom: 25px; font-weight: 500; }
-
 </style>
-
 <base target="_blank">
-
 </head>
-
 <body>
-
 <div id="loadingScreen">
-
 <img src="rsz_logo.jpg" alt="Biofilmed Desire">
-
 <p>Loading portal...</p>
-
 </div>
 
 <div class="container" id="loginGate" style="display:none; text-align: center; margin-top: 40px;">
-
 <img src="rsz_logo.jpg" alt="Desire Logo" style="width:80px;height:80px;border-radius:50%;margin-bottom:15px;">
-
 <h2 class="login-welcome">Welcome</h2>
-
 <h3 class="login-to">to</h3>
-
 <h2 class="login-residence">BiofilmedDesire Residence</h2>
-
 <h3 class="login-portal">portal</h3>
-
 <h2>Secure login</h2>
-
 <div id="loginError" class="text-danger mb-3" style="display:none; font-weight:600;"></div>
+<div class="mb-3 text-start">
+<label class="form-label">Access code</label>
+<input type="text" id="loginToken" class="form-control" readonly style="background:#e2e8f0; cursor:not-allowed;">
+</div>
+<div class="mb-4 text-start">
+<label class="form-label">Access PIN</label>
+<div class="password-wrapper">
+<input type="password" id="loginPin" class="form-control" placeholder="****" maxlength="4" inputmode="numeric" style="text-align:center; font-size:1.5rem; letter-spacing:0.5em;">
+<span class="eye-icon" onclick="togglePinVisibility('loginPin', this)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+</div>
+</div>
+<button type="button" class="btn-submit" id="loginBtn" style="margin-bottom: 15px;">Sign In</button>
+<div style="margin-top: 15px; margin-bottom: 20px;">
+<a href="#" id="forgotPinBtn" style="color: #2563eb; font-size: 0.9rem; font-weight: 600; text-decoration: none;">Forgot PIN?</a>
+</div>
+<p style="color: #64748b; font-size: 0.8rem; font-weight: 500; margin-bottom: 0;"> 🔒  Secure & Encrypted</p>
+</div>
+
+<div class="container" id="setupGate" style="display:none; text-align: center; margin-top: 40px;">
+<img src="rsz_logo.jpg" alt="Desire Logo" style="width:80px;height:80px;border-radius:50%;margin-bottom:15px;">
+<h2 class="login-welcome">Welcome</h2>
+<h3 class="login-to">to</h3>
+<h2 class="login-residence">BiofilmedDesire Residence</h2>
+<h3 class="login-portal">portal</h3>
+<h2 style="font-size: 1.4rem; margin-bottom: 10px;">Set Up Master PIN</h2>
+<p style="font-size: 0.9rem; color: #475569; margin-bottom: 25px;">As a first-time user, please create a secure 4-digit PIN for your property.</p>
+
+<div id="setupError" class="text-danger mb-3" style="display:none; font-weight:600;"></div>
 
 <div class="mb-3 text-start">
-
-<label class="form-label">Access code</label>
-
-<input type="text" id="loginToken" class="form-control" readonly style="background:#e2e8f0; cursor:not-allowed;">
-
-</div>
-
-<div class="mb-4 text-start">
-
-<label class="form-label">Access PIN</label>
-
+<label class="form-label">Create PIN</label>
 <div class="password-wrapper">
-
-<input type="password" id="loginPin" class="form-control" placeholder="****" maxlength="4" inputmode="numeric" style="text-align:center; font-size:1.5rem; letter-spacing:0.5em;">
-
-<span class="eye-icon" onclick="togglePinVisibility('loginPin', this)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
-
+<input type="password" id="setupPin" class="form-control" placeholder="****" maxlength="4" inputmode="numeric" style="text-align:center; font-size:1.5rem; letter-spacing:0.5em;">
+<span class="eye-icon" onclick="togglePinVisibility('setupPin', this)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
 </div>
-
 </div>
-
-<button type="button" class="btn-submit" id="loginBtn" style="margin-bottom: 15px;">Sign In</button>
-
-<div style="margin-top: 15px; margin-bottom: 20px;">
-
-<a href="#" id="forgotPinBtn" style="color: #2563eb; font-size: 0.9rem; font-weight: 600; text-decoration: none;">Forgot PIN?</a>
-
+<div class="mb-4 text-start">
+<label class="form-label">Confirm PIN</label>
+<div class="password-wrapper">
+<input type="password" id="setupPinConfirm" class="form-control" placeholder="****" maxlength="4" inputmode="numeric" style="text-align:center; font-size:1.5rem; letter-spacing:0.5em;">
+<span class="eye-icon" onclick="togglePinVisibility('setupPinConfirm', this)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
 </div>
-
-<p style="color: #64748b; font-size: 0.8rem; font-weight: 500; margin-bottom: 0;">🔒 Secure & Encrypted</p>
-
+</div>
+<button type="button" class="btn-submit" id="setupBtn" style="margin-bottom: 15px;">Save & Continue</button>
+<p style="color: #64748b; font-size: 0.8rem; font-weight: 500; margin-bottom: 0;"> 🔒  Secure & Encrypted</p>
 </div>
 
 <div class="container" id="mainContent" style="display:none;">
-
 <img src="rsz_logo.jpg" alt="Desire Logo" class="top-right-logo" onerror="this.style.display='none'">
-
 <h2>BiofilmedDesire Residence Portal</h2>
-
 <div id="iosInstallHint">
-
 <p><strong>For best experience:</strong> Tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong>.</p>
-
 </div>
-
 <div id="badgeActive" class="status-badge status-active">
-
 <div class="status-dot"></div>
-
 <div class="status-text">
-
 <div class="status-title">ACTIVE --- Rooms Are Live</div>
-
 <div class="status-meta">Last updated: <span id="activeLastUpdate">loading...</span></div>
-
 </div>
-
 </div>
-
 <div id="badgeWarning" class="status-badge status-warning" style="display: none;">
-
 <div class="status-dot"></div>
-
 <div class="status-text">
-
 <div class="status-title">WARNING --- Update in <span id="warnDaysLeft">4</span> days</div>
-
 <div class="status-desc">Your rooms will pause soon. Update now to stay live.</div>
-
 <div class="warning-actions">
-
 <button type="button" class="warning-btn warning-btn-primary" onclick="scrollToForm()">Update Now</button>
-
 <button type="button" class="warning-btn warning-btn-secondary" onclick="snoozeWarning()">Remind Me Tomorrow</button>
-
 </div>
-
 </div>
-
 </div>
-
 <div id="badgePaused" class="status-badge status-paused" style="display: none;">
-
 <div class="status-dot"></div>
-
 <div class="status-text">
-
 <div class="status-title">PAUSED --- Update Needed</div>
-
 <div class="status-desc">Students can't see your rooms. Update to reactivate.</div>
-
 </div>
-
 </div>
-
 <div id="badgeInactive" class="status-badge status-inactive" style="display: none;">
-
 <div class="status-dot"></div>
-
 <div class="status-text">
-
 <div class="status-title">INACTIVE --- Update Required</div>
-
 <div class="status-desc">Your rooms are off. Update to get tenants again.</div>
-
 </div>
-
 </div>
-
 <form id="updateForm">
-
 <div class="mb-4">
-
 <label class="form-label">Name of Residence</label>
-
 <input type="text" id="residenceName" class="form-control" required>
-
 </div>
-
 <div class="draft-indicator" id="draftIndicator"></div>
-
 <div id="roomContainer"></div>
-
 <button type="button" class="btn-add" id="addRoomBtn">+ Add Another Room Type</button>
-
 <button type="button" class="btn-submit" id="submitBtn">Submit Data</button>
-
 </form>
-
 <div id="statusMsg"></div>
-
 <div id="receiptSection" style="display:none;">
-
 <div class="receipt-toggle" id="receiptToggle">&#128196; View Receipt <span id="receiptArrow">v</span></div>
-
 <div class="receipt-card" id="receiptCard">
-
 <div class="receipt-row" id="receiptResName"></div>
-
 <div class="receipt-row" id="receiptDate"></div>
-
 <div class="receipt-row" id="receiptRef"></div>
-
 <div class="receipt-divider"></div>
-
 <div id="receiptRooms"></div>
-
 <button class="receipt-copy" id="receiptCopy">Copy</button>
-
 </div>
-
 </div>
-
 <div id="ownerSettings" style="display:none; margin-top:30px; background:#f1f5f9; border-radius:8px; border:1px solid #cbd5e1; overflow:hidden;">
-
 <div id="settingsHeader" style="padding: 18px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #e2e8f0;">
-
-<h3 style="font-size:1rem; color:#0f172a; font-weight:600; margin:0;">⚙️ Settings (Owner only)</h3>
-
+<h3 style="font-size:1rem; color:#0f172a; font-weight:600; margin:0;"> ⚙ ️ Settings (Owner only)</h3>
 <span id="settingsToggleIcon" style="font-size: 1.2rem; font-weight: bold; color: #475569;">+</span>
-
 </div>
-
 <div id="settingsContent" style="display:none; padding: 20px;">
-
 <p style="font-size:0.8rem; color:#475569; margin-bottom:15px;">Manage your staff access permissions and update caretaker PINs here.</p>
-
 <div id="caretakerContainer"></div>
-
 <button type="button" class="btn-add" id="addCaretakerBtn" style="background-color:#ffffff; border:1px solid #cbd5e1; margin-bottom: 15px;">+ Add Another Caretaker</button>
-
 <button type="button" class="btn-submit" id="saveStaffBtn" style="background-color:#15803d; margin-top:0;">Save Staff Settings</button>
-
 <div id="settingsMsg" style="text-align:center; font-size:0.85rem; font-weight:600; margin-top:10px; display:none;"></div>
-
 </div>
-
 </div>
-
 </div>
-
 <script>
-
 const API_URL = "https://api.biofilmeddesire.com/v1/sync";
-
 const QUEUE_KEY = 'q_v1';
-
 const DRAFT_KEY = 'd_v3';
-
 const ROOM_TYPES_CACHE_KEY = 'rt_cache';
-
 const PORTAL_ID_KEY = 'pid';
-
 let roomTypeOptions = [];
-
 const STATUS_THRESHOLDS = { ACTIVE: 14, WARNING: 18, PAUSED: 30, INACTIVE: 31 };
-
 const YOUR_WHATSAPP = "27646300769";
-
 let receiptVisible = false;
-
 // SVG icon definitions
 const EYE_OPEN_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
-
 const EYE_CLOSED_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7c.78 0 1.53-.09 2.24-.26"/><path d="M2 2l20 20"/></svg>';
-
 // Helpers for the Eye Password Toggle
 function togglePinVisibility(inputId, iconElement) {
 const input = document.getElementById(inputId);
@@ -444,7 +271,6 @@ input.type = "password";
 iconElement.innerHTML = EYE_OPEN_SVG;
 }
 }
-
 // Collapsible Settings Logic
 document.getElementById('settingsHeader').addEventListener('click', function() {
 const content = document.getElementById('settingsContent');
@@ -457,10 +283,8 @@ content.style.display = "none";
 icon.innerText = "+";
 }
 });
-
 const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
 const urlParams = new URLSearchParams(window.location.search);
-
 (function() {
 var op = localStorage.getItem('bd_portal_id') || sessionStorage.getItem('bd_portal_id');
 if (op) { localStorage.setItem('pid', op); sessionStorage.setItem('pid', op); localStorage.removeItem('bd_portal_id'); sessionStorage.removeItem('bd_portal_id'); }
@@ -468,19 +292,15 @@ var oq = localStorage.getItem('bd_offline_queue'); if (oq) { localStorage.setIte
 var od = localStorage.getItem('bd_portal_draft_v3'); if (od) { localStorage.setItem('d_v3', od); localStorage.removeItem('bd_portal_draft_v3'); }
 var ort = localStorage.getItem('bd_room_types'); if (ort) { localStorage.setItem('rt_cache', ort); localStorage.removeItem('bd_room_types'); }
 })();
-
 let locationCode = hashParams.get('id') || hashParams.get('code') || urlParams.get('id') || urlParams.get('code') || '';
 if (!locationCode) locationCode = localStorage.getItem(PORTAL_ID_KEY) || '';
 if (!locationCode) locationCode = sessionStorage.getItem(PORTAL_ID_KEY) || '';
-
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isStandalone = window.navigator.standalone === true;
-
 if (locationCode) {
 localStorage.setItem(PORTAL_ID_KEY, locationCode);
 sessionStorage.setItem(PORTAL_ID_KEY, locationCode);
 }
-
 function generateDynamicManifest() {
 if (!locationCode) return;
 const manifest = { name:"Biofilmed Desire Portal", short_name:"BD Portal", start_url:"/#id="+encodeURIComponent(locationCode), display:"standalone", background_color:"#0f172a", theme_color:"#0f172a", scope:"/", icons:[{src:"icon-192.png",sizes:"192x192",type:"image/png",purpose:"any maskable"},{src:"icon-512.png",sizes:"512x512",type:"image/png",purpose:"any maskable"}], orientation:"portrait" };
@@ -488,16 +308,12 @@ const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
 const link = document.getElementById('manifest-link');
 if (link) link.href = URL.createObjectURL(blob);
 }
-
 if (locationCode) generateDynamicManifest();
-
 if (isIOS && !isStandalone && locationCode) {
 const hint = document.getElementById('iosInstallHint');
 if (hint) hint.style.display = 'block';
 }
-
 function escapeHtml(text) { const div = document.createElement('div'); div.innerText = text; return div.innerHTML; }
-
 // Room Card Logic
 function createRoomCard(room) {
 room = room || { rowIndex: '', type: '', price: '', spots: 0 };
@@ -530,7 +346,6 @@ else alert('At least one room card is required.');
 });
 return div;
 }
-
 function renderRooms(rooms) {
 const container = document.getElementById('roomContainer');
 container.innerHTML = '';
@@ -541,9 +356,7 @@ container.appendChild(createRoomCard({ rowIndex: r.rowIndex || '', type: r.type 
 });
 }
 }
-
 document.getElementById('addRoomBtn').addEventListener('click', function() { document.getElementById('roomContainer').appendChild(createRoomCard()); });
-
 function readFileAsBase64(file) {
 return new Promise(function(resolve) {
 const reader = new FileReader();
@@ -551,7 +364,6 @@ reader.onload = function(e) { resolve({ base64: e.target.result.split(',')[1], m
 reader.readAsDataURL(file);
 });
 }
-
 async function loadData() {
 if (!locationCode) {
 if (!isStandalone) document.getElementById('loadingScreen').innerHTML = '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;"><strong>Error:</strong> No access code found.<br><br>Please open this portal using the link provided by Biofilmed Desire.</p>';
@@ -583,12 +395,10 @@ renderRooms([]);
 restoreDraft(serverData);
 checkStatus();
 }
-
 function getQueue() { try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch (e) { return []; } }
 function saveQueue(q) { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
 function addToQueue(payload) { const q = getQueue(); q.push({ payload, timestamp: Date.now(), attempts: 0 }); saveQueue(q); return q.length; }
 function removeFromQueue(i) { const q = getQueue(); q.splice(i, 1); saveQueue(q); }
-
 async function processQueue() {
 const q = getQueue(); if (q.length === 0) return;
 const msg = document.getElementById('statusMsg'); let sc = 0;
@@ -601,14 +411,12 @@ if (result.status === 'Success') { removeFromQueue(i); sc++; }
 else if (item.attempts >= 3) removeFromQueue(i);
 } catch (err) { if (item.attempts >= 3) removeFromQueue(i); }
 }
-if (sc > 0) { msg.className = 'whatsapp-success'; msg.innerText = sc + ' queued submission(s) sent successfully!'; msg.style.display = 'block'; }
+if (sc > 0) { msg.className = 'whatsapp-success'; msg.innerText = sc + ' queued submission(s) sent successfully!'; msg.style.display = 'block';
 }
-
+}
 window.addEventListener('online', function() { processQueue(); });
 if (navigator.onLine) setTimeout(processQueue, 2000);
-
 let lastReceiptText = '';
-
 function buildReceipt(payload, cardMap) {
 const now = new Date();
 const dateStr = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
@@ -631,13 +439,11 @@ document.getElementById('receiptSection').style.display = 'block';
 document.getElementById('receiptCard').classList.remove('show');
 document.getElementById('receiptArrow').innerText = 'v';
 }
-
 document.getElementById('receiptToggle').addEventListener('click', function() {
 const card = document.getElementById('receiptCard'); const arrow = document.getElementById('receiptArrow');
 if (card.classList.contains('show')) { card.classList.remove('show'); arrow.innerText = 'v'; }
 else { card.classList.add('show'); arrow.innerText = '^'; }
 });
-
 document.getElementById('receiptCopy').addEventListener('click', function() {
 if (navigator.clipboard && lastReceiptText) {
 navigator.clipboard.writeText(lastReceiptText).then(function() {
@@ -646,7 +452,6 @@ btn.innerText = 'Copied!'; setTimeout(function() { btn.innerText = old; }, 2000)
 });
 }
 });
-
 document.getElementById('submitBtn').addEventListener('click', async function() {
 const btn = document.getElementById('submitBtn');
 if (btn.dataset.submitting === "true") return;
@@ -664,7 +469,8 @@ const rowIndex = card.getAttribute('data-rowindex') || '';
 const notes = card.querySelector('.notes-input').value.trim();
 const pictureFile = card.querySelector('.picture-input').files[0];
 const videoFile = card.querySelector('.video-input').files[0];
-const entry = { type, price, spots, rowIndex, notes: notes || '', pictureBase64: null, pictureMime: null, pictureName: null, videoBase64: null, videoMime: null, videoName: null };
+const entry = { type, price, spots, rowIndex, notes: notes ||
+'', pictureBase64: null, pictureMime: null, pictureName: null, videoBase64: null, videoMime: null, videoName: null };
 if (pictureFile) { const pd = await readFileAsBase64(pictureFile); entry.pictureBase64 = pd.base64; entry.pictureMime = pd.mimeType; entry.pictureName = pd.name; }
 if (videoFile) { const vd = await readFileAsBase64(videoFile); entry.videoBase64 = vd.base64; entry.videoMime = vd.mimeType; entry.videoName = vd.name; }
 cardEntries.push(entry);
@@ -717,7 +523,6 @@ msg.className = 'whatsapp-success'; msg.innerHTML = 'Connection failed. Your upd
 }
 btn.disabled = false; btn.innerText = 'Submit Data'; btn.dataset.submitting = "false";
 });
-
 let draftDebounceTimer = null;
 function getDraft() { try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { return null; } }
 function saveDraft(targetCard) {
@@ -730,7 +535,8 @@ const ind = document.getElementById('draftIndicator'); if (ind) ind.innerText = 
 }
 function restoreDraft(serverData) {
 const draft = getDraft(); if (!draft) return false;
-if ((Date.now() - (draft.savedAt || 0)) / (1000 * 60 * 60 * 24) > 7) { localStorage.removeItem(DRAFT_KEY); return false; }
+if ((Date.now() - (draft.savedAt || 0)) / (1000 * 60 * 60 * 24) > 7) { localStorage.removeItem(DRAFT_KEY); return false;
+}
 if (serverData && serverData.rooms && serverData.rooms.length > 0) return false;
 if (draft.residenceName) document.getElementById('residenceName').value = draft.residenceName;
 if (draft.rooms && draft.rooms.length > 0) {
@@ -748,7 +554,6 @@ draftDebounceTimer = setTimeout(function() { saveDraft(tc); }, 800);
 }
 const updateForm = document.getElementById('updateForm');
 if (updateForm) { updateForm.addEventListener('input', debouncedSave); updateForm.addEventListener('change', debouncedSave); }
-
 async function checkStatus() {
 if (!locationCode) { document.querySelectorAll('.status-badge').forEach(function(b) { b.style.display = 'none'; }); return; }
 try {
@@ -789,7 +594,6 @@ document.getElementById('badgeActive').style.display = 'flex';
 document.getElementById('activeLastUpdate').textContent = 'Unable to check';
 }
 }
-
 function scrollToForm() { document.getElementById('updateForm').scrollIntoView({ behavior: 'smooth' }); }
 function snoozeWarning() {
 const tomorrow = Date.now() + (24 * 60 * 60 * 1000);
@@ -799,13 +603,10 @@ document.getElementById('badgeActive').style.display = 'flex';
 const lastUpdate = document.getElementById('activeLastUpdate').textContent;
 document.getElementById('activeLastUpdate').textContent = lastUpdate.replace(' (reminder snoozed)', '') + ' (reminder snoozed)';
 }
-
 // ==========================================
 // ── STAFF (CARETAKER) MANAGEMENT LOGIC ──
 // ==========================================
-
 let staffCount = 0;
-
 function createCaretakerCard(staff = {name:'', pin:'', phone:''}) {
 staffCount++;
 const pinId = 'staffPin_' + staffCount;
@@ -834,7 +635,6 @@ div.innerHTML = `
 div.querySelector('.btn-remove').addEventListener('click', function() { div.remove(); });
 return div;
 }
-
 document.getElementById('addCaretakerBtn').addEventListener('click', function() {
 const container = document.getElementById('caretakerContainer');
 if(container.children.length < 4) {
@@ -843,7 +643,6 @@ container.appendChild(createCaretakerCard());
 alert('Maximum 4 caretakers allowed.');
 }
 });
-
 document.getElementById('saveStaffBtn').addEventListener('click', async function() {
 const btn = document.getElementById('saveStaffBtn');
 const msg = document.getElementById('settingsMsg');
@@ -873,11 +672,9 @@ msg.style.color = '#dc2626';
 }
 btn.disabled = false; btn.innerText = 'Save Staff Settings';
 });
-
 // ==========================================
 // ── FORGOT PASSWORD LOGIC ──
 // ==========================================
-
 document.getElementById('forgotPinBtn').addEventListener('click', async function(e) {
 e.preventDefault();
 const tokenVal = document.getElementById('loginToken').value.trim();
@@ -898,24 +695,22 @@ alert('Error processing request. Please contact admin.');
 alert('Network error. Failed to process request.');
 }
 });
-
 // ==========================================
 // ── LOGIN & PERSISTENCE SEQUENCE ──
 // ==========================================
-
 let isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
 let userRole = sessionStorage.getItem('userRole') || '';
 let refreshCount = parseInt(sessionStorage.getItem('refreshCount') || '0', 10);
-
 function showLoginScreen() {
 document.getElementById('loadingScreen').style.display = 'none';
 document.getElementById('mainContent').style.display = 'none';
+document.getElementById('setupGate').style.display = 'none';
 document.getElementById('loginGate').style.display = 'block';
 if (locationCode) { document.getElementById('loginToken').value = locationCode; }
 }
-
 function unlockPortal(role) {
 document.getElementById('loginGate').style.display = 'none';
+document.getElementById('setupGate').style.display = 'none';
 document.getElementById('mainContent').style.display = 'block';
 if (role === 'MASTER') {
 document.getElementById('ownerSettings').style.display = 'block';
@@ -927,7 +722,6 @@ document.getElementById('ownerSettings').style.display = 'none';
 }
 loadData();
 }
-
 function checkAuthAndLoad() {
 if (isLoggedIn) {
 if (refreshCount < 3) {
@@ -945,11 +739,9 @@ showLoginScreen();
 showLoginScreen();
 }
 }
-
 if (!isStandalone || locationCode) {
 checkAuthAndLoad();
 }
-
 document.getElementById('loginBtn').addEventListener('click', async function() {
 const btn = document.getElementById('loginBtn');
 const errDiv = document.getElementById('loginError');
@@ -973,6 +765,10 @@ sessionStorage.setItem('userRole', response.role);
 sessionStorage.setItem('refreshCount', '0');
 userRole = response.role;
 unlockPortal(response.role);
+} else if (response.firstTime) {
+// Switch to First-Time PIN Setup Screen
+document.getElementById('loginGate').style.display = 'none';
+document.getElementById('setupGate').style.display = 'block';
 } else {
 const msgs = { INCORRECT_PIN: 'Incorrect PIN. Please try again.', INVALID_CODE: 'Access code not recognised. Please check your link.' };
 errDiv.innerText = msgs[response.error] || 'Login failed. Please try again.';
@@ -984,13 +780,57 @@ errDiv.style.display = 'block';
 }
 btn.disabled = false; btn.innerText = 'Sign In';
 });
-
 document.getElementById('loginPin').addEventListener('keydown', function(e) {
 if (e.key === 'Enter') document.getElementById('loginBtn').click();
 });
 
+// ==========================================
+// ── SETUP PIN LOGIC (FIRST TIME USER) ──
+// ==========================================
+document.getElementById('setupBtn').addEventListener('click', async function() {
+const btn = document.getElementById('setupBtn');
+const errDiv = document.getElementById('setupError');
+const tokenVal = document.getElementById('loginToken').value.trim();
+const pinVal = document.getElementById('setupPin').value.trim();
+const pinConfirm = document.getElementById('setupPinConfirm').value.trim();
+
+if (!pinVal || pinVal.length < 4) {
+errDiv.innerText = 'Please enter a 4-digit PIN.';
+errDiv.style.display = 'block';
+return;
+}
+if (pinVal !== pinConfirm) {
+errDiv.innerText = 'PINs do not match. Please try again.';
+errDiv.style.display = 'block';
+return;
+}
+
+btn.disabled = true; btn.innerText = 'Saving...'; errDiv.style.display = 'none';
+
+try {
+const res = await fetch(API_URL, {
+method: 'POST',
+body: JSON.stringify({ action: 'setMasterPin', security_token: tokenVal, pin: pinVal })
+});
+const response = await res.json();
+
+if (response.success) {
+// Log them in immediately as the Master/Owner
+sessionStorage.setItem('isLoggedIn', 'true');
+sessionStorage.setItem('userRole', 'MASTER');
+sessionStorage.setItem('refreshCount', '0');
+userRole = 'MASTER';
+unlockPortal('MASTER');
+} else {
+errDiv.innerText = response.error || 'Failed to save PIN.';
+errDiv.style.display = 'block';
+}
+} catch (err) {
+errDiv.innerText = 'Connection error. Please try again.';
+errDiv.style.display = 'block';
+}
+btn.disabled = false; btn.innerText = 'Save & Continue';
+});
 </script>
-
 </body>
-
 </html>
