@@ -1,799 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0f172a">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="BD Portal">
-<title>BiofilmedDesire Residence Portal</title>
-<link id="manifest-link" rel="manifest" href="/manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
-<link rel="apple-touch-icon" sizes="152x152" href="icon-192.png">
-<link rel="apple-touch-icon" sizes="120x120" href="icon-192.png">
-<link rel="shortcut icon" href="icon-192.png">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-* { -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-touch-callout: none; box-sizing: border-box; }
-body { background-color: #f8fafc; font-family: 'Inter', sans-serif; padding: 40px 15px; color: #1e293b; -webkit-text-size-adjust: 100%; overscroll-behavior-y: none; }
-.container { max-width: 500px; width: 100%; background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin: auto;
-border-top: 5px solid #0f172a; position: relative; }
-.top-right-logo { position: absolute; top: 15px; right: 15px; width: 55px; height: 55px; object-fit: cover; border-radius: 50%; border: 1px solid #e2e8f0; background-color: white; }
-h2 { font-family: 'Playfair Display', serif; font-weight: 600; text-align: left; margin-bottom: 30px; color: #0f172a; font-size: 1.4rem; padding-right: 65px; }
-@media (max-width: 576px) { body { padding: 20px 10px; } .container { padding: 25px 15px; border-radius: 8px; } .top-right-logo { width: 45px; height: 45px; top: 10px; right: 10px; } h2 { font-size: 1.25rem; padding-right: 50px; margin-bottom: 20px; } .room-card { padding: 15px; } }
-.form-label { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; display: block; }
-.room-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; position: relative; }
-.btn-remove { position: absolute; top: 10px; right: 10px; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px; padding: 2px 8px; font-weight: bold; font-size: 0.8rem; min-width: 28px; min-height: 28px; cursor: pointer; }
-.btn-remove:hover { background: #fca5a5; }
-.btn-add { background-color: #e2e8f0; color: #0f172a; font-weight: 600; border: none; border-radius: 6px; padding: 12px; width: 100%; margin-bottom: 25px; min-height: 44px; cursor: pointer; }
-.btn-add:hover { background-color: #cbd5e1; }
-.btn-submit { width: 100%; padding: 14px; font-weight: 600; background-color: #0f172a; color: white; border: none; border-radius: 6px; margin-top: 15px; min-height: 48px; font-size: 1rem; cursor: pointer; }
-.btn-submit:hover { background-color: #1e293b; }
-.btn-submit:active { background-color: #334155; transform: scale(0.98); }
-.whatsapp-success { color: #15803d; font-size: 0.9rem; margin-top: 15px; text-align: center; font-weight: 500; }
-.text-danger { color: #dc2626; font-size: 0.9rem; margin-top: 15px; text-align: center; }
-input, select, textarea { font-size: 16px !important; min-height: 44px; width: 100%; }
-input[type="number"] { -moz-appearance: textfield; }
-input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-#loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
-#loadingScreen img { width: 120px; height: 120px; border-radius: 24px; object-fit: cover; border: 2px solid rgba(255,255,255,0.1); }
-#loadingScreen p { color: #94a3b8; font-family: sans-serif; margin-top: 16px; font-size: 14px; letter-spacing: 0.5px; }
-#statusMsg { margin-top: 20px; text-align: center; font-weight: 600; padding: 12px; border-radius: 6px; }
-#iosInstallHint { display: none; text-align: center; padding: 20px; background: #f1f5f9; border-radius: 8px; margin-bottom: 20px; }
-#iosInstallHint p { margin: 0; font-size: 0.85rem; color: #475569; }
-.media-section { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
-.media-label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 6px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-.file-input-sm { font-size: 14px !important; min-height: 38px; }
-.notes-textarea { min-height: 60px; resize: vertical; }
-.receipt-toggle { color: #0f172a; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; }
-.receipt-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-top: 10px; text-align: left; display: none; }
-.receipt-card.show { display: block; animation: fadeIn 0.2s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-.receipt-row { font-size: 0.85rem; color: #475569; margin-bottom: 6px; }
-.receipt-row strong { color: #0f172a; }
-.receipt-divider { border-top: 1px dashed #e2e8f0; margin: 10px 0; }
-.receipt-copy { background: #0f172a; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; }
-.draft-saved { font-size: 0.7rem; color: #10b981; text-align: right; margin-top: 4px; opacity: 0; transition: opacity 0.3s; }
-.draft-saved.show { opacity: 1; }
-.draft-indicator { font-size: 0.7rem; color: #94a3b8; text-align: center; margin-bottom: 15px; }
-.price-spots-row { display: flex; gap: 12px; flex-wrap: nowrap; }
-.price-spots-row > div { flex: 1 1 0; min-width: 0; }
-@media (max-width: 360px) { .price-spots-row { flex-direction: column; gap: 0; } }
-
-/* STATUS BADGE — ALWAYS VISIBLE */
-.status-badge { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.4; animation: fadeIn 0.3s ease-out; }
-.status-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
-.status-text { flex: 1; }
-.status-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
-.status-meta { font-size: 0.8rem; opacity: 0.7; margin-top: 4px; }
-.status-desc { font-size: 0.8rem; opacity: 0.85; margin-top: 4px; }
-.status-active { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
-.status-active .status-dot { background: #22c55e; }
-.status-warning { background: #fefce8; border: 1px solid #fde047; color: #854d0e; }
-.status-warning .status-dot { background: #eab308; animation: pulse 2s infinite; }
-.status-paused { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; }
-.status-paused .status-dot { background: #f97316; }
-.status-inactive { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
-.status-inactive .status-dot { background: #ef4444; }
-@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(234,179,8,0.4); } 50% { box-shadow: 0 0 0 6px rgba(234,179,8,0); } }
-.warning-actions { display: flex; gap: 8px; margin-top: 10px; }
-.warning-btn { flex: 1; padding: 8px 10px; border-radius: 6px; border: none; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
-.warning-btn-primary { background: #0f172a; color: white; }
-.warning-btn-secondary { background: transparent; color: #854d0e; border: 1px solid #fde047; }
-
-/* Custom Additions for Password Eye Toggle and Formatting */
-.password-wrapper { position: relative; width: 100%; display: block; }
-.password-wrapper input { padding-right: 40px; }
-.eye-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.1rem; opacity: 0.7; user-select: none; }
-.eye-icon:hover { opacity: 1; }
-#loginGate h3 { font-family: 'Inter', sans-serif; font-size: 1.1rem; color: #475569; margin-bottom: 5px; font-weight: 500; }
-#loginGate h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #0f172a; margin-bottom: 25px; text-align: center; padding: 0; }
-</style>
-<base target="_blank">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BD Portal">
+    <title>BiofilmedDesire Residence Portal</title>
+    <link id="manifest-link" rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icon-192.png">
+    <link rel="shortcut icon" href="icon-192.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght=600&family=Inter:wght=400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-touch-callout: none; box-sizing: border-box; }
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; padding: 40px 15px; color: #1e293b; -webkit-text-size-adjust: 100%; overscroll-behavior-y: none; }
+        .container { max-width: 500px; width: 100%; background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin: auto; border-top: 5px solid #0f172a; position: relative; }
+        .top-right-logo { position: absolute; top: 15px; right: 15px; width: 55px; height: 55px; object-fit: cover; border-radius: 50%; border: 1px solid #e2e8f0; background-color: white; }
+        h2 { font-family: 'Playfair Display', serif; font-weight: 600; text-align: left; margin-bottom: 30px; color: #0f172a; font-size: 1.4rem; padding-right: 65px; }
+        .secure-login-text { font-size: 0.85rem; font-weight: 500; color: #64748b; margin-top: -20px; margin-bottom: 25px; }
+        @media (max-width: 576px) { 
+            body { padding: 20px 10px; } 
+            .container { padding: 25px 15px; border-radius: 8px; } 
+            .top-right-logo { width: 45px; height: 45px; top: 10px; right: 10px; } 
+            h2 { font-size: 1.25rem; padding-right: 50px; margin-bottom: 20px; } 
+            .room-card { padding: 15px; } 
+        }
+        .form-label { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px; display: block; }
+        .room-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; position: relative; }
+        .btn-remove { position: absolute; top: 10px; right: 10px; background: #fee2e2; color: #ef4444; border: none; border-radius: 4px; padding: 2px 8px; font-weight: bold; font-size: 0.8rem; min-width: 28px; min-height: 28px; cursor: pointer; }
+        .btn-remove:hover { background: #fca5a5; }
+        .btn-add { background-color: #e2e8f0; color: #0f172a; font-weight: 600; border: none; border-radius: 6px; padding: 12px; width: 100%; margin-bottom: 25px; min-height: 44px; cursor: pointer; }
+        .btn-add:hover { background-color: #cbd5e1; }
+        .btn-submit { width: 100%; padding: 14px; font-weight: 600; background-color: #0f172a; color: white; border: none; border-radius: 6px; margin-top: 15px; min-height: 48px; font-size: 1rem; cursor: pointer; }
+        .btn-submit:hover { background-color: #1e293b; }
+        .btn-submit:active { background-color: #334155; transform: scale(0.98); }
+        .whatsapp-success { color: #15803d; font-size: 0.9rem; margin-top: 15px; text-align: center; font-weight: 500; }
+        .text-danger { color: #dc2626; font-size: 0.9rem; margin-top: 15px; text-align: center; }
+        input, select, textarea { font-size: 16px !important; min-height: 44px; width: 100%; }
+        input[type="number"] { -moz-appearance: textfield; }
+        input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        #loadingScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+        #loadingScreen img { width: 120px; height: 120px; border-radius: 24px; object-fit: cover; border: 2px solid rgba(255,255,255,0.1); }
+        #loadingScreen p { color: #94a3b8; font-family: sans-serif; margin-top: 16px; font-size: 14px; letter-spacing: 0.5px; }
+        #statusMsg { margin-top: 20px; text-align: center; font-weight: 600; padding: 12px; border-radius: 6px; }
+        .password-wrapper { position: relative; display: flex; align-items: center; }
+        .eye-icon { position: absolute; right: 15px; cursor: pointer; display: flex; align-items: center; color: #64748b; width: 22px; height: 22px; user-select: none; }
+        .eye-icon:hover { color: #0f172a; }
+        .eye-icon svg { width: 100%; height: 100%; }
+        .price-spots-row { display: flex; gap: 12px; flex-wrap: nowrap; }
+        .price-spots-row > div { flex: 1 1 0; min-width: 0; }
+        @media (max-width: 360px) { .price-spots-row { flex-direction: column; gap: 0; } }
+        .status-badge { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.4; animation: fadeIn 0.3s ease-out; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
+        .status-text { flex: 1; }
+        .status-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+    </style>
 </head>
 <body>
-<div id="loadingScreen">
-    <img src="rsz_logo.jpg" alt="Biofilmed Desire">
-    <p>Loading portal...</p>
-</div>
-
-<div class="container" id="loginGate" style="display:none; text-align: center; margin-top: 40px;">
-    <img src="rsz_logo.jpg" alt="Desire Logo" style="width:80px;height:80px;border-radius:50%;margin-bottom:15px;">
-    <h3>Welcome to BiofilmedDesire Residence portal</h3>
-    <h2>Secure login</h2>
-    
-    <div id="loginError" class="text-danger mb-3" style="display:none; font-weight:600;"></div>
-
-    <div class="mb-3 text-start">
-        <label class="form-label">Access code</label>
-        <input type="text" id="loginToken" class="form-control" readonly style="background:#e2e8f0; cursor:not-allowed;">
+    <div id="loadingScreen">
+        <img src="https://biofilmeddesire-creator.github.io/portal/rsz_logo.jpg" alt="Logo">
+        <p>Loading Secure Gateway...</p>
     </div>
 
-    <div class="mb-4 text-start">
-        <label class="form-label">Access PIN</label>
-        <div class="password-wrapper">
-            <input type="password" id="loginPin" class="form-control" placeholder="****" maxlength="4" inputmode="numeric" style="text-align:center; font-size:1.5rem; letter-spacing:0.5em;">
-            <span class="eye-icon" onclick="togglePinVisibility('loginPin', this)">fa-eye</span>
-        </div>
-    </div>
-
-    <button type="button" class="btn-submit" id="loginBtn" style="margin-bottom: 15px;">Sign In</button>
-    
-    <div style="margin-top: 15px; margin-bottom: 20px;">
-        <a href="#" id="forgotPinBtn" style="color: #2563eb; font-size: 0.9rem; font-weight: 600; text-decoration: none;">Forgot password?</a>
-    </div>
-
-    <p style="color: #64748b; font-size: 0.8rem; font-weight: 500; margin-bottom: 0;">🔒 Secure & Encrypted</p>
-</div>
-
-<div class="container" id="mainContent" style="display:none;">
-    <img src="rsz_logo.jpg" alt="Desire Logo" class="top-right-logo" onerror="this.style.display='none'">
-    <h2>BiofilmedDesire Residence Portal</h2>
-
-    <div id="iosInstallHint">
-        <p><strong>For best experience:</strong> Tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong>.</p>
-    </div>
-    
-    <div id="badgeActive" class="status-badge status-active">
-        <div class="status-dot"></div>
-        <div class="status-text">
-            <div class="status-title">ACTIVE — Rooms Are Live</div>
-            <div class="status-meta">Last updated: <span id="activeLastUpdate">loading...</span></div>
-        </div>
-    </div>
-    
-    <div id="badgeWarning" class="status-badge status-warning" style="display: none;">
-        <div class="status-dot"></div>
-        <div class="status-text">
-            <div class="status-title">WARNING — Update in <span id="warnDaysLeft">4</span> days</div>
-            <div class="status-desc">Your rooms will pause soon. Update now to stay live.</div>
-            <div class="warning-actions">
-                <button type="button" class="warning-btn warning-btn-primary" onclick="scrollToForm()">Update Now</button>
-                <button type="button" class="warning-btn warning-btn-secondary" onclick="snoozeWarning()">Remind Me Tomorrow</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="badgePaused" class="status-badge status-paused" style="display: none;">
-        <div class="status-dot"></div>
-        <div class="status-text">
-            <div class="status-title">PAUSED — Update Needed</div>
-            <div class="status-desc">Students can't see your rooms. Update to reactivate.</div>
-        </div>
-    </div>
-    
-    <div id="badgeInactive" class="status-badge status-inactive" style="display: none;">
-        <div class="status-dot"></div>
-        <div class="status-text">
-            <div class="status-title">INACTIVE — Update Required</div>
-            <div class="status-desc">Your rooms are off. Update to get tenants again.</div>
-        </div>
-    </div>
-    
-    <form id="updateForm">
-        <div class="mb-4">
-            <label class="form-label">Name of Residence</label>
-            <input type="text" id="residenceName" class="form-control" required>
-        </div>
-        <div class="draft-indicator" id="draftIndicator"></div>
-        <div id="roomContainer"></div>
-        <button type="button" class="btn-add" id="addRoomBtn">+ Add Another Room Type</button>
-        <button type="button" class="btn-submit" id="submitBtn">Submit Data</button>
-    </form>
-
-    <div id="statusMsg"></div>
-
-    <div id="receiptSection" style="display:none;">
-        <div class="receipt-toggle" id="receiptToggle">&#128196; View Receipt <span id="receiptArrow">v</span></div>
-        <div class="receipt-card" id="receiptCard">
-            <div class="receipt-row" id="receiptResName"></div>
-            <div class="receipt-row" id="receiptDate"></div>
-            <div class="receipt-row" id="receiptRef"></div>
-            <div class="receipt-divider"></div>
-            <div id="receiptRooms"></div>
-            <button class="receipt-copy" id="receiptCopy">Copy</button>
-        </div>
-    </div>
-
-    <div id="ownerSettings" style="display:none; margin-top:30px; background:#f1f5f9; border-radius:8px; border:1px solid #cbd5e1; overflow:hidden;">
-        <div id="settingsHeader" style="padding: 18px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #e2e8f0;">
-            <h3 style="font-size:1rem; color:#0f172a; font-weight:600; margin:0;"> Settings (Owner only)</h3>
-            <span id="settingsToggleIcon" style="font-size: 1.2rem; font-weight: bold; color: #475569;">+</span>
+    <div class="container" id="loginGate" style="display:none;">
+        <img src="https://biofilmeddesire-creator.github.io/portal/rsz_logo.jpg" class="top-right-logo" alt="Logo">
+        <h2>BiofilmedDesire Residence Portal</h2>
+        <div class="secure-login-text">Secure Login</div>
+        
+        <div id="loginError" class="text-danger text-start mb-3" style="display:none;"></div>
+        
+        <div class="mb-3 text-start">
+            <label class="form-label">Location Token</label>
+            <input type="text" id="loginToken" class="form-control" readonly style="background:#e2e8f0; cursor:not-allowed;">
         </div>
         
-        <div id="settingsContent" style="display:none; padding: 20px;">
-            <p style="font-size:0.8rem; color:#475569; margin-bottom:15px;">Manage your staff access permissions and update caretaker PINs here.</p>
-            
+        <div class="mb-4 text-start">
+            <label class="form-label">Access PIN</label>
+            <div class="password-wrapper">
+                <input type="password" id="loginPin" class="form-control" placeholder="****" maxlength="4" inputmode="numeric" style="text-align:center; font-size:1.5rem; letter-spacing:0.5em;">
+                <span class="eye-icon" onclick="togglePinVisibility('loginPin', this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </span>
+            </div>
+        </div>
+        
+        <button type="button" class="btn-submit" id="loginBtn" style="margin-bottom: 15px;">Sign In</button>
+        <div style="margin-top: 15px; margin-bottom: 20px;">
+            <a href="#" id="forgotPinBtn" style="color: #2563eb; font-size: 0.9rem; font-weight: 600; text-decoration: none;">Forgot password?</a>
+        </div>
+        <p style="color: #64748b; font-size: 0.8rem; font-weight: 500; margin-bottom: 0;">🔒 Secure & Encrypted</p>
+    </div>
+
+    <div class="container" id="mainContent" style="display:none;">
+        <img src="https://biofilmeddesire-creator.github.io/portal/rsz_logo.jpg" class="top-right-logo" alt="Logo">
+        <h2 id="portalHeading">Residence Updates</h2>
+        
+        <div class="mb-3 text-start">
+            <label class="form-label">Residence Name</label>
+            <input type="text" id="residenceName" class="form-control" placeholder="Enter residence name">
+        </div>
+
+        <div id="roomContainer"></div>
+        <button type="button" class="btn-add" id="addRoomBtn">+ Add Room Option</button>
+
+        <div id="ownerSettings" style="display:none; border-top:2px solid #e2e8f0; margin-top:30px; padding-top:20px;">
+            <h3 style="font-family:'Playfair Display', serif; font-size:1.2rem; margin-bottom:20px; text-align:left;">Caretaker Staff Matrix</h3>
             <div id="caretakerContainer"></div>
-            
-            <button type="button" class="btn-add" id="addCaretakerBtn" style="background-color:#ffffff; border:1px solid #cbd5e1; margin-bottom: 15px;">+ Add Another Caretaker</button>
+            <button type="button" class="btn-add" id="addCaretakerBtn" style="background-color:#ffffff; border:1px solid #cbd5e1; margin-bottom:15px;">+ Add Another Caretaker</button>
             <button type="button" class="btn-submit" id="saveStaffBtn" style="background-color:#15803d; margin-top:0;">Save Staff Settings</button>
             <div id="settingsMsg" style="text-align:center; font-size:0.85rem; font-weight:600; margin-top:10px; display:none;"></div>
         </div>
+
+        <button type="button" class="btn-submit" id="submitAllBtn">Submit Live Updates</button>
+        <div id="statusMsg" style="display:none;"></div>
     </div>
-</div>
 
-<script>
-const API_URL = "https://api.biofilmeddesire.com/v1/sync";
-const QUEUE_KEY = 'q_v1';
-const DRAFT_KEY = 'd_v3';
-const ROOM_TYPES_CACHE_KEY = 'rt_cache';
-const PORTAL_ID_KEY = 'pid';
-let roomTypeOptions = [];
-const STATUS_THRESHOLDS = { ACTIVE: 14, WARNING: 18, PAUSED: 30, INACTIVE: 31 };
-const YOUR_WHATSAPP = "27646300769";
-let receiptVisible = false;
+    <script>
+        const API_URL = "https://api.biofilmeddesire.com/v1/sync"; // Connects to Cloudflare Worker proxy/Apps script web app URL
+        let roomTypeOptions = ["Single", "Sharing (Per Bed)", "Bachelor", "1 Bedroom Apartment", "2 Bedroom Apartment"];
+        let tokenCode = "";
+        let staffCount = 0;
 
-// Helpers for the Eye Password Toggle
-function togglePinVisibility(inputId, iconElement) {
-    const input = document.getElementById(inputId);
-    if (input.type === "password") {
-        input.type = "text";
-        iconElement.innerText = "fa-eye-slash"; 
-    } else {
-        input.type = "password";
-        iconElement.innerText = "fa-eye";
-    }
-}
-
-// Collapsible Settings Logic
-document.getElementById('settingsHeader').addEventListener('click', function() {
-    const content = document.getElementById('settingsContent');
-    const icon = document.getElementById('settingsToggleIcon');
-    if (content.style.display === "none") {
-        content.style.display = "block";
-        icon.innerText = "−";
-    } else {
-        content.style.display = "none";
-        icon.innerText = "+";
-    }
-});
-
-const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
-const urlParams = new URLSearchParams(window.location.search);
-
-(function() {
-    var op = localStorage.getItem('bd_portal_id') || sessionStorage.getItem('bd_portal_id');
-    if (op) { localStorage.setItem('pid', op); sessionStorage.setItem('pid', op); localStorage.removeItem('bd_portal_id'); sessionStorage.removeItem('bd_portal_id'); }
-    var oq = localStorage.getItem('bd_offline_queue'); if (oq) { localStorage.setItem('q_v1', oq); localStorage.removeItem('bd_offline_queue'); }
-    var od = localStorage.getItem('bd_portal_draft_v3'); if (od) { localStorage.setItem('d_v3', od); localStorage.removeItem('bd_portal_draft_v3'); }
-    var ort = localStorage.getItem('bd_room_types'); if (ort) { localStorage.setItem('rt_cache', ort); localStorage.removeItem('bd_room_types'); }
-})();
-
-let locationCode = hashParams.get('id') || hashParams.get('code') || urlParams.get('id') || urlParams.get('code') || '';
-if (!locationCode) locationCode = localStorage.getItem(PORTAL_ID_KEY) || '';
-if (!locationCode) locationCode = sessionStorage.getItem(PORTAL_ID_KEY) || '';
-
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-const isStandalone = window.navigator.standalone === true;
-
-if (locationCode) {
-    localStorage.setItem(PORTAL_ID_KEY, locationCode);
-    sessionStorage.setItem(PORTAL_ID_KEY, locationCode);
-}
-
-function generateDynamicManifest() {
-    if (!locationCode) return;
-    const manifest = { name:"Biofilmed Desire Portal", short_name:"BD Portal", start_url:"/#id="+encodeURIComponent(locationCode), display:"standalone", background_color:"#0f172a", theme_color:"#0f172a", scope:"/", icons:[{src:"icon-192.png",sizes:"192x192",type:"image/png",purpose:"any maskable"},{src:"icon-512.png",sizes:"512x512",type:"image/png",purpose:"any maskable"}], orientation:"portrait" };
-    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-    const link = document.getElementById('manifest-link');
-    if (link) link.href = URL.createObjectURL(blob);
-}
-if (locationCode) generateDynamicManifest();
-
-if (isIOS && !isStandalone && locationCode) {
-    const hint = document.getElementById('iosInstallHint');
-    if (hint) hint.style.display = 'block';
-}
-
-function escapeHtml(text) { const div = document.createElement('div'); div.innerText = text; return div.innerHTML; }
-
-// Room Card Logic
-function createRoomCard(room) {
-    room = room || { rowIndex: '', type: '', price: '', spots: 0 };
-    const div = document.createElement('div');
-    div.className = 'room-card';
-    div.setAttribute('data-rowindex', room.rowIndex || '');
-    const optionsHtml = roomTypeOptions.map(function(opt) {
-        return '<option value="' + opt + '"' + (room.type === opt ? ' selected' : '') + '>' + opt + '</option>';
-    }).join('');
-    div.innerHTML =
-        '<button type="button" class="btn-remove">X</button>' +
-        '<div class="mb-3"><label class="form-label">Room Type</label>' +
-        '<select class="form-select type-select" required>' +
-        '<option value="" disabled' + (!room.type ? ' selected' : '') + '>Select Room Type...</option>' +
-        optionsHtml + '</select></div>' +
-        '<div class="price-spots-row">' +
-        '<div><label class="form-label">Monthly Price (R)</label><input type="number" class="form-control price-input" value="' + (room.price || '') + '" min="0" required></div>' +
-        '<div><label class="form-label">Spots Available</label><input type="number" class="form-control spots-input" value="' + (room.spots || 0) + '" min="0" required></div>' +
-        '</div>' +
-        '<div class="media-section">' +
-        '<label class="media-label">Notes</label>' +
-        '<div class="mb-2"><textarea class="form-control notes-input notes-textarea" rows="2" placeholder="Update pricing or conditions..."></textarea></div>' +
-        '<div class="draft-saved">Draft saved</div>' +
-        '<div class="mb-2"><label class="media-label">Picture</label><input type="file" class="form-control file-input-sm picture-input" accept="image/*"></div>' +
-        '<div class="mb-1"><label class="media-label">Video</label><input type="file" class="form-control file-input-sm video-input" accept="video/*"></div>' +
-        '</div>';
-    div.querySelector('.btn-remove').addEventListener('click', function() {
-        if (document.querySelectorAll('#roomContainer .room-card').length > 1) div.remove();
-        else alert('At least one room card is required.');
-    });
-    return div;
-}
-
-function renderRooms(rooms) {
-    const container = document.getElementById('roomContainer');
-    container.innerHTML = '';
-    if (!rooms || rooms.length === 0) { container.appendChild(createRoomCard()); }
-    else {
-        rooms.forEach(function(r) {
-            container.appendChild(createRoomCard({ rowIndex: r.rowIndex || '', type: r.type || '', price: r.price || '', spots: r.spots || 0 }));
-        });
-    }
-}
-
-document.getElementById('addRoomBtn').addEventListener('click', function() { document.getElementById('roomContainer').appendChild(createRoomCard()); });
-
-function readFileAsBase64(file) {
-    return new Promise(function(resolve) {
-        const reader = new FileReader();
-        reader.onload = function(e) { resolve({ base64: e.target.result.split(',')[1], mimeType: file.type, name: file.name }); };
-        reader.readAsDataURL(file);
-    });
-}
-
-async function loadData() {
-    if (!locationCode) {
-        if (!isStandalone) document.getElementById('loadingScreen').innerHTML = '<p style="color:#fff;padding:20px;text-align:center;font-family:sans-serif;"><strong>Error:</strong> No access code found.<br><br>Please open this portal using the link provided by Biofilmed Desire.</p>';
-        return;
-    }
-    let serverData = null;
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(function() { controller.abort(); }, 10000);
-        const dataRes = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getLandlordData', token: locationCode }), signal: controller.signal });
-        clearTimeout(timeoutId);
-        serverData = await dataRes.json();
-        
-        if (serverData.roomTypeOptions && serverData.roomTypeOptions.length > 0) {
-            roomTypeOptions = serverData.roomTypeOptions;
-            try { localStorage.setItem(ROOM_TYPES_CACHE_KEY, JSON.stringify(roomTypeOptions)); } catch (e) {}
-        } else {
-            try { const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]'); if (cached.length > 0) roomTypeOptions = cached; } catch (e) {}
-        }
-        document.getElementById('residenceName').value = serverData.residenceName || '';
-        renderRooms(serverData.rooms || []);
-        
-        // Auto-populate caretakers if returning from backend (Requires backend modification to return staff array)
-        if(serverData.staff && serverData.staff.length > 0) {
-            document.getElementById('caretakerContainer').innerHTML = '';
-            serverData.staff.forEach(s => document.getElementById('caretakerContainer').appendChild(createCaretakerCard(s)));
-        }
-        
-    } catch (err) {
-        try { const cached = JSON.parse(localStorage.getItem(ROOM_TYPES_CACHE_KEY) || '[]'); if (cached.length > 0) roomTypeOptions = cached; } catch (e) {}
-        renderRooms([]);
-    }
-
-    restoreDraft(serverData);
-    checkStatus();
-}
-
-function getQueue() { try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch (e) { return []; } }
-function saveQueue(q) { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
-function addToQueue(payload) { const q = getQueue(); q.push({ payload, timestamp: Date.now(), attempts: 0 }); saveQueue(q); return q.length; }
-function removeFromQueue(i) { const q = getQueue(); q.splice(i, 1); saveQueue(q); }
-
-async function processQueue() {
-    const q = getQueue(); if (q.length === 0) return;
-    const msg = document.getElementById('statusMsg'); let sc = 0;
-    for (let i = q.length - 1; i >= 0; i--) {
-        const item = q[i]; item.attempts++;
-        try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(item.payload) });
-            const result = await res.json();
-            if (result.status === 'Success') { removeFromQueue(i); sc++; }
-            else if (item.attempts >= 3) removeFromQueue(i);
-        } catch (err) { if (item.attempts >= 3) removeFromQueue(i); }
-    }
-    if (sc > 0) { msg.className = 'whatsapp-success'; msg.innerText = sc + ' queued submission(s) sent successfully!'; msg.style.display = 'block'; }
-}
-
-window.addEventListener('online', function() { processQueue(); });
-if (navigator.onLine) setTimeout(processQueue, 2000);
-
-let lastReceiptText = '';
-function buildReceipt(payload, cardMap) {
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
-    const resName = payload.residenceName || 'Residence'; const ref = payload.token || 'N/A';
-    document.getElementById('receiptResName').innerHTML = '<strong>Residence:</strong> ' + escapeHtml(resName);
-    document.getElementById('receiptDate').innerHTML = '<strong>Date:</strong> ' + dateStr;
-    document.getElementById('receiptRef').innerHTML = '<strong>Ref:</strong> ' + escapeHtml(ref);
-    const roomsDiv = document.getElementById('receiptRooms'); roomsDiv.innerHTML = '';
-    const rooms = Array.from(cardMap.values());
-    const lines = ['Biofilmed Desire Receipt', 'Residence: ' + resName, 'Date: ' + dateStr, 'Ref: ' + ref, ''];
-    rooms.forEach(function(r) {
-        const row = document.createElement('div'); row.className = 'receipt-row';
-        row.innerHTML = '* <strong>' + escapeHtml(r.type) + '</strong> -- R' + r.price + ' -- ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : '');
-        roomsDiv.appendChild(row);
-        lines.push('* ' + r.type + ' -- R' + r.price + ' -- ' + r.spots + ' spot' + (r.spots !== 1 ? 's' : ''));
-    });
-    lines.push('', 'Submitted via BD Portal');
-    lastReceiptText = lines.join('\n');
-    document.getElementById('receiptSection').style.display = 'block';
-    document.getElementById('receiptCard').classList.remove('show');
-    document.getElementById('receiptArrow').innerText = 'v';
-}
-
-document.getElementById('receiptToggle').addEventListener('click', function() {
-    const card = document.getElementById('receiptCard'); const arrow = document.getElementById('receiptArrow');
-    if (card.classList.contains('show')) { card.classList.remove('show'); arrow.innerText = 'v'; }
-    else { card.classList.add('show'); arrow.innerText = '^'; }
-});
-
-document.getElementById('receiptCopy').addEventListener('click', function() {
-    if (navigator.clipboard && lastReceiptText) {
-        navigator.clipboard.writeText(lastReceiptText).then(function() {
-            const btn = document.getElementById('receiptCopy'); const old = btn.innerText;
-            btn.innerText = 'Copied!'; setTimeout(function() { btn.innerText = old; }, 2000);
-        });
-    }
-});
-
-document.getElementById('submitBtn').addEventListener('click', async function() {
-    const btn = document.getElementById('submitBtn');
-    if (btn.dataset.submitting === "true") return;
-    const msg = document.getElementById('statusMsg');
-    btn.dataset.submitting = "true"; btn.disabled = true; btn.innerText = 'Authorizing...';
-    msg.className = ''; msg.innerText = 'Please wait...';
-    const cardEntries = [];
-    const cards = document.querySelectorAll('#roomContainer .room-card');
-    for (let i = 0; i < cards.length; i++) {
-        const card = cards[i];
-        const type = card.querySelector('.type-select').value;
-        const price = parseFloat(card.querySelector('.price-input').value) || 0;
-        const spots = parseInt(card.querySelector('.spots-input').value, 10) || 0;
-        const rowIndex = card.getAttribute('data-rowindex') || '';
-        const notes = card.querySelector('.notes-input').value.trim();
-        const pictureFile = card.querySelector('.picture-input').files[0];
-        const videoFile = card.querySelector('.video-input').files[0];
-        const entry = { type, price, spots, rowIndex, notes: notes || '', pictureBase64: null, pictureMime: null, pictureName: null, videoBase64: null, videoMime: null, videoName: null };
-        if (pictureFile) { const pd = await readFileAsBase64(pictureFile); entry.pictureBase64 = pd.base64; entry.pictureMime = pd.mimeType; entry.pictureName = pd.name; }
-        if (videoFile) { const vd = await readFileAsBase64(videoFile); entry.videoBase64 = vd.base64; entry.videoMime = vd.mimeType; entry.videoName = vd.name; }
-        cardEntries.push(entry);
-    }
-    const cardMap = new Map();
-    cardEntries.forEach(function(entry) {
-        const key = entry.type + '||' + entry.price;
-        if (cardMap.has(key)) {
-            const ex = cardMap.get(key);
-            ex.spots += entry.spots;
-            if (!ex.rowIndex && entry.rowIndex) ex.rowIndex = entry.rowIndex;
-            if (entry.notes) ex.notes = ex.notes ? ex.notes + ' | ' + entry.notes : entry.notes;
-            if (entry.pictureBase64) { ex.pictureBase64 = entry.pictureBase64; ex.pictureMime = entry.pictureMime; ex.pictureName = entry.pictureName; }
-            if (entry.videoBase64) { ex.videoBase64 = entry.videoBase64; ex.videoMime = entry.videoMime; ex.videoName = entry.videoName; }
-        } else { cardMap.set(key, Object.assign({}, entry)); }
-    });
-    const payload = {
-        action: 'updateData',
-        token: locationCode,
-        residenceName: document.getElementById('residenceName').value,
-        dynamicRoomJSON: JSON.stringify(Array.from(cardMap.values()))
-    };
-    if (!navigator.onLine) {
-        const ql = addToQueue(payload);
-        msg.className = 'whatsapp-success'; msg.innerHTML = 'No signal. Your update is saved and will auto-send when connection returns. (' + ql + ' in queue)';
-        btn.disabled = false; btn.innerText = 'Submit Data'; btn.dataset.submitting = "false"; return;
-    }
-    try {
-        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const result = await res.json();
-        if (result.status === 'Success') {
-            msg.className = 'whatsapp-success';
-            const waMessage = "Hi BiofilmedDesire, I have additional files for my residence: " + (document.getElementById('residenceName').value || '');
-            const waLink = "https://wa.me/" + YOUR_WHATSAPP + "?text=" + encodeURIComponent(waMessage);
-            msg.innerHTML = 'Data submitted successfully. If you want to submit additional files, you can submit them via <a href="' + waLink + '" target="_blank" style="color: #15803d; text-decoration: underline; font-weight: 600;"> WhatsApp</a>. God bless you!';
-            document.getElementById('badgeWarning').style.display = 'none';
-            document.getElementById('badgePaused').style.display = 'none';
-            document.getElementById('badgeInactive').style.display = 'none';
-            document.getElementById('badgeActive').style.display = 'flex';
-            const now = new Date();
-            document.getElementById('activeLastUpdate').textContent = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
-            localStorage.removeItem('bd_warn_snooze_' + locationCode);
-            localStorage.removeItem(DRAFT_KEY); document.getElementById('draftIndicator').innerText = '';
-            buildReceipt(payload, cardMap); processQueue();
-        } else { msg.className = 'text-danger'; msg.innerText = 'Error: ' + (result.error || result.status || 'Unknown error'); }
-    } catch (err) {
-        const ql = addToQueue(payload);
-        msg.className = 'whatsapp-success'; msg.innerHTML = 'Connection failed. Your update is saved and will auto-send when signal returns. (' + ql + ' in queue)';
-    }
-    btn.disabled = false; btn.innerText = 'Submit Data'; btn.dataset.submitting = "false";
-});
-
-let draftDebounceTimer = null;
-function getDraft() { try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { return null; } }
-function saveDraft(targetCard) {
-    const cards = document.querySelectorAll('#roomContainer .room-card');
-    const draft = { residenceName: document.getElementById('residenceName').value, savedAt: Date.now(), rooms: [] };
-    cards.forEach(function(card) { draft.rooms.push({ type: card.querySelector('.type-select').value, price: card.querySelector('.price-input').value, spots: card.querySelector('.spots-input').value }); });
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-    if (targetCard) { const el = targetCard.querySelector('.draft-saved'); if (el) { el.classList.add('show'); setTimeout(function() { el.classList.remove('show'); }, 1500); } }
-    const ind = document.getElementById('draftIndicator'); if (ind) ind.innerText = 'Auto-saved ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
-}
-
-function restoreDraft(serverData) {
-    const draft = getDraft(); if (!draft) return false;
-    if ((Date.now() - (draft.savedAt || 0)) / (1000 * 60 * 60 * 24) > 7) { localStorage.removeItem(DRAFT_KEY); return false; }
-    if (serverData && serverData.rooms && serverData.rooms.length > 0) return false;
-    if (draft.residenceName) document.getElementById('residenceName').value = draft.residenceName;
-    if (draft.rooms && draft.rooms.length > 0) {
-        const container = document.getElementById('roomContainer'); container.innerHTML = '';
-        draft.rooms.forEach(function(r) { container.appendChild(createRoomCard({ rowIndex: '', type: r.type || '', price: r.price || '', spots: r.spots || 0 })); });
-        const ind = document.getElementById('draftIndicator'); if (ind) ind.innerText = 'Draft restored (last saved state)';
-        return true;
-    }
-    return false;
-}
-
-function debouncedSave(e) {
-    if (draftDebounceTimer) clearTimeout(draftDebounceTimer);
-    const tc = e && e.target ? e.target.closest('.room-card') : null;
-    draftDebounceTimer = setTimeout(function() { saveDraft(tc); }, 800);
-}
-const updateForm = document.getElementById('updateForm');
-if (updateForm) { updateForm.addEventListener('input', debouncedSave); updateForm.addEventListener('change', debouncedSave); }
-
-async function checkStatus() {
-    if (!locationCode) { document.querySelectorAll('.status-badge').forEach(function(b) { b.style.display = 'none'; }); return; }
-    try {
-        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'checkReminder', token: locationCode }) });
-        if (!res.ok) throw new Error('Network response was not ok');
-        const data = await res.json();
-        const daysSince = data.daysSince || 0;
-        const lastUpdate = data.lastUpdate || 'Unknown';
-        document.getElementById('badgeActive').style.display = 'none';
-        document.getElementById('badgeWarning').style.display = 'none';
-        document.getElementById('badgePaused').style.display = 'none';
-        document.getElementById('badgeInactive').style.display = 'none';
-        let badgeToShow = null;
-        if (daysSince <= STATUS_THRESHOLDS.ACTIVE) {
-            badgeToShow = document.getElementById('badgeActive');
-            const parsedDate = new Date(lastUpdate);
-            const formatted = !isNaN(parsedDate) ? parsedDate.toLocaleDateString('en-GB') + ' ' + parsedDate.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}) : lastUpdate;
-            document.getElementById('activeLastUpdate').textContent = formatted;
-        } else if (daysSince <= STATUS_THRESHOLDS.WARNING) {
-            const snooze = localStorage.getItem('bd_warn_snooze_' + locationCode);
-            const now = Date.now();
-            if (!snooze || now > parseInt(snooze)) {
-                badgeToShow = document.getElementById('badgeWarning');
-                const daysLeft = STATUS_THRESHOLDS.WARNING - Math.floor(daysSince) + 1;
-                document.getElementById('warnDaysLeft').textContent = Math.max(1, daysLeft);
-            } else {
-                badgeToShow = document.getElementById('badgeActive');
-                const parsedDate2 = new Date(lastUpdate);
-                const formatted2 = !isNaN(parsedDate2) ? parsedDate2.toLocaleDateString('en-GB') + ' ' + parsedDate2.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}) : lastUpdate;
-                document.getElementById('activeLastUpdate').textContent = formatted2 + ' (reminder snoozed)';
-            }
-        } else if (daysSince <= STATUS_THRESHOLDS.PAUSED) {
-            badgeToShow = document.getElementById('badgePaused');
-        } else { badgeToShow = document.getElementById('badgeInactive'); }
-        if (badgeToShow) badgeToShow.style.display = 'flex';
-    } catch (err) {
-        document.getElementById('badgeActive').style.display = 'flex';
-        document.getElementById('activeLastUpdate').textContent = 'Unable to check';
-    }
-}
-
-function scrollToForm() { document.getElementById('updateForm').scrollIntoView({ behavior: 'smooth' }); }
-
-function snoozeWarning() {
-    const tomorrow = Date.now() + (24 * 60 * 60 * 1000);
-    localStorage.setItem('bd_warn_snooze_' + locationCode, tomorrow.toString());
-    document.getElementById('badgeWarning').style.display = 'none';
-    document.getElementById('badgeActive').style.display = 'flex';
-    const lastUpdate = document.getElementById('activeLastUpdate').textContent;
-    document.getElementById('activeLastUpdate').textContent = lastUpdate.replace(' (reminder snoozed)', '') + ' (reminder snoozed)';
-}
-
-// ==========================================
-// ── STAFF (CARETAKER) MANAGEMENT LOGIC ──
-// ==========================================
-let staffCount = 0;
-function createCaretakerCard(staff = {name:'', pin:'', phone:''}) {
-    staffCount++;
-    const pinId = 'staffPin_' + staffCount;
-    const div = document.createElement('div');
-    div.className = 'room-card';
-    div.style.background = '#ffffff';
-    div.style.border = '1px solid #e2e8f0';
-    div.innerHTML = `
-        <button type="button" class="btn-remove">X</button>
-        <div class="mb-3">
-            <label class="form-label">Caretaker Name</label>
-            <input type="text" class="form-control staff-name" value="${staff.name || ''}" placeholder="Name">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Create/Update PIN</label>
-            <div class="password-wrapper">
-                <input type="password" id="${pinId}" class="form-control staff-pin" value="${staff.pin || ''}" maxlength="4" placeholder="****" inputmode="numeric" style="text-align:center; letter-spacing:0.2em;">
-                <span class="eye-icon" onclick="togglePinVisibility('${pinId}', this)">👁️</span>
-            </div>
-        </div>
-        <div class="mb-0">
-            <label class="form-label">Phone Number</label>
-            <input type="tel" class="form-control staff-phone" value="${staff.phone || ''}" placeholder="07...">
-        </div>
-    `;
-    div.querySelector('.btn-remove').addEventListener('click', function() { div.remove(); });
-    return div;
-}
-
-document.getElementById('addCaretakerBtn').addEventListener('click', function() {
-    const container = document.getElementById('caretakerContainer');
-    if(container.children.length < 4) {
-        container.appendChild(createCaretakerCard());
-    } else {
-        alert('Maximum 4 caretakers allowed.');
-    }
-});
-
-document.getElementById('saveStaffBtn').addEventListener('click', async function() {
-    const btn = document.getElementById('saveStaffBtn');
-    const msg = document.getElementById('settingsMsg');
-    const cards = document.querySelectorAll('#caretakerContainer .room-card');
-    const staffList = [];
-    
-    cards.forEach(card => {
-        staffList.push({
-            name: card.querySelector('.staff-name').value,
-            pin: card.querySelector('.staff-pin').value,
-            phone: card.querySelector('.staff-phone').value
-        });
-    });
-
-    btn.disabled = true; btn.innerText = 'Saving...';
-    try {
-        const res = await fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'saveStaff', token: locationCode, staff: staffList })
-        });
-        const result = await res.json();
-        msg.style.display = 'block';
-        msg.innerText = result.status === 'Success' ? 'Staff settings saved successfully!' : 'Error saving settings.';
-        msg.style.color = result.status === 'Success' ? '#15803d' : '#dc2626';
-    } catch (err) {
-        msg.style.display = 'block';
-        msg.innerText = 'Connection error.';
-        msg.style.color = '#dc2626';
-    }
-    btn.disabled = false; btn.innerText = 'Save Staff Settings';
-});
-
-// ==========================================
-// ── FORGOT PASSWORD LOGIC ──
-// ==========================================
-document.getElementById('forgotPinBtn').addEventListener('click', async function(e) {
-    e.preventDefault();
-    const tokenVal = document.getElementById('loginToken').value.trim();
-    if (!tokenVal) return alert('Access code missing.');
-    
-    alert('Processing request... Check your email shortly.');
-    try {
-        const res = await fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'forgotPin', security_token: tokenVal })
-        });
-        const result = await res.json();
-        if(result.success) {
-            alert('A secure login link/PIN has been sent to the registered email address.');
-        } else {
-            alert('Error processing request. Please contact admin.');
-        }
-    } catch (err) {
-        alert('Network error. Failed to process request.');
-    }
-});
-
-// ==========================================
-// ── LOGIN & PERSISTENCE SEQUENCE ──
-// ==========================================
-let isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-let userRole = sessionStorage.getItem('userRole') || '';
-let refreshCount = parseInt(sessionStorage.getItem('refreshCount') || '0', 10);
-
-function showLoginScreen() {
-    document.getElementById('loadingScreen').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'none';
-    document.getElementById('loginGate').style.display = 'block';
-    
-    if (locationCode) { document.getElementById('loginToken').value = locationCode; }
-}
-
-function unlockPortal(role) {
-    document.getElementById('loginGate').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-    if (role === 'MASTER') {
-        document.getElementById('ownerSettings').style.display = 'block';
-        if(document.getElementById('caretakerContainer').children.length === 0) {
-            document.getElementById('caretakerContainer').appendChild(createCaretakerCard());
-        }
-    } else if (role === 'CARETAKER') {
-        document.getElementById('ownerSettings').style.display = 'none';
-    }
-    loadData();
-}
-
-function checkAuthAndLoad() {
-    if (isLoggedIn) {
-        if (refreshCount < 3) {
-            refreshCount++;
-            sessionStorage.setItem('refreshCount', refreshCount);
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            tokenCode = urlParams.get('id') || urlParams.get('code') || "";
+            document.getElementById('loginToken').value = tokenCode;
             document.getElementById('loadingScreen').style.display = 'none';
-            unlockPortal(userRole);
-        } else {
-            sessionStorage.removeItem('isLoggedIn');
-            sessionStorage.removeItem('userRole');
-            sessionStorage.setItem('refreshCount', '0');
-            showLoginScreen();
-        }
-    } else {
-        showLoginScreen();
-    }
-}
-
-if (!isStandalone || locationCode) {
-    checkAuthAndLoad();
-}
-
-document.getElementById('loginBtn').addEventListener('click', async function() {
-    const btn = document.getElementById('loginBtn');
-    const errDiv = document.getElementById('loginError');
-    const tokenVal = document.getElementById('loginToken').value.trim();
-    const pinVal = document.getElementById('loginPin').value.trim();
-
-    if (!tokenVal || !pinVal) {
-        errDiv.innerText = 'Please enter your 4-digit PIN.';
-        errDiv.style.display = 'block';
-        return;
-    }
-
-    btn.disabled = true; btn.innerText = 'Verifying...'; errDiv.style.display = 'none';
-
-    try {
-        const res = await fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'verifyPortalLogin', security_token: tokenVal, pin: pinVal })
+            document.getElementById('loginGate').style.display = 'block';
         });
-        const response = await res.json();
 
-        if (response.success) {
-            sessionStorage.setItem('isLoggedIn', 'true');
-            sessionStorage.setItem('userRole', response.role);
-            sessionStorage.setItem('refreshCount', '0');
-            userRole = response.role;
-            unlockPortal(response.role);
-        } else {
-            const msgs = { INCORRECT_PIN: 'Incorrect PIN. Please try again.', INVALID_TOKEN: 'Access code not recognised. Please check your link.' };
-            errDiv.innerText = msgs[response.error] || 'Login failed. Please try again.';
-            errDiv.style.display = 'block';
+        function togglePinVisibility(inputId, el) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                el.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L17.772 17.772M15.23 15.23a1 1 0 01-1.42 0l-3.38-3.38a1 1 0 010-1.414l3.38-3.38a1 1 0 011.414 1.42L11.83 12l3.4 3.4z" />
+                    </svg>`;
+            } else {
+                input.type = "password";
+                el.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>`;
+            }
         }
-    } catch (err) {
-        errDiv.innerText = 'Connection error. Please check your signal and try again.';
-        errDiv.style.display = 'block';
-    }
-    btn.disabled = false; btn.innerText = 'Sign In';
-});
 
-document.getElementById('loginPin').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') document.getElementById('loginBtn').click();
-});
-</script>
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const pinVal = document.getElementById('loginPin').value.trim();
+            const errDiv = document.getElementById('loginError');
+            if (!tokenCode || !pinVal) {
+                errDiv.innerText = "Please enter your 4-digit security access PIN.";
+                errDiv.style.display = "block";
+                return;
+            }
+            errDiv.style.display = "none";
+            
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'verifyPortalLogin', security_token: tokenCode, pin: pinVal })
+                });
+                const response = await res.json();
+                if (response.success) {
+                    document.getElementById('loginGate').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                    document.getElementById('portalHeading').innerText = response.residenceName || "Residence Updates";
+                    
+                    if (response.role === 'MASTER') {
+                        document.getElementById('ownerSettings').style.display = 'block';
+                        renderStaffCards(response.staff || []);
+                    } else {
+                        document.getElementById('ownerSettings').style.display = 'none';
+                    }
+                } else {
+                    errDiv.innerText = response.error || "Invalid dynamic PIN configuration framework.";
+                    errDiv.style.display = "block";
+                }
+            } catch(e) {
+                errDiv.innerText = "Security sync failure network exception pipeline.";
+                errDiv.style.display = "block";
+            }
+        });
+
+        document.getElementById('forgotPinBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const emailInput = prompt("Enter your registered recovery email address:");
+            if (!emailInput) return;
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "forgotPasswordRequest", security_token: tokenCode, email: emailInput.trim() })
+                });
+                const response = await res.json();
+                alert(response.message || "Request handled successfully.");
+            } catch (err) {
+                alert("Network error processing password reset link.");
+            }
+        });
+
+        function createCaretakerCard(staff = {name:'', pin:'', phone:''}) {
+            staffCount++;
+            const div = document.createElement('div');
+            div.className = 'room-card';
+            div.style.background = '#f8fafc';
+            div.innerHTML = `
+                <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
+                <div class="mb-2">
+                    <label class="form-label">Caretaker Name</label>
+                    <input type="text" class="form-control staff-name" value="${staff.name || ''}" placeholder="Caretaker Full Name">
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label">Caretaker Mobile Phone</label>
+                        <input type="text" class="form-control staff-phone" value="${staff.phone || ''}" placeholder="e.g. 0721234567">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">4-Digit Login PIN</label>
+                        <input type="text" class="form-control staff-pin" maxlength="4" value="${staff.pin || ''}" placeholder="e.g. 1234">
+                    </div>
+                </div>`;
+            return div;
+        }
+
+        function renderStaffCards(staffArray) {
+            const container = document.getElementById('caretakerContainer');
+            container.innerHTML = '';
+            staffArray.forEach(s => container.appendChild(createCaretakerCard(s)));
+        }
+
+        document.getElementById('addCaretakerBtn').addEventListener('click', () => {
+            document.getElementById('caretakerContainer').appendChild(createCaretakerCard());
+        });
+
+        document.getElementById('saveStaffBtn').addEventListener('click', async () => {
+            const msg = document.getElementById('settingsMsg');
+            const btn = document.getElementById('saveStaffBtn');
+            btn.disabled = true; btn.innerText = "Saving Staff Matrix...";
+            
+            const staffCards = document.querySelectorAll('#caretakerContainer .room-card');
+            const staffData = [];
+            staffCards.forEach(card => {
+                staffData.push({
+                    name: card.querySelector('.staff-name').value.trim(),
+                    phone: card.querySelector('.staff-phone').value.trim(),
+                    pin: card.querySelector('.staff-pin').value.trim()
+                });
+            });
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'saveStaffSettings', security_token: tokenCode, staff: staffData })
+                });
+                const response = await res.json();
+                msg.style.display = "block";
+                if(response.status === "Success") {
+                    msg.className = "whatsapp-success";
+                    msg.innerText = "Staff settings columns synced successfully!";
+                } else {
+                    msg.className = "text-danger";
+                    msg.innerText = response.error || "Failed saving matrix metrics.";
+                }
+            } catch(e) {
+                msg.style.display = "block";
+                msg.className = "text-danger";
+                msg.innerText = "Connection pipeline handshake configuration error.";
+            }
+            btn.disabled = false; btn.innerText = "Save Staff Settings";
+        });
+    </script>
 </body>
 </html>
