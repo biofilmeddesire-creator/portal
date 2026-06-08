@@ -220,7 +220,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 
 <h2 class="login-residence">BiofilmedDesire Residence</h2>
 
-<h3 class="login-portal">the portal</h3>
+<h3 class="login-portal">portal</h3>
 
 <h2>Secure login</h2>
 
@@ -974,7 +974,7 @@ sessionStorage.setItem('refreshCount', '0');
 userRole = response.role;
 unlockPortal(response.role);
 } else {
-const msgs = { INCORRECT_PIN: 'Incorrect PIN. Please try again.', INVALID_TOKEN: 'Access code not recognised. Please check your link.' };
+const msgs = { INCORRECT_PIN: 'Incorrect PIN. Please try again.', INVALID_CODE: 'Access code not recognised. Please check your link.' };
 errDiv.innerText = msgs[response.error] || 'Login failed. Please try again.';
 errDiv.style.display = 'block';
 }
