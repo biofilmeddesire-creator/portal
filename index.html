@@ -229,9 +229,34 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 <div id="firstTimeSetup" style="display:none;">
 
 <h2 style="font-size:1.3rem; margin-bottom:6px;">Set Up Your Secure PIN</h2>
-<p style="color:#64748b; font-size:0.88rem; margin-bottom:20px;">Welcome! This is your first time accessing the portal. Choose a 4-digit PIN to secure your account.</p>
+<p style="color:#64748b; font-size:0.88rem; margin-bottom:20px;">Welcome! This is your first time accessing the portal. Please fill in all fields to secure your account.</p>
 
 <div id="firstTimeError" class="text-danger mb-3" style="display:none; font-weight:600;"></div>
+
+<div class="mb-3 text-start">
+<label class="form-label">Title</label>
+<select id="landlordTitle" class="form-select" style="min-height:44px;">
+<option value="" disabled selected>Select title...</option>
+<option value="Mr">Mr</option>
+<option value="Mrs">Mrs</option>
+<option value="Ms">Ms</option>
+<option value="Miss">Miss</option>
+<option value="Dr">Dr</option>
+<option value="Prof">Prof</option>
+<option value="Rev">Rev</option>
+<option value="Other">Other</option>
+</select>
+</div>
+
+<div class="mb-3 text-start">
+<label class="form-label">Full Name &amp; Surname</label>
+<input type="text" id="landlordFullName" class="form-control" placeholder="e.g. John Dlamini" autocomplete="name">
+</div>
+
+<div class="mb-3 text-start">
+<label class="form-label">Email Address</label>
+<input type="email" id="landlordEmail" class="form-control" placeholder="e.g. john@email.com" autocomplete="email" inputmode="email">
+</div>
 
 <div class="mb-3 text-start">
 <label class="form-label">Choose a 4-Digit PIN</label>
@@ -1646,12 +1671,20 @@ const btn = document.getElementById('setFirstPinBtn');
 
 const errDiv = document.getElementById('firstTimeError');
 
+const title    = document.getElementById('landlordTitle').value.trim();
+const fullName = document.getElementById('landlordFullName').value.trim();
+const email    = document.getElementById('landlordEmail').value.trim();
+
 const pin1 = document.getElementById('newPin').value.trim();
 
 const pin2 = document.getElementById('confirmPin').value.trim();
 
 errDiv.style.display = 'none';
 
+// Validate every field — none may be left blank
+if (!title)    { errDiv.innerText = 'Please select your title.';               errDiv.style.display = 'block'; document.getElementById('landlordTitle').focus();    return; }
+if (!fullName) { errDiv.innerText = 'Please enter your full name and surname.'; errDiv.style.display = 'block'; document.getElementById('landlordFullName').focus(); return; }
+if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errDiv.innerText = 'Please enter a valid email address.'; errDiv.style.display = 'block'; document.getElementById('landlordEmail').focus(); return; }
 if (!pin1 || pin1.length < 4) { errDiv.innerText = 'Please enter a 4-digit PIN.'; errDiv.style.display = 'block'; return; }
 
 if (!/^\d{4}$/.test(pin1)) { errDiv.innerText = 'PIN must be exactly 4 digits.'; errDiv.style.display = 'block'; return; }
@@ -1666,7 +1699,7 @@ const res = await fetch(API_URL, {
 
 method: 'POST',
 
-body: JSON.stringify({ action: 'setMasterPin', security_token: locationCode, pin: pin1 })
+body: JSON.stringify({ action: 'setMasterPin', security_token: locationCode, pin: pin1, landlordName: title + ' ' + fullName, landlordEmail: email })
 
 });
 
