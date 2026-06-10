@@ -1022,6 +1022,20 @@ function renderRooms(rooms) {
 
 }
 
+function renderCaretakers(staff) {
+
+  const cc = document.getElementById('caretakerContainer');
+
+  cc.innerHTML = '';
+
+  const filled = (staff || []).filter(function(s) { return (s.name || '').trim() || (s.phone || '').trim() || (s.pin || '').trim(); });
+
+  if (!filled.length) { cc.appendChild(createCaretakerCard()); return; }
+
+  filled.forEach(function(s) { cc.appendChild(createCaretakerCard({ name: s.name || '', phone: s.phone || '', pin: s.pin || '' })); });
+
+}
+
 document.getElementById('addRoomBtn').addEventListener('click', function() {
 
   document.getElementById('roomContainer').appendChild(createRoomCard());
@@ -1084,28 +1098,7 @@ async function loadData() {
 
     renderRooms(serverData.rooms || []);
 
-    // Restore saved caretaker cards (REQ 2 — retention)
-    // Always clear first to remove any placeholder blank card.
-    // Filter out empty-slot padding — backend always returns 4 slots but unpopulated
-    // slots have all-empty strings and must NOT render as visible blank cards.
-
-    const cc = document.getElementById('caretakerContainer');
-
-    cc.innerHTML = '';
-
-    const filledStaff = (serverData.staff || []).filter(function(s) {
-      return (s.name || '').trim() || (s.phone || '').trim() || (s.pin || '').trim();
-    });
-
-    if (filledStaff.length > 0) {
-
-      filledStaff.forEach(function(s) { cc.appendChild(createCaretakerCard(s)); });
-
-    } else {
-
-      cc.appendChild(createCaretakerCard());
-
-    }
+    renderCaretakers(serverData.staff || []);
 
   } catch(err) {
 
@@ -1113,9 +1106,7 @@ async function loadData() {
 
     renderRooms([]);
 
-    const cc = document.getElementById('caretakerContainer');
-
-    if (cc) { cc.innerHTML = ''; cc.appendChild(createCaretakerCard()); }
+    renderCaretakers([]);
 
   }
 
