@@ -1085,15 +1085,21 @@ async function loadData() {
     renderRooms(serverData.rooms || []);
 
     // Restore saved caretaker cards (REQ 2 — retention)
-    // Always clear first to remove the placeholder blank card added by unlockPortal()
+    // Always clear first to remove any placeholder blank card.
+    // Filter out empty-slot padding — backend always returns 4 slots but unpopulated
+    // slots have all-empty strings and must NOT render as visible blank cards.
 
     const cc = document.getElementById('caretakerContainer');
 
     cc.innerHTML = '';
 
-    if (serverData.staff && serverData.staff.length > 0) {
+    const filledStaff = (serverData.staff || []).filter(function(s) {
+      return (s.name || '').trim() || (s.phone || '').trim() || (s.pin || '').trim();
+    });
 
-      serverData.staff.forEach(function(s) { cc.appendChild(createCaretakerCard(s)); });
+    if (filledStaff.length > 0) {
+
+      filledStaff.forEach(function(s) { cc.appendChild(createCaretakerCard(s)); });
 
     } else {
 
@@ -1106,6 +1112,10 @@ async function loadData() {
     try { const c = JSON.parse(localStorage.getItem(RT_CACHE_KEY) || '[]'); if (c.length) roomTypeOptions = c; } catch(e) {}
 
     renderRooms([]);
+
+    const cc = document.getElementById('caretakerContainer');
+
+    if (cc) { cc.innerHTML = ''; cc.appendChild(createCaretakerCard()); }
 
   }
 
