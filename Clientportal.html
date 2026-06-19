@@ -273,6 +273,7 @@ justify-content: center; color: white; font-size: 1.5rem; text-decoration: none;
 }
 </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 <div id="page-landing" class="page active">
@@ -530,6 +531,161 @@ Submit Payment for Verification
 <button class="btn btn-primary btn-block" onclick="verifyGate()">Unlock Portal</button>
 <p class="gate-error" id="gate-error">Invalid credentials or access expired.</p>
 <p class="gate-hint">Don't have access? <a href="#" onclick="showPage('page-landing')" style="color:var(--accent); text-decoration:none; font-weight:600;">Get Started</a></p>
+</div>
+</div>
+html
+
+<!-- ════════════════════════════════════════════════════════════════════
+     NEW PAGE: post-token qualifying form. Shown ONCE right after a
+     successful token verification, before the first batch is ever
+     requested. Mirrors your full Google Form fields.
+     ════════════════════════════════════════════════════════════════════ -->
+<div id="page-criteria-form" class="page payment-page">
+<nav class="navbar">
+<div class="container">
+<a href="#" class="logo">
+<img src="logo.png" alt="BiofilmedDesire" class="logo-img">
+<span class="logo-text">Biofilmed<span>Desire</span></span>
+</a>
+</div>
+</nav>
+<div class="container" style="padding-top: 40px;">
+<div class="payment-card fade-in">
+<h2>Tell Us What You Need</h2>
+<p class="subtitle">A few quick questions so we can curate your 3 best matches near University of Limpopo</p>
+
+<div class="form-group">
+<label>Room Type</label>
+<select id="crit-roomtype">
+<option value="">Select...</option>
+<option value="Single">Single</option>
+<option value="Bachelor">Bachelor</option>
+<option value="Sharing">Sharing</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Gender</label>
+<select id="crit-gender">
+<option value="Both">No preference</option>
+<option value="Male">Male</option>
+<option value="Female">Female</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Occupant Status</label>
+<select id="crit-occupant">
+<option value="Both">Student or Worker</option>
+<option value="Student">Student</option>
+<option value="Worker">Worker</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Name of Institution or Workplace</label>
+<input type="text" id="crit-institution" placeholder="e.g. University of Limpopo">
+</div>
+
+<div class="form-group">
+<label>Preferred Area</label>
+<select id="crit-area">
+<option value="All">Any area</option>
+<option value="Gate 1">Gate 1</option>
+<option value="Gate 2">Gate 2</option>
+<option value="Gate 3">Gate 3</option>
+<option value="Makanye">Makanye</option>
+<option value="Paledimall">Paledimall</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Max Monthly Budget</label>
+<select id="crit-budget">
+<option value="">Select budget...</option>
+<option value="1500">Up to R1,500</option>
+<option value="2000">Up to R2,000</option>
+<option value="2500">Up to R2,500</option>
+<option value="3000">Up to R3,000</option>
+<option value="3500">Up to R3,500</option>
+<option value="4000">Up to R4,000</option>
+<option value="4500">Up to R4,500</option>
+<option value="5000">Up to R5,000</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Who Will Be Staying in the Unit?</label>
+<input type="text" id="crit-staying" placeholder="e.g. Just me / Me and a roommate">
+</div>
+
+<div class="form-group">
+<label>When Do You Want Us to Start Looking?</label>
+<input type="text" id="crit-startlooking" placeholder="e.g. Immediately">
+</div>
+
+<div class="form-group">
+<label>When Do You Want to Move In?</label>
+<input type="text" id="crit-moveindate" placeholder="e.g. 1 July 2026">
+</div>
+
+<div class="form-group">
+<label>When Do You Want to Start Paying Rent?</label>
+<input type="text" id="crit-rentstart" placeholder="e.g. 1 July 2026">
+</div>
+
+<div class="form-group">
+<label>Preferred Viewing Date</label>
+<input type="text" id="crit-viewingdate" placeholder="e.g. Any weekday afternoon">
+</div>
+
+<div class="form-group">
+<label>Who Makes the Final Decision and Pays?</label>
+<input type="text" id="crit-decisionmaker" placeholder="e.g. Myself / My parent">
+</div>
+
+<div class="form-group">
+<label>Do You Have the Rent, Deposit & Fees Ready?</label>
+<select id="crit-ready">
+<option value="">Select...</option>
+<option value="Yes">Yes, fully ready</option>
+<option value="Partially">Partially ready</option>
+<option value="No">Not yet</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Which Statement Matches Your Expectation of Our Service?</label>
+<select id="crit-expectation">
+<option value="">Select...</option>
+<option value="I want the cheapest option available">I want the cheapest option available</option>
+<option value="I want the best value for money">I want the best value for money</option>
+<option value="I want the closest option to campus">I want the closest option to campus</option>
+<option value="I want the safest, most secure option">I want the safest, most secure option</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Any Special Requirements? (Parking, security, kids, pets, WiFi, none, etc.)</label>
+<input type="text" id="crit-special" placeholder="e.g. Parking, secure complex, none">
+</div>
+
+<div class="form-group">
+<label>How Did You Hear About Our Service?</label>
+<select id="crit-referral">
+<option value="">Select...</option>
+<option value="WhatsApp">WhatsApp</option>
+<option value="Friend referral">Friend referral</option>
+<option value="Social Media">Social Media</option>
+<option value="Campus flyer">Campus flyer</option>
+<option value="Other">Other</option>
+</select>
+</div>
+
+<button class="btn btn-primary btn-block" onclick="submitDetailedCriteria()" id="submit-criteria-btn" style="margin-top:8px;">
+Show Me My First 3 Options
+</button>
+</div>
 </div>
 </div>
 <div id="page-expired" class="page expired-page">
@@ -869,8 +1025,7 @@ async function verifyGate() {
       document.getElementById('portal-name').textContent =
         (result.name || 'Student').split(' ')[0];
  
-      await renderPortal();
-      showPage('page-portal');
+      showPage('page-criteria-form');
  
     } else {
       const msgs = {
@@ -1131,6 +1286,79 @@ content.innerHTML = '<div class="admin-table" style="overflow-x:auto;"><table st
 }
 }
 renderAdmin();
+
+// ==================== DETAILED CRITERIA FORM ====================
+async function submitDetailedCriteria() {
+  const btn = document.getElementById('submit-criteria-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving your preferences...';
+
+  const client = DB.currentClient;
+  if (!client) {
+    alert('Session error. Please log in again.');
+    showPage('page-gate');
+    return;
+  }
+
+  const payload = {
+    action:           'saveStudentCriteria',
+    phone:            client.phone,
+    token:            client.token,
+    rowIndex:         client.rowIndex,
+    roomType:         document.getElementById('crit-roomtype').value,
+    gender:           document.getElementById('crit-gender').value,
+    occupant:         document.getElementById('crit-occupant').value,
+    institution:      document.getElementById('crit-institution').value.trim(),
+    area:             document.getElementById('crit-area').value,
+    budget:           document.getElementById('crit-budget').value,
+    staying:          document.getElementById('crit-staying').value.trim(),
+    startLooking:     document.getElementById('crit-startlooking').value.trim(),
+    moveInDate:       document.getElementById('crit-moveindate').value.trim(),
+    rentStart:        document.getElementById('crit-rentstart').value.trim(),
+    viewingDate:      document.getElementById('crit-viewingdate').value.trim(),
+    decisionMaker:    document.getElementById('crit-decisionmaker').value.trim(),
+    ready:            document.getElementById('crit-ready').value,
+    expectation:      document.getElementById('crit-expectation').value,
+    special:          document.getElementById('crit-special').value.trim(),
+    referral:         document.getElementById('crit-referral').value
+  };
+
+  // Basic validation
+  if (!payload.roomType || !payload.budget || !payload.ready || !payload.expectation || !payload.referral) {
+    alert('Please fill in all required fields (marked with select dropdowns).');
+    btn.disabled = false;
+    btn.textContent = 'Show Me My First 3 Options';
+    return;
+  }
+
+  try {
+    const response = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // Update local client object with criteria
+      client.preferredArea = payload.area === 'All' ? '' : payload.area;
+      client.maxBudget = parseInt(payload.budget);
+      client.roomType = payload.roomType.toLowerCase();
+      // Now show the portal
+      showPage('page-criteria-form');
+    } else {
+      alert('Error saving criteria: ' + (result.error || 'Please try again.'));
+      btn.disabled = false;
+      btn.textContent = 'Show Me My First 3 Options';
+    }
+  } catch (err) {
+    alert('Network error. Please check your connection and try again.');
+    btn.disabled = false;
+    btn.textContent = 'Show Me My First 3 Options';
+  }
+}
+
 </script>
 </body>
 </html>
