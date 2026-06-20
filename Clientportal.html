@@ -4,12 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="canonical" href="https://find.biofilmeddesire.com/">
-<script>
-// Redirect GitHub Pages traffic to custom domain
-if (window.location.hostname.includes('github.io')) {
-  window.location.href = 'https://find.biofilmeddesire.com' + window.location.pathname + window.location.search;
-}
-</script>
 <title>BiofilmedDesire | Student Accommodation — University of Limpopo</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -273,7 +267,6 @@ justify-content: center; color: white; font-size: 1.5rem; text-decoration: none;
 }
 </style>
 <base target="_blank">
-<base target="_blank">
 </head>
 <body>
 <div id="page-landing" class="page active">
@@ -533,12 +526,10 @@ Submit Payment for Verification
 <p class="gate-hint">Don't have access? <a href="#" onclick="showPage('page-landing')" style="color:var(--accent); text-decoration:none; font-weight:600;">Get Started</a></p>
 </div>
 </div>
-html
 
 <!-- ════════════════════════════════════════════════════════════════════
-     NEW PAGE: post-token qualifying form. Shown ONCE right after a
-     successful token verification, before the first batch is ever
-     requested. Mirrors your full Google Form fields.
+     POST-TOKEN QUALIFYING FORM — shown once, right after a successful
+     token verification, before the first batch is ever requested.
      ════════════════════════════════════════════════════════════════════ -->
 <div id="page-criteria-form" class="page payment-page">
 <nav class="navbar">
@@ -688,6 +679,7 @@ Show Me My First 3 Options
 </div>
 </div>
 </div>
+
 <div id="page-expired" class="page expired-page">
 <div class="expired-card fade-in">
 <div class="expired-icon"> ⏳ </div>
@@ -705,7 +697,11 @@ Show Me My First 3 Options
 <span class="logo-text">Biofilmed<span>Desire</span></span>
 </a>
 <div style="display:flex; align-items:center; gap:16px;">
-<div class="batch-indicator"><div class="batch-dot"></div><span id="batch-text">Batch 1 of 5</span></div>
+<div class="batch-indicator" style="gap:12px;">
+  <button class="btn btn-ghost btn-sm" id="prev-batch-btn" onclick="goToPreviousBatch()" style="padding:6px 14px; font-size:0.8rem;" disabled>&larr; Previous</button>
+  <div style="display:flex; align-items:center; gap:8px;"><div class="batch-dot"></div><span id="batch-text">Batch 1 of 4</span></div>
+  <button class="btn btn-ghost btn-sm" id="next-batch-btn" onclick="goToNextBatch()" style="padding:6px 14px; font-size:0.8rem;" disabled>Next &rarr;</button>
+</div>
 <div class="user-pill" style="display:flex; align-items:center; gap:8px; background:var(--bg); padding:6px 14px; border-radius:100px; border:1px solid var(--border); font-size:0.85rem; font-weight:600;">
 <img src="https://biofilmeddesire-creator.github.io/portal/rsz_logo.jpg" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;" id="portal-avatar">
 <span id="portal-name">Student</span>
@@ -728,7 +724,7 @@ Show Me My First 3 Options
 <div class="boundary-icon"> 🚫 </div>
 <h2>Search Limit Reached</h2>
 <div class="boundary-message">
-We have now exhausted the 15 verified properties in your specified zone and budget around University of Limpopo.
+We have now exhausted the 12 verified properties in your specified zone and budget around University of Limpopo.
 Our team has spent the allocated time sourcing these for you.
 If you would like us to expand the search radius or look into a different price tier, we will need to activate a new search mandate with a renewed service fee.
 </div>
@@ -823,7 +819,7 @@ currentBatch: 0,
 selectedRoomType: null,
 uploadedProof: null
 };
-const HARD_BOUNDARY_INDEX = 15;
+const HARD_BOUNDARY_INDEX = 12; // 4 batches x 3 = 12 total options
 const TOKEN_EXPIRY_HOURS = 24;
 const CAPITEC_ACCOUNT = '2515803187';
 const WHATSAPP_NUMBER = '27825053087';
@@ -927,7 +923,7 @@ el.addEventListener('input', checkFormValidity);
 el.addEventListener('change', checkFormValidity);
 }
 });
-// ==================== UPDATED FUNCTION ====================
+
 async function submitPaymentRequest() {
   const btn = document.getElementById('submit-pay-btn');
   btn.disabled = true;
@@ -988,6 +984,7 @@ async function submitPaymentRequest() {
 }
 
 // ========================================================
+// Routes to the qualifying-criteria form on success (NOT straight to portal).
 async function verifyGate() {
   const phone    = document.getElementById('gate-phone').value.trim().replace(/\D/g, '');
   const token    = document.getElementById('gate-token').value.trim().toUpperCase();
@@ -1012,19 +1009,21 @@ async function verifyGate() {
     const result = await response.json();
  
     if (result.success) {
-      // Store session data in memory (not localStorage — security)
       DB.currentClient = {
-        name:         result.name,
-        phone:        phone,
-        token:        token,
-        rowIndex:     result.rowIndex,
-        batchesSent:  result.batchesSent || 0,
-        lastSeenIndex: (result.batchesSent || 0) * 3
+        name:                 result.name,
+        phone:                phone,
+        token:                token,
+        rowIndex:             result.rowIndex,
+        batchesSent:          result.batchesSent || 0,
+        currentlyViewedBatch: 0
       };
  
       document.getElementById('portal-name').textContent =
         (result.name || 'Student').split(' ')[0];
  
+      // Go to the qualifying form FIRST. getStudentBatch refuses to serve a
+      // batch until Detailed_Criteria exists, so this also acts as a
+      // safety net if someone reaches the portal without completing it.
       showPage('page-criteria-form');
  
     } else {
@@ -1052,45 +1051,136 @@ async function verifyGate() {
   }
 }
 
-function getMatchedProperties(client) {
-return DB.properties.filter(p =>
-p.area === client.preferredArea &&
-p.rent <= client.maxBudget &&
-(client.roomType === 'bachelor' || p.type === 'Single' || client.roomType === 'single')
-);
+// ==================== DETAILED CRITERIA FORM ====================
+// Sends action 'saveDetailedCriteria' with field names matching exactly
+// what the Code.gs saveDetailedCriteria() function expects. On success,
+// proceeds to render the portal (not back to the form).
+async function submitDetailedCriteria() {
+  const btn = document.getElementById('submit-criteria-btn');
+  const client = DB.currentClient;
+
+  if (!client) {
+    alert('Session error. Please log in again.');
+    showPage('page-gate');
+    return;
+  }
+
+  const roomType = document.getElementById('crit-roomtype').value;
+  const budget   = document.getElementById('crit-budget').value;
+
+  if (!roomType) {
+    alert('Please select a room type.');
+    return;
+  }
+  if (!budget) {
+    alert('Please select your maximum budget.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  const payload = {
+    action:               'saveDetailedCriteria',
+    phone:                 client.phone,
+    token:                 client.token,
+    rowIndex:              client.rowIndex,
+    roomType:              roomType,
+    gender:                document.getElementById('crit-gender').value,
+    occupantStatus:        document.getElementById('crit-occupant').value,
+    institution:           document.getElementById('crit-institution').value.trim(),
+    area:                  document.getElementById('crit-area').value,
+    budget:                budget,
+    staying:               document.getElementById('crit-staying').value.trim(),
+    startLooking:          document.getElementById('crit-startlooking').value.trim(),
+    moveInDate:            document.getElementById('crit-moveindate').value.trim(),
+    rentStartDate:         document.getElementById('crit-rentstart').value.trim(),
+    viewingDate:           document.getElementById('crit-viewingdate').value.trim(),
+    decisionMaker:         document.getElementById('crit-decisionmaker').value.trim(),
+    ready:                 document.getElementById('crit-ready').value,
+    expectation:           document.getElementById('crit-expectation').value,
+    specialRequirements:   document.getElementById('crit-special').value.trim(),
+    referral:              document.getElementById('crit-referral').value
+  };
+
+  try {
+    const response = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      client.preferredArea = payload.area === 'All' ? '' : payload.area;
+      client.maxBudget      = parseInt(payload.budget, 10);
+      client.roomType       = payload.roomType.toLowerCase();
+
+      await renderPortal();
+      showPage('page-portal');
+    } else {
+      alert('Error saving criteria: ' + (result.error || 'Please try again or contact us on WhatsApp.'));
+    }
+  } catch (err) {
+    alert('A network error occurred. Please check your connection and try again, or contact us on WhatsApp 082 505 3087.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Show Me My First 3 Options';
+  }
 }
 
+// ==================== PORTAL BATCH RENDERING ====================
 async function renderPortal() {
+  const client = DB.currentClient;
+  client.currentlyViewedBatch = (client.batchesSent || 0) + 1;
+  await fetchAndShowBatch(client.currentlyViewedBatch, false);
+}
+
+async function fetchAndShowBatch(batchNumber, isGoingBack) {
   const client    = DB.currentClient;
   const container = document.getElementById('properties-container');
   const boundary  = document.getElementById('boundary-container');
   const batchText = document.getElementById('batch-text');
- 
-  // Show loading state
+
   container.style.display = 'flex';
   boundary.style.display  = 'none';
   container.innerHTML =
     '<div style="text-align:center; padding:60px 24px;">' +
     '<div style="width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px;"></div>' +
-    '<p style="color:var(--text-muted);">Finding your matches...</p>' +
+    '<p style="color:var(--text-muted);">' + (isGoingBack ? 'Loading previous batch...' : 'Finding your matches...') + '</p>' +
     '</div>';
- 
+
   try {
+    const action = isGoingBack ? 'getPreviousBatch' : 'getStudentBatch';
     const response = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        action:      'getStudentBatch',
+        action:      action,
         phone:       client.phone,
         token:       client.token,
         rowIndex:    client.rowIndex,
-        batchNumber: (client.batchesSent || 0) + 1
+        batchNumber: batchNumber
       })
     });
- 
+
     const result = await response.json();
- 
+
     if (!result.success) {
+      if (result.error === 'CRITERIA_NOT_SUBMITTED') {
+        showPage('page-criteria-form');
+        return;
+      }
+      if (result.error === 'REASON_REQUIRED') {
+        container.innerHTML =
+          '<div style="text-align:center;padding:40px 24px;background:var(--surface);border-radius:12px;border:1px solid var(--border);">' +
+          '<h3 style="margin-bottom:12px;">One More Thing</h3>' +
+          '<p style="color:var(--text-muted);margin-bottom:24px;">Please tell us what didn\'t work about the last batch before we show the next one.</p>' +
+          '<button class="btn btn-primary" onclick="openDealbreaker(null)">Give My Reason</button>' +
+          '</div>';
+        return;
+      }
       container.innerHTML =
         '<div style="text-align:center;padding:40px 24px;background:var(--surface);border-radius:12px;border:1px solid var(--border);">' +
         '<h3 style="margin-bottom:12px;">Something went wrong</h3>' +
@@ -1099,19 +1189,21 @@ async function renderPortal() {
         '</div>';
       return;
     }
- 
+
     if (result.exhausted || !result.rooms || result.rooms.length === 0) {
       container.style.display = 'none';
       boundary.style.display  = 'block';
       batchText.textContent   = 'Search Exhausted';
+      updateBatchNavButtons(client.currentlyViewedBatch || batchNumber, true);
       return;
     }
- 
-    // Update local batch counter
-    client.batchesSent = result.batchNumber;
-    batchText.textContent = 'Batch ' + result.batchNumber + ' of 5';
- 
-    // Render the room cards
+
+    if (!isGoingBack) {
+      client.batchesSent = result.batchNumber;
+    }
+    client.currentlyViewedBatch = result.batchNumber;
+    batchText.textContent = 'Batch ' + result.batchNumber + ' of 4';
+
     container.innerHTML = result.rooms.map(function(prop, idx) {
       const isPending  = prop.status && prop.status.toLowerCase().includes('full');
       const imageUrl   = prop.pictures
@@ -1123,7 +1215,7 @@ async function renderPortal() {
       const walkLabel = prop.walkMins && prop.walkMins !== 999
         ? '<div class="meta-item">&#128694; ' + prop.walkMins + ' min walk</div>'
         : '';
- 
+
       return (
         '<div class="property-card ' + (isPending ? 'pending' : '') + ' slide-up" style="animation-delay:' + (idx * 0.15) + 's;">' +
           '<div class="property-image">' +
@@ -1151,7 +1243,9 @@ async function renderPortal() {
         '</div>'
       );
     }).join('');
- 
+
+    updateBatchNavButtons(result.batchNumber, false);
+
   } catch (err) {
     container.innerHTML =
       '<div style="text-align:center;padding:40px 24px;background:var(--surface);border-radius:12px;border:1px solid var(--border);">' +
@@ -1162,16 +1256,43 @@ async function renderPortal() {
   }
 }
 
+function updateBatchNavButtons(currentBatchNumber, isExhausted) {
+  const prevBtn = document.getElementById('prev-batch-btn');
+  const nextBtn = document.getElementById('next-batch-btn');
+  if (!prevBtn || !nextBtn) return;
+  prevBtn.disabled = currentBatchNumber <= 1;
+  const client = DB.currentClient;
+  const highestServed = client.batchesSent || 1;
+  nextBtn.disabled = isExhausted || (currentBatchNumber >= highestServed && highestServed >= 4);
+}
+
+async function goToPreviousBatch() {
+  const client = DB.currentClient;
+  const targetBatch = (client.currentlyViewedBatch || 1) - 1;
+  if (targetBatch < 1) return;
+  await fetchAndShowBatch(targetBatch, true);
+}
+
+async function goToNextBatch() {
+  const client = DB.currentClient;
+  const targetBatch = (client.currentlyViewedBatch || 0) + 1;
+  const highestServed = client.batchesSent || 0;
+
+  if (targetBatch <= highestServed) {
+    await fetchAndShowBatch(targetBatch, true);
+  } else {
+    await fetchAndShowBatch(targetBatch, false);
+  }
+}
+
 async function bookViewing(propId, propTitle) {
   const client = DB.currentClient;
  
-  // Optimistic UI — show success screen immediately
   document.getElementById('success-property').textContent = propTitle || propId;
   document.getElementById('success-location').textContent = 'Ref: ' + propId;
   document.getElementById('success-ref').textContent      = 'BD-' + Date.now().toString().slice(-6);
   showPage('page-success');
  
-  // Log to GAS in background — non-blocking
   try {
     await fetch(WORKER_URL, {
       method: 'POST',
@@ -1186,11 +1307,12 @@ async function bookViewing(propId, propTitle) {
       })
     });
   } catch(err) {
-    // Silent — UI already shows success; you'll follow up via WhatsApp
     console.warn('logViewingRequest failed silently:', err);
   }
 }
 
+// Tolerates propId === null (happens when REASON_REQUIRED triggers the
+// modal directly rather than a specific "Not For Me" click).
 let pendingDealbreakerPropId = null;
 function openDealbreaker(propId) {
   pendingDealbreakerPropId = propId;
@@ -1219,11 +1341,9 @@ async function submitDealbreaker() {
  
   closeDealbreaker();
  
-  // Show progress screen
   const progress = document.getElementById('progress-screen');
   progress.classList.add('active');
  
-  // Log rejection to GAS
   try {
     await fetch(WORKER_URL, {
       method: 'POST',
@@ -1241,7 +1361,6 @@ async function submitDealbreaker() {
     console.warn('logDealbreaker failed silently:', err);
   }
  
-  // Small delay so the progress animation feels real, then load next batch
   await new Promise(function(res) { setTimeout(res, 1800); });
   progress.classList.remove('active');
   await renderPortal();
@@ -1286,79 +1405,6 @@ content.innerHTML = '<div class="admin-table" style="overflow-x:auto;"><table st
 }
 }
 renderAdmin();
-
-// ==================== DETAILED CRITERIA FORM ====================
-async function submitDetailedCriteria() {
-  const btn = document.getElementById('submit-criteria-btn');
-  btn.disabled = true;
-  btn.textContent = 'Saving your preferences...';
-
-  const client = DB.currentClient;
-  if (!client) {
-    alert('Session error. Please log in again.');
-    showPage('page-gate');
-    return;
-  }
-
-  const payload = {
-    action:           'saveStudentCriteria',
-    phone:            client.phone,
-    token:            client.token,
-    rowIndex:         client.rowIndex,
-    roomType:         document.getElementById('crit-roomtype').value,
-    gender:           document.getElementById('crit-gender').value,
-    occupant:         document.getElementById('crit-occupant').value,
-    institution:      document.getElementById('crit-institution').value.trim(),
-    area:             document.getElementById('crit-area').value,
-    budget:           document.getElementById('crit-budget').value,
-    staying:          document.getElementById('crit-staying').value.trim(),
-    startLooking:     document.getElementById('crit-startlooking').value.trim(),
-    moveInDate:       document.getElementById('crit-moveindate').value.trim(),
-    rentStart:        document.getElementById('crit-rentstart').value.trim(),
-    viewingDate:      document.getElementById('crit-viewingdate').value.trim(),
-    decisionMaker:    document.getElementById('crit-decisionmaker').value.trim(),
-    ready:            document.getElementById('crit-ready').value,
-    expectation:      document.getElementById('crit-expectation').value,
-    special:          document.getElementById('crit-special').value.trim(),
-    referral:         document.getElementById('crit-referral').value
-  };
-
-  // Basic validation
-  if (!payload.roomType || !payload.budget || !payload.ready || !payload.expectation || !payload.referral) {
-    alert('Please fill in all required fields (marked with select dropdowns).');
-    btn.disabled = false;
-    btn.textContent = 'Show Me My First 3 Options';
-    return;
-  }
-
-  try {
-    const response = await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      // Update local client object with criteria
-      client.preferredArea = payload.area === 'All' ? '' : payload.area;
-      client.maxBudget = parseInt(payload.budget);
-      client.roomType = payload.roomType.toLowerCase();
-      // Now show the portal
-      showPage('page-criteria-form');
-    } else {
-      alert('Error saving criteria: ' + (result.error || 'Please try again.'));
-      btn.disabled = false;
-      btn.textContent = 'Show Me My First 3 Options';
-    }
-  } catch (err) {
-    alert('Network error. Please check your connection and try again.');
-    btn.disabled = false;
-    btn.textContent = 'Show Me My First 3 Options';
-  }
-}
-
 </script>
 </body>
 </html>
